@@ -1,0 +1,40 @@
+<%= form_with model: @record, local: true, class: "space-y-4" do |f| %>
+  <% if @record.errors.any? %>
+    <div class="rounded border border-rose-200 bg-rose-50 p-3 text-rose-700">
+      <strong><%= pluralize(@record.errors.count, "error") %> prohibited this record from being saved:</strong>
+      <ul class="list-disc ml-5">
+        <% @record.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <label class="block text-sm text-gray-600">開始</label>
+    <%= f.datetime_select :start_time %>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600">終了（任意）</label>
+    <%= f.datetime_select :end_time, include_blank: true %>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600">目標</label>
+    <%= f.select :target_hours,
+      options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }, @record.target_hours),
+      include_blank: "未設定",
+      class: "border rounded px-2 py-1" %>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600">結果</label>
+    <%= f.select :success, [["未設定", ""], ["達成", true], ["失敗", false]], {}, class: "border rounded px-2 py-1" %>
+  </div>
+
+  <div>
+    <label class="block text-sm text-gray-600">コメント</label>
+    <%= f.text_area :comment, rows: 4, class: "w-full border rounded px-2 py-1" %>
+  </div>
+
+  <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white" %>
+<% end %>
