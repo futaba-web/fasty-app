@@ -1,6 +1,6 @@
 class FastingRecord < ApplicationRecord
-    TARGET_HOURS_CHOICES = [12, 14, 16, 18, 20, 22, 24].freeze
-    #belongs_to :user, optional: true #Users導入後に外してOK
+    TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
+    # belongs_to :user, optional: true #Users導入後に外してOK
 
     validates :start_time, presence: true
     validates :target_hours, presence: true, inclusion: { in: TARGET_HOURS_CHOICES }

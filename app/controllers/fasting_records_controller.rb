@@ -1,6 +1,6 @@
 class FastingRecordsController < ApplicationController
   before_action :set_scope
-  before_action :set_record, only: [:show, :edit, :update, :finish]
+  before_action :set_record, only: [ :show, :edit, :update, :finish ]
 
   def index
     @running = @scope.running.last
@@ -17,7 +17,7 @@ class FastingRecordsController < ApplicationController
   def create
     @record = FastingRecord.new(record_params.merge(user_id: nil))
     if @record.save
-      redirect_to fasting_records_path, notice: '新しい記録を登録しました'
+      redirect_to fasting_records_path, notice: "新しい記録を登録しました"
     else
       render :new, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class FastingRecordsController < ApplicationController
 
   def update
     if @record.update(record_params)
-      redirect_to @record, notice: '更新しました'
+      redirect_to @record, notice: "更新しました"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -36,14 +36,14 @@ class FastingRecordsController < ApplicationController
   # 開始（進行中があればブロック）
   def start
     if @scope.running.exists?
-      redirect_to fasting_records_path, alert: '進行中の記録があります' and return
+      redirect_to fasting_records_path, alert: "進行中の記録があります" and return
     end
 
     hours  = params[:target_hours].presence&.to_i
     record = FastingRecord.new(user_id: nil, start_time: Time.current, target_hours: hours)
 
     if record.save
-      redirect_to fasting_records_path, notice: 'ファスティングを開始しました'
+      redirect_to fasting_records_path, notice: "ファスティングを開始しました"
     else
       redirect_to fasting_records_path, alert: record.errors.full_messages.to_sentence
     end
@@ -53,7 +53,7 @@ class FastingRecordsController < ApplicationController
   def finish
     result = params.key?(:success) ? ActiveModel::Type::Boolean.new.cast(params[:success]) : nil
     if @record.update(end_time: Time.current, success: result)
-      redirect_to new_fasting_record_path, notice: 'ファスティングを終了しました。新しい記録を作成できます。'
+      redirect_to new_fasting_record_path, notice: "ファスティングを終了しました。新しい記録を作成できます。"
     else
       redirect_back fallback_location: fasting_records_path, alert: @record.errors.full_messages.to_sentence
     end

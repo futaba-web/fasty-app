@@ -10,7 +10,7 @@ class CreateFastingRecords < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    add_index :fasting_records, [:user_id, :start_time]
-    add_index :fasting_records, [:user_id, :end_time]
+    add_index :fasting_records, [ :user_id, :start_time ]
+    add_index :fasting_records, [ :user_id, :end_time ]
   end
 end

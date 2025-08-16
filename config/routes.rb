@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root "fasting_records#index"
 
-  resources :fasting_records, only: [:index, :show, :new, :create, :edit, :update] do
+  resources :fasting_records, only: [ :index, :show, :new, :create, :edit, :update ] do
     post :start, on: :collection
     post :finish, on: :member
   end
