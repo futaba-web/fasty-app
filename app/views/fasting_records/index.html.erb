@@ -57,18 +57,18 @@
       </tr>
     </thead>
     <tbody>
-      <% @records.each do |r| %>
-        <tr class="border-t">
-          <td class="px-3 py-2"><%= l r.start_time %></td>
-          <td class="px-3 py-2"><%= r.end_time ? l(r.end_time) : "-" %></td>
-          <td class="px-3 py-2 text-center"><%= r.target_hours || "-" %></td>
-          <td class="px-3 py-2"><%= r.success.nil? ? "-" : (r.success ? "達成" : "失敗") %></td>
-          <td class="px-3 py-2">
-            <%= link_to "詳細", r, class: "text-blue-600 underline" %> /
-            <%= link_to "編集", edit_fasting_record_path(r), class: "text-blue-600 underline" %>
-          </td>
-        </tr>
-      <% end %>
+    <% @records.each do |r| %>
+      <tr class="border-t">
+        <td class="px-3 py-2"><%= fmt_jp(r.start_time)%></td>
+        <td class="px-3 py-2"><%= fmt_jp(r.end_time) %></td>
+        <td class="px-3 py-2 text-center"><%= r.target_hours || "-" %></td>
+        <td class="px-3 py-2"><%= r.success.nil? ? "-" : (r.success ? "達成" : "失敗") %></td>
+        <td class="px-3 py-2">
+          <%= link_to "詳細", r, class: "text-blue-600 underline" %> /
+          <%= link_to "編集", edit_fasting_record_path(r), class: "text-blue-600 underline" %>
+        </td>
+      </tr>
+    <% end %>
     </tbody>
   </table>
 </div>

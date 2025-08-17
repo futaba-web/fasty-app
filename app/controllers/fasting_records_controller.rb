@@ -11,12 +11,12 @@ class FastingRecordsController < ApplicationController
   def show; end
 
   def new
-    @record = FastingRecord.new(start_time: Time.current)
+    @record = FastingRecord.new(start_time: Time.current, end_time: Time.current)
   end
 
   def create
     @record = FastingRecord.new(record_params.merge(user_id: nil))
-    if @record.save
+    if @record.save(context: :manual)
       redirect_to fasting_records_path, notice: "新しい記録を登録しました"
     else
       render :new, status: :unprocessable_entity
