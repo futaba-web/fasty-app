@@ -1,4 +1,4 @@
-<%= form_with model: @record, local: true, class: "space-y-4" do |f| %>
+<%= form_with model: @record, local: true, class: "space-y-4", data: { controller: "fasting-form" } do |f| %>
   <% if @record.errors.any? %>
     <div class="rounded border border-rose-200 bg-rose-50 p-3 text-rose-700">
       <strong><%= pluralize(@record.errors.count, "error") %> prohibited this record from being saved:</strong>
@@ -10,20 +10,24 @@
 
   <div>
     <label class="block text-sm text-gray-600">開始</label>
-    <%= f.datetime_select :start_time %>
+    <%= f.datetime_field :start_time,
+          data: { "fasting-form-target": "start", action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
   </div>
 
   <div>
-    <label class="block text-sm text-gray-600">終了（任意）</label>
-    <%= f.datetime_select :end_time, include_blank: true %>
+    <label class="block text-sm text-gray-600">終了（必須・自動入力）</label>
+    <%= f.datetime_field :end_time, required: true,
+          data: { "fasting-form-target": "end" } %>
   </div>
 
   <div>
     <label class="block text-sm text-gray-600">目標</label>
     <%= f.select :target_hours,
       options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }, @record.target_hours),
-      include_blank: "未設定",
-      class: "border rounded px-2 py-1" %>
+      { include_blank: "選択してください" },
+      class: "border rounded px-2 py-1",
+      data: { "fasting-form-target": "targetHours", action: "change->fasting-form#updateEnd" },
+      required: true %>
   </div>
 
   <div>

@@ -5,6 +5,7 @@ class FastingRecord < ApplicationRecord
     validates :start_time, presence: true
     validates :target_hours, presence: true, inclusion: { in: TARGET_HOURS_CHOICES }
     validate :end_after_start
+    validates :end_time, presence: true, on: :manual
 
     scope :running, -> { where(end_time: nil) }
 
