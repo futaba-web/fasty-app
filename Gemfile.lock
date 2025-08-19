@@ -96,7 +96,6 @@ GEM
     drb (2.2.3)
     erb (4.0.4)
       cgi (>= 0.3.3)
-    error_highlight (0.7.0)
     erubi (1.13.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
@@ -241,9 +240,12 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
-    sass-embedded (1.90.0)
+    sass-embedded (1.90.0-aarch64-linux-gnu)
       google-protobuf (~> 4.31)
-      rake (>= 13)
+    sass-embedded (1.90.0-arm64-darwin)
+      google-protobuf (~> 4.31)
+    sass-embedded (1.90.0-x86_64-linux-gnu)
+      google-protobuf (~> 4.31)
     securerandom (0.4.1)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
@@ -294,7 +296,6 @@ DEPENDENCIES
   brakeman
   dartsass-rails
   debug
-  error_highlight (>= 0.4.0)
   importmap-rails
   mysql2 (~> 0.5)
   puma (>= 5.0)
@@ -306,6 +307,9 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+
+RUBY VERSION
+   ruby 3.2.2p53
 
 BUNDLED WITH
    2.3.26
