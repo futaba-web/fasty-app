@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  root "fasting_records#index"
+  get "pages/home"
+  root "pages#home"
 
   resources :fasting_records, only: [ :index, :show, :new, :create, :edit, :update ] do
     post :start, on: :collection

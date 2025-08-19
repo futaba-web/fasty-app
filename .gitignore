@@ -44,3 +44,6 @@
 # OS / Editor
 .DS_Store
 *.swp
+
+# dev-only: Figma overlay
+app/assets/images/landing/figma-comp.*
