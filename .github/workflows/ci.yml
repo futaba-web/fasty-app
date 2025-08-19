@@ -5,6 +5,10 @@ on:
   push:
     branches: [ main ]
 
+env:
+  # dev/test の gem もインストールする（空文字で全部入れる）
+  BUNDLE_WITHOUT: ""
+
 jobs:
   lint:                      # CI / lint (pull_request)
     runs-on: ubuntu-latest
@@ -14,7 +18,13 @@ jobs:
         with:
           ruby-version: '3.2.2'
           bundler-cache: true
-      - run: bundle exec rubocop
+      - name: Show versions (debug)
+        run: |
+          ruby -v
+          bundle -v
+          bundle list | grep -E 'rubocop|brakeman' || true
+      - name: RuboCop
+        run: bundle exec rubocop --parallel
 
   scan_ruby:                 # CI / scan_ruby (pull_request)
     runs-on: ubuntu-latest
@@ -24,11 +34,11 @@ jobs:
         with:
           ruby-version: '3.2.2'
           bundler-cache: true
-      - run: bundle exec brakeman -q -w2 --no-pager
+      - name: Brakeman
+        run: bundle exec brakeman -q -w2 --no-pager
 
-  scan_js:                   # CI / scan_js (pull_request)
-    # まだ JS のリンタを使っていないので一旦スキップ
+  scan_js:                   # いまは未使用なのでスキップ
     if: false
     runs-on: ubuntu-latest
     steps:
-      - run: echo "No JS lint yet"
+      - run: echo "JS lint is disabled for now"
