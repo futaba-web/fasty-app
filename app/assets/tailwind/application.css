@@ -1,2 +1,6 @@
+/* app/assets/tailwind/application.css (Tailwind v4 入力) */
 @import "tailwindcss";
-/*Hello,Tailwind! */
+
+/* ここに自作の Tailwind ベースCSSを取り込む */
+@import "../stylesheets/landing.css";
+/* 他にも増やしたければここに import を追加 */

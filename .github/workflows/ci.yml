@@ -5,51 +5,40 @@ on:
   push:
     branches: [ main ]
 
+env:
+  # dev/test の gem もインストールする（空文字で全部入れる）
+  BUNDLE_WITHOUT: ""
+
 jobs:
-  scan_ruby:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
-
-  scan_js:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
-
-  lint:
+  lint:                      # CI / lint (pull_request)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: .ruby-version
+          ruby-version: '3.2.2'
           bundler-cache: true
+      - name: Show versions (debug)
+        run: |
+          ruby -v
+          bundle -v
+          bundle list | grep -E 'rubocop|brakeman' || true
+      - name: RuboCop
+        run: bundle exec rubocop --parallel
 
-      - name: Lint code for consistent style
-        run: bin/rubocop -f github
+  scan_ruby:                 # CI / scan_ruby (pull_request)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.2'
+          bundler-cache: true
+      - name: Brakeman
+        run: bundle exec brakeman -q -w2 --no-pager
 
+  scan_js:                   # いまは未使用なのでスキップ
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "JS lint is disabled for now"

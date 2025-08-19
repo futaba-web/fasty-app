@@ -1,0 +1,17 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      RAILS_ENV: development
+      BUNDLE_WITHOUT: ""   # dev/test も入れる
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    command: ./bin/rails server -b 0.0.0.0 -p 3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  bundle_cache:

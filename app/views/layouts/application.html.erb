@@ -20,8 +20,17 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body>
-    <%= render "shared/flash" %>
-    <%= yield %>
+  <body class="text-gray-900">
+    <% landing = (controller_path == "pages" && action_name == "home") %>
+    <%= render("shared/header") if !landing && lookup_context.exists?("shared/header") %>
+
+    <% if landing %>
+      <%= yield %>
+    <% else %>
+      <main class="max-w-5xl mx-auto p-4 pt-4">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>

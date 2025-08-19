@@ -1,0 +1,51 @@
+/* app/assets/stylesheets/landing.css */
+@layer components {
+  .hero       { @apply relative w-full min-h-[100svh] bg-center bg-cover flex items-center justify-center; }
+
+  /* 少しだけ暗めにして文字のコントラストを安定（以前の白→黒に微修正） */
+  .hero-dim   { @apply absolute inset-0 bg-white/35; }
+
+  .hero-top   { @apply absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-transparent; }
+
+  /* @apply では書けないので通常CSSで定義（色味はそのまま＝最小変更） */
+  .hero-center {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at center,
+      rgba(255,255,255,.50) 0%,
+      rgba(255,255,255,.25) 40%,
+      rgba(255,255,255,0) 75%);
+  }
+
+  .hero-title { @apply select-none absolute top-6 md:top-10 left-1/2 -translate-x-1/2 z-20
+                        text-white text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-wide
+                        drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)]; }
+
+  .hero-box   { @apply relative z-10 w-full mx-auto max-w-[1100px] px-6 text-center text-gray-900; }
+  .hero-copy  { @apply mt-24 md:mt-28 lg:mt-32 text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight; }
+  .hero-list  { @apply mt-6 space-y-3 text-xl md:text-2xl lg:text-3xl font-bold; }
+
+  /* 追加：CTAボタンの並び間隔（最小変更で見た目安定） */
+  .hero-cta   { @apply mt-10 flex flex-wrap items-center justify-center gap-6; }
+
+  .btn-mint     { @apply inline-flex items-center justify-center rounded-full px-5 py-4 md:py-4 font-bold text-white shadow-lg; background:#2bd4c3; }
+  .btn-mint--lg { @apply w-[220px] md:w-[280px] lg:w-[320px] text-2xl md:text-3xl lg:text-4xl; }
+}
+
+/* 追加：軽いホバーアニメ（@apply では書けないので utilities として定義） */
+@layer utilities {
+  .btn-mint { transition: transform .15s ease, box-shadow .15s ease; box-shadow: 0 10px 30px rgba(43,212,195,.35); }
+  .btn-mint:hover { transform: translateY(-1.5px); box-shadow: 0 14px 34px rgba(43,212,195,.45); }
+}
+  
+/* セカンダリボタン（ログイン） */
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full
+           border-2 border-white/80 text-white/90
+           px-8 py-4 md:py-5 font-bold backdrop-blur-sm
+           hover:bg-white/10 transition;
+}
+
+  /* 不安つぶしチップ */
+  .badge-soft {
+    @apply px-3 py-1 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-sm;
+}
