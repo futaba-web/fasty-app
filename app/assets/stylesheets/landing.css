@@ -59,72 +59,41 @@
   }
 }
 
-/* ===== Devise 認証画面 ===== */
+/* ===== Auth（ログイン/登録/パスワード再設定） ===== */
 @layer components {
-  /* 背景画像（assets/landing/hero.jpg を使用） */
+  /* 背景：画像 + cover */
   .auth-bg {
     @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat;
     background-image: image-url("landing/hero.jpg");
   }
-  /* 必要なら背景の見せ方を上寄せに */
-  .auth-top-35 { background-position: 50% 35%; }
 
-  /* うっすら暗くして文字の可読性UP */
-  .auth-dim { @apply absolute inset-0 bg-black/40; }
+  /* うっすら暗め（読みやすさ確保しつつ、背景も見せる） */
+  .auth-dim { @apply absolute inset-0 bg-black/30; } /* ← 40% → 30% に少し明るく */
 
-  /* 画面中央配置 & 余白広め */
-  .auth-center { @apply relative min-h-[100svh] flex items-center justify-center p-4 sm:p-6 md:p-10; }
+  /* センター配置 */
+  .auth-center {
+    @apply relative min-h-[100svh] flex items-center justify-center p-4 sm:p-6 md:p-10;
+  }
 
-  /* 半透明カードを大きめに・内側ゆったり */
+  /* ★カードをコンパクト&半透明に */
   .auth-card {
-    /* 基本は 92vw か 420px の小さい方。スマホでデカくなりすぎない */
-    width: min(92vw, 420px);
-
-    @apply rounded-2xl bg-white/85 backdrop-blur-xl shadow-2xl
-           ring-1 ring-black/5 border border-white/70
-           bg-gradient-to-b from-white/95 to-white/85
-           p-6 sm:p-8; /* 余白も少し控えめに */
-
+    @apply w-full max-w-[680px] md:max-w-[720px]
+           rounded-2xl bg-white/65 backdrop-blur-md
+           shadow-2xl ring-1 ring-black/10
+           p-6 md:p-8 lg:p-10;
+    /* うっすらグラデで“ガラス感” */
+    @apply bg-gradient-to-b from-white/80 to-white/55
+           border border-white/50;
   }
 
-  /* タブレット以上：少し広げる */
-  @media (min-width: 768px) {
-    .auth-card {
-      width: min(88vw, 640px);
-      @apply p-10;
-    }
-  }
-
-  /* デスクトップ：もう少し広げる */
-  @media (min-width: 1024px) {
-    .auth-card {
-      width: min(70vw, 760px);
-    }
-  }
-
-  /* 見出しはやや控えめに（カード内に収まりやすく） */
+  /* 大きいタイトルがはみ出さないように（既に入れていたらそのままでOK） */
   .auth-title {
-    @apply text-center font-bold mb-6 md:mb-8;
-    line-height: 1.25;
-    padding-inline: .25rem;
-    text-wrap: balance;
-    font-size: clamp(24px, 6vw, 36px);      /* 以前より少し小さめ */
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem); /* 24px〜36px */
+    line-height: 1.2;
+    letter-spacing: 0.02em;
   }
 
-
-  /* 縦並びの間隔を広げる */
-  .auth-stack { @apply space-y-5 sm:space-y-6 md:space-y-8; }
-
-  /* 入力のサイズ拡大 */
-  .auth-input { @apply block w-full h-12 md:h-14 rounded-lg border border-gray-300 px-4 text-base md:text-lg; }
-
-  /* 送信ボタン大きめ */
-  .auth-btn { @apply w-full h-12 md:h-14 rounded-lg bg-blue-600 text-white text-lg md:text-xl font-semibold shadow hover:bg-blue-700 transition; }
-
-  /* 下部リンクの文字サイズ & 余白 */
-  .auth-links { @apply mt-5 md:mt-6 space-y-2 text-base md:text-lg; }
-
-  /* 既存の dev ise shared links 用の体裁（任意） */
+  /* ログイン下のリンク */
   .devise-links { @apply mt-6 text-center space-y-2; }
   .devise-links a { @apply text-blue-600 hover:text-blue-700 underline underline-offset-4; }
 }
