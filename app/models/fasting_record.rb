@@ -1,7 +1,8 @@
 class FastingRecord < ApplicationRecord
-    TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
-    # belongs_to :user, optional: true #Users導入後に外してOK
+    belongs_to :user, optional: true
 
+    TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
+    validates :user_id, uniqueness: { conditions: -> { where(end_time: nil) } }
     validates :start_time, presence: true
     validates :target_hours, presence: true, inclusion: { in: TARGET_HOURS_CHOICES }
     validate :end_after_start
@@ -9,7 +10,9 @@ class FastingRecord < ApplicationRecord
 
     scope :running, -> { where(end_time: nil) }
 
-    def running? = end_time.nil?
+    def running?
+      end_time.nil?
+    end
 
     def duration_seconds
         ((end_time || Time.current) - start_time).to_i
