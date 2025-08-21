@@ -1,0 +1,55 @@
+ja:
+  activerecord:
+    attributes:
+      user:
+        name: "お名前"
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+        current_password: "現在のパスワード"
+        remember_me: "ログイン状態を保持"
+
+  devise:
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      new:
+        sign_in: "ログイン"
+
+    registrations:
+      signed_up: "アカウントを作成しました。ようこそ！"
+      updated: "アカウント情報を更新しました。"
+      new:
+        sign_up: "新規登録"
+
+    passwords:
+      send_instructions: "パスワード再設定用のメールを送信しました。"
+      updated: "パスワードを更新しました。"
+      new:
+        Forgot_your_password?: "パスワードをお忘れですか？"
+        send_me_reset_password_instructions: "再設定メールを送信"
+      edit:
+        change_your_password: "パスワードの変更"
+        new_password: "新しいパスワード"
+        confirm_new_password: "新しいパスワード（確認）"
+        change_my_password: "パスワードを変更する"
+
+    confirmations:
+      send_instructions: "確認メールを送信しました。"
+      confirmed: "メールアドレスの確認が完了しました。"
+
+    failure:
+      unauthenticated: "続けるにはログインしてください。"
+      invalid: "メールアドレスまたはパスワードが正しくありません。"
+      not_found_in_database: "メールアドレスまたはパスワードが正しくありません。"
+      last_attempt: "あと1回失敗するとアカウントがロックされます。"
+      already_authenticated: "すでにログインしています。"
+
+    shared:
+      minimum_password_length:
+        one: "（最低%{count}文字）"
+        other: "（最低%{count}文字）"
+      links:
+        sign_in: "ログインはこちら"
+        sign_up: "アカウントをお持ちでない方はこちら（新規登録）"
+        forgot_your_password: "パスワードをお忘れの方はこちら"

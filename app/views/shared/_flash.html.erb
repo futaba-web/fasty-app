@@ -1,0 +1,7 @@
+<!-- app/views/shared/_flash.html.erb -->
+<% flash.each do |type, message| %>
+  <div class="mb-3 rounded px-4 py-2
+              <%= type.to_s == 'alert' ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700' %>">
+    <%= message %>
+  </div>
+<% end %>

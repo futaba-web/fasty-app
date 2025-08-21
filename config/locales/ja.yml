@@ -12,3 +12,13 @@ ja:
       default: "%Y/%m/%d %H:%M"
       long: "%Y年%-m月%-d日(%a) %H時%M分"
       jp_short: "%Y/%m/%d(%a) %H時%M分"
+  devise:
+    shared:
+      links:
+        sign_in: "ログインはこちら"
+        sign_up: "アカウントをお持ちでない方はこちら（新規登録）"
+        forgot_password: "パスワードをお忘れの方はこちら"
+  activerecord:
+    attributes:
+      user:
+        email: "メールアドレス"
