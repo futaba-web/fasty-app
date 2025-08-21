@@ -7,7 +7,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= javascript_importmap_tags %> <!-- Turbo/Stimulus 読み込み -->
+    <%= javascript_importmap_tags %>
 
     <%= yield :head %>
 
@@ -20,20 +20,23 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body class="text-gray-900">
+  <body class="text-gray-900 min-h-screen flex flex-col">
     <% landing = (controller_path == "pages" && action_name == "home") %>
 
-    <%# ランディング以外はヘッダー表示 %>
-    <%= render("shared/header") unless landing %>
+    <!-- ヘッダーは常に表示 -->
+    <%= render "shared/header" %>
 
     <% if landing %>
-      <%= yield %>
+      <main class="grow">
+        <%= yield %>
+      </main>
     <% else %>
-      <!-- ヘッダー分の上余白を確保（headerはh-14なのでpt-16で少し余裕） -->
-      <main class="max-w-5xl mx-auto p-4 pt-16">
+      <main class="grow max-w-5xl mx-auto p-4 pt-4">
         <%= render "shared/flash" %>
         <%= yield %>
       </main>
     <% end %>
+
+    <%= render "shared/footer" %>
   </body>
 </html>
