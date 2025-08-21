@@ -18,6 +18,8 @@
   </head>
 
   <body class="text-gray-900">
+    <%= render "shared/header" %>
+
     <div
       class="auth-bg bg-fixed auto-top-35"
       style="background-image: url('<%= asset_path("landing/hero.jpg") %>')"
@@ -31,5 +33,7 @@
         </div>
       </main>
     </div>
+
+    <%= render "shared/footer" %>
   </body>
 </html>
