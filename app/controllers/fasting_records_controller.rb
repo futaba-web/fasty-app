@@ -1,22 +1,24 @@
+# app/controllers/fasting_records_controller.rb
 class FastingRecordsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_scope
-  before_action :set_record, only: [ :show, :edit, :update, :finish ]
+  before_action :set_record, only: %i[show edit update destroy finish]
 
   def index
-    @running = @scope.running.last
-    @records = @scope.order(start_time: :desc).limit(30)
     @today   = Time.zone.today
+    @running = @scope.running.order(start_time: :desc).first
+    @records = @scope.order(start_time: :desc).limit(30)
   end
 
   def show; end
 
   def new
-    @record = FastingRecord.new(start_time: Time.current, end_time: Time.current)
+    @record = @scope.new(start_time: Time.current, end_time: Time.current)
   end
 
   def create
-    @record = FastingRecord.new(record_params.merge(user_id: nil))
-    if @record.save(context: :manual)
+    @record = @scope.new(fasting_record_params)
+    if @record.save
       redirect_to fasting_records_path, notice: "新しい記録を登録しました"
     else
       render :new, status: :unprocessable_entity
@@ -26,7 +28,7 @@ class FastingRecordsController < ApplicationController
   def edit; end
 
   def update
-    if @record.update(record_params)
+    if @record.update(fasting_record_params)
       redirect_to @record, notice: "更新しました"
     else
       render :edit, status: :unprocessable_entity
@@ -40,7 +42,7 @@ class FastingRecordsController < ApplicationController
     end
 
     hours  = params[:target_hours].presence&.to_i
-    record = FastingRecord.new(user_id: nil, start_time: Time.current, target_hours: hours)
+    record = @scope.new(start_time: Time.current, target_hours: hours)
 
     if record.save
       redirect_to fasting_records_path, notice: "ファスティングを開始しました"
@@ -49,27 +51,35 @@ class FastingRecordsController < ApplicationController
     end
   end
 
-  # 終了 → new へ誘導
+  # 終了
   def finish
     result = params.key?(:success) ? ActiveModel::Type::Boolean.new.cast(params[:success]) : nil
     if @record.update(end_time: Time.current, success: result)
-      redirect_to new_fasting_record_path, notice: "ファスティングを終了しました。新しい記録を作成できます。"
+      redirect_to fasting_records_path, notice: "ファスティングを終了しました"
     else
       redirect_back fallback_location: fasting_records_path, alert: @record.errors.full_messages.to_sentence
     end
   end
 
+  def destroy
+    @record.destroy!
+    redirect_to fasting_records_path, notice: "記録を削除しました"
+  end
+
   private
 
   def set_scope
-    @scope = FastingRecord.where(user_id: nil) # Users導入後は current_user.id に置換
+    # ★ ここが重要: 自分の記録だけを対象にする
+    @scope = current_user.fasting_records
   end
 
   def set_record
+    # ★ ID直叩きでも他人のは取れない
     @record = @scope.find(params[:id])
   end
 
-  def record_params
+  # ★ create/update 両方で同じStrong Params名を使う
+  def fasting_record_params
     params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment, :success)
   end
 end

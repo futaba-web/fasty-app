@@ -66,6 +66,10 @@
         <td class="px-3 py-2">
           <%= link_to "詳細", r, class: "text-blue-600 underline" %> /
           <%= link_to "編集", edit_fasting_record_path(r), class: "text-blue-600 underline" %>
+          <%= button_to "削除", fasting_record_path(r),
+              method: :delete,
+              data: { turbo_confirm: "本当に削除しますか？" },
+              class: "text-red-600 underline" %>
         </td>
       </tr>
     <% end %>

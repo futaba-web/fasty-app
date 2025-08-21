@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_15_112916) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_19_123238) do
   create_table "fasting_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.datetime "start_time", null: false
@@ -20,7 +20,26 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_15_112916) do
     t.boolean "success"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.virtual "active_user_id", type: :bigint, as: "if((`end_time` is null),`user_id`,NULL)", stored: true
+    t.index ["active_user_id"], name: "index_fasting_records_on_active_user_id", unique: true
     t.index ["user_id", "end_time"], name: "index_fasting_records_on_user_id_and_end_time"
     t.index ["user_id", "start_time"], name: "index_fasting_records_on_user_id_and_start_time"
+    t.index ["user_id"], name: "index_fasting_records_on_user_id"
   end
+
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "name", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["name"], name: "index_users_on_name", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  add_foreign_key "fasting_records", "users"
 end
