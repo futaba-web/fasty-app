@@ -7,7 +7,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= javascript_importmap_tags %> <!-- 追加: Turbo/Stimulus 読み込み -->
+    <%= javascript_importmap_tags %> <!-- Turbo/Stimulus 読み込み -->
 
     <%= yield :head %>
 
@@ -16,18 +16,21 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %> <!-- 追加 -->
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
   <body class="text-gray-900">
     <% landing = (controller_path == "pages" && action_name == "home") %>
-    <%= render("shared/header") if !landing && lookup_context.exists?("shared/header") %>
+
+    <%# ランディング以外はヘッダー表示 %>
+    <%= render("shared/header") unless landing %>
 
     <% if landing %>
       <%= yield %>
     <% else %>
-      <main class="max-w-5xl mx-auto p-4 pt-4">
+      <!-- ヘッダー分の上余白を確保（headerはh-14なのでpt-16で少し余裕） -->
+      <main class="max-w-5xl mx-auto p-4 pt-16">
         <%= render "shared/flash" %>
         <%= yield %>
       </main>

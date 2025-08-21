@@ -1,13 +1,15 @@
 /* app/assets/stylesheets/landing.css */
+
+/* ===== Hero（トップページ） ===== */
 @layer components {
   .hero       { @apply relative w-full min-h-[100svh] bg-center bg-cover flex items-center justify-center; }
 
-  /* 少しだけ暗めにして文字のコントラストを安定（以前の白→黒に微修正） */
+  /* うっすら白でコントラスト安定 */
   .hero-dim   { @apply absolute inset-0 bg-white/35; }
 
   .hero-top   { @apply absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-transparent; }
 
-  /* @apply では書けないので通常CSSで定義（色味はそのまま＝最小変更） */
+  /* @apply では表現しづらい中央ハイライト */
   .hero-center {
     position: absolute; inset: 0;
     background: radial-gradient(circle at center,
@@ -24,28 +26,105 @@
   .hero-copy  { @apply mt-24 md:mt-28 lg:mt-32 text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight; }
   .hero-list  { @apply mt-6 space-y-3 text-xl md:text-2xl lg:text-3xl font-bold; }
 
-  /* 追加：CTAボタンの並び間隔（最小変更で見た目安定） */
+  /* CTAボタンの並び */
   .hero-cta   { @apply mt-10 flex flex-wrap items-center justify-center gap-6; }
 
   .btn-mint     { @apply inline-flex items-center justify-center rounded-full px-5 py-4 md:py-4 font-bold text-white shadow-lg; background:#2bd4c3; }
   .btn-mint--lg { @apply w-[220px] md:w-[280px] lg:w-[320px] text-2xl md:text-3xl lg:text-4xl; }
 }
 
-/* 追加：軽いホバーアニメ（@apply では書けないので utilities として定義） */
+/* ===== Utilities ===== */
 @layer utilities {
   .btn-mint { transition: transform .15s ease, box-shadow .15s ease; box-shadow: 0 10px 30px rgba(43,212,195,.35); }
   .btn-mint:hover { transform: translateY(-1.5px); box-shadow: 0 14px 34px rgba(43,212,195,.45); }
+
+  /* ヘッダーのブランド色（スクショに近いグレー） */
+  .bg-brand-header { background-color: #bdb6b2; }
+  .bg-brand-header--light { background-color: #c4bdbb; }
+  .bg-brand-header--dark  { background-color: #a9a3a0; }
 }
-  
-/* セカンダリボタン（ログイン） */
+
+/* ===== 共通パーツ ===== */
+@layer components {
+  /* セカンダリ（ログイン 等） */
   .btn-outline {
     @apply inline-flex items-center justify-center rounded-full
            border-2 border-white/80 text-white/90
            px-8 py-4 md:py-5 font-bold backdrop-blur-sm
            hover:bg-white/10 transition;
-}
+  }
 
-  /* 不安つぶしチップ */
   .badge-soft {
     @apply px-3 py-1 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-sm;
+  }
+}
+
+/* ===== Devise 認証画面 ===== */
+@layer components {
+  /* 背景画像（assets/landing/hero.jpg を使用） */
+  .auth-bg {
+    @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat;
+    background-image: image-url("landing/hero.jpg");
+  }
+  /* 必要なら背景の見せ方を上寄せに */
+  .auth-top-35 { background-position: 50% 35%; }
+
+  /* うっすら暗くして文字の可読性UP */
+  .auth-dim { @apply absolute inset-0 bg-black/40; }
+
+  /* 画面中央配置 & 余白広め */
+  .auth-center { @apply relative min-h-[100svh] flex items-center justify-center p-4 sm:p-6 md:p-10; }
+
+  /* 半透明カードを大きめに・内側ゆったり */
+  .auth-card {
+    /* 基本は 92vw か 420px の小さい方。スマホでデカくなりすぎない */
+    width: min(92vw, 420px);
+
+    @apply rounded-2xl bg-white/85 backdrop-blur-xl shadow-2xl
+           ring-1 ring-black/5 border border-white/70
+           bg-gradient-to-b from-white/95 to-white/85
+           p-6 sm:p-8; /* 余白も少し控えめに */
+
+  }
+
+  /* タブレット以上：少し広げる */
+  @media (min-width: 768px) {
+    .auth-card {
+      width: min(88vw, 640px);
+      @apply p-10;
+    }
+  }
+
+  /* デスクトップ：もう少し広げる */
+  @media (min-width: 1024px) {
+    .auth-card {
+      width: min(70vw, 760px);
+    }
+  }
+
+  /* 見出しはやや控えめに（カード内に収まりやすく） */
+  .auth-title {
+    @apply text-center font-bold mb-6 md:mb-8;
+    line-height: 1.25;
+    padding-inline: .25rem;
+    text-wrap: balance;
+    font-size: clamp(24px, 6vw, 36px);      /* 以前より少し小さめ */
+  }
+
+
+  /* 縦並びの間隔を広げる */
+  .auth-stack { @apply space-y-5 sm:space-y-6 md:space-y-8; }
+
+  /* 入力のサイズ拡大 */
+  .auth-input { @apply block w-full h-12 md:h-14 rounded-lg border border-gray-300 px-4 text-base md:text-lg; }
+
+  /* 送信ボタン大きめ */
+  .auth-btn { @apply w-full h-12 md:h-14 rounded-lg bg-blue-600 text-white text-lg md:text-xl font-semibold shadow hover:bg-blue-700 transition; }
+
+  /* 下部リンクの文字サイズ & 余白 */
+  .auth-links { @apply mt-5 md:mt-6 space-y-2 text-base md:text-lg; }
+
+  /* 既存の dev ise shared links 用の体裁（任意） */
+  .devise-links { @apply mt-6 text-center space-y-2; }
+  .devise-links a { @apply text-blue-600 hover:text-blue-700 underline underline-offset-4; }
 }
