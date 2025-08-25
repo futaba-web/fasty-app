@@ -1,3 +1,4 @@
+# app/controllers/application_controller.rb
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   layout :layout_by_resource
@@ -9,9 +10,14 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:account_update, keys: [ :name ])
   end
 
-  # ログイン後の遷移先
-  def after_sign_in_path_for(resource)
-    stored_location_for(resource) || fasting_records_path
+  # ログイン後の遷移先（必ずマイページへ）
+  def after_sign_in_path_for(resource_or_scope)
+    mypage_path
+  end
+
+  # サインアップ後もマイページへ（任意だが合わせておくと自然）
+  def after_sign_up_path_for(resource)
+    mypage_path
   end
 
   # ログアウト後の遷移先
