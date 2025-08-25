@@ -1,13 +1,20 @@
-# app/controllers/fasting_records_controller.rb
 class FastingRecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_scope
   before_action :set_record, only: %i[show edit update destroy finish]
 
+  # 記録一覧ページ（フィルタ付き）
   def index
-    @today   = Time.zone.today
-    @running = @scope.running.order(start_time: :desc).first
-    @records = @scope.order(start_time: :desc).limit(30)
+    scope = @scope.order(start_time: :desc)
+
+    case params[:status]
+    when "success"
+      scope = scope.where(success: true)
+    when "failure"
+      scope = scope.where(success: false)
+    end
+
+    @records = scope.page(params[:page]).per(20) # kaminari/pagy を使っていなければ .page/.per は外してください
   end
 
   def show; end
@@ -35,31 +42,33 @@ class FastingRecordsController < ApplicationController
     end
   end
 
-  # 開始（進行中があればブロック）
+  # 今すぐ開始（進行中があればブロック）
   def start
     if @scope.running.exists?
-      redirect_to fasting_records_path, alert: "進行中の記録があります" and return
+      redirect_to mypage_path, alert: "進行中の記録があります" and return
     end
 
     hours  = params[:target_hours].presence&.to_i
-    record = @scope.new(start_time: Time.current, target_hours: hours)
+    record = @scope.new(start_time: Time.current, target_hours: hours, success: nil)
 
     if record.save
-      redirect_to fasting_records_path, notice: "ファスティングを開始しました"
+      redirect_to mypage_path, notice: "ファスティングを開始しました"
     else
-      redirect_to fasting_records_path, alert: record.errors.full_messages.to_sentence
+      redirect_to mypage_path, alert: record.errors.full_messages.to_sentence
     end
   end
 
-  # 終了
+  # 今すぐ終了（params[:success] を true/false で受ける／未指定なら nil）
   def finish
-    result = params.key?(:success) ? ActiveModel::Type::Boolean.new.cast(params[:success]) : nil
-    if @record.update(end_time: Time.current, success: result)
-      redirect_to fasting_records_path, notice: "ファスティングを終了しました"
-    else
-      redirect_back fallback_location: fasting_records_path, alert: @record.errors.full_messages.to_sentence
+    if @record.end_time.present?
+      redirect_to mypage_path, alert: "この記録はすでに終了しています。" and return
     end
+
+    @record.update!(end_time: Time.current, success: nil) # 成否は未確定のまま
+    redirect_to edit_fasting_record_path(@record),
+                notice: "ファスティングを終了しました。結果（達成/失敗）を選択して保存してください。"
   end
+
 
   def destroy
     @record.destroy!
@@ -69,16 +78,16 @@ class FastingRecordsController < ApplicationController
   private
 
   def set_scope
-    # ★ ここが重要: 自分の記録だけを対象にする
+    # 自分の記録だけを対象にする
     @scope = current_user.fasting_records
   end
 
   def set_record
-    # ★ ID直叩きでも他人のは取れない
+    # ID直叩きでも他人のは取れない
     @record = @scope.find(params[:id])
   end
 
-  # ★ create/update 両方で同じStrong Params名を使う
+  # create/update 共通 Strong Params
   def fasting_record_params
     params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment, :success)
   end

@@ -1,51 +1,25 @@
-<!-- 今日の日付（固定ヘッダー） -->
+<!-- 見出し -->
 <div class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b px-4 py-2">
-  <strong><%= l @today, format: :long %></strong>
+  <strong>ファスティング記録一覧</strong>
 </div>
 
 <div class="max-w-3xl mx-auto p-4 space-y-6">
-  <h1 class="text-xl font-bold">ファスティング</h1>
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-bold">記録一覧</h1>
+    <%= link_to "マイページへ", mypage_path, class: "text-blue-600 underline" %>
+  </div>
 
-  <% if @running.present? %>
-    <!-- 進行中 -->
-    <div class="rounded-lg border p-4 space-y-2">
-      <p>開始: <%= l @running.start_time %></p>
-      <p>
-        経過:
-        <span data-controller="timer"
-              data-timer-start-at-value="<%= @running.start_time.to_i %>"
-              class="font-mono">
-          0
-        </span> 秒
-      </p>
-      <div class="flex gap-2">
-        <%= button_to "終了（達成）",
-              finish_fasting_record_path(@running, success: true),
-              method: :post,
-              class: "px-3 py-2 rounded bg-emerald-600 text-white" %>
-        <%= button_to "終了（失敗）",
-              finish_fasting_record_path(@running, success: false),
-              method: :post,
-              class: "px-3 py-2 rounded bg-rose-600 text-white" %>
-      </div>
-    </div>
-  <% else %>
-    <!-- 未開始：目標時間→開始 -->
-    <div class="rounded-lg border p-4">
-      <%= form_with url: start_fasting_records_path, method: :post, local: true, class: "flex items-center gap-3" do %>
-        <%= select_tag :target_hours,
-              options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }),
-              include_blank: "目標時間を選択（必須）",
-              required: true,
-              class: "border rounded px-2 py-1" %>
-        <%= submit_tag "開始", class: "px-3 py-2 rounded bg-blue-600 text-white" %>
-      <% end %>
-    </div>
-  <% end %>
+  <!-- フィルタ（すべて / 達成 / 失敗） -->
+  <div class="flex gap-2">
+    <% cur = params[:status].presence %>
+    <%= link_to "すべて", fasting_records_path,
+          class: "px-3 py-1 rounded border " + (cur.nil? ? "bg-gray-900 text-white" : "bg-white") %>
+    <%= link_to "達成", fasting_records_path(status: "success"),
+          class: "px-3 py-1 rounded border " + (cur == "success" ? "bg-gray-900 text-white" : "bg-white") %>
+    <%= link_to "失敗", fasting_records_path(status: "failure"),
+          class: "px-3 py-1 rounded border " + (cur == "failure" ? "bg-gray-900 text-white" : "bg-white") %>
+  </div>
 
-  <hr>
-
-  <h2 class="font-semibold">最近の記録</h2>
   <table class="min-w-full border text-sm">
     <thead class="bg-gray-50">
       <tr>
@@ -59,7 +33,7 @@
     <tbody>
     <% @records.each do |r| %>
       <tr class="border-t">
-        <td class="px-3 py-2"><%= fmt_jp(r.start_time)%></td>
+        <td class="px-3 py-2"><%= fmt_jp(r.start_time) %></td>
         <td class="px-3 py-2"><%= fmt_jp(r.end_time) %></td>
         <td class="px-3 py-2 text-center"><%= r.target_hours || "-" %></td>
         <td class="px-3 py-2"><%= r.success.nil? ? "-" : (r.success ? "達成" : "失敗") %></td>
@@ -69,10 +43,15 @@
           <%= button_to "削除", fasting_record_path(r),
               method: :delete,
               data: { turbo_confirm: "本当に削除しますか？" },
-              class: "text-red-600 underline" %>
+              class: "text-red-600 underline inline-block ml-2" %>
         </td>
       </tr>
     <% end %>
     </tbody>
   </table>
+
+  <!-- Kaminari ページネーション -->
+  <div class="mt-6">
+    <%= paginate @records %>
+  </div>
 </div>
