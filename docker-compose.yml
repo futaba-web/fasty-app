@@ -1,25 +1,46 @@
 services:
   db:
     image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: fasty_app_development
       TZ: Asia/Tokyo
     volumes:
       - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -ppassword -h 127.0.0.1 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   web:
     build: .
-    command: bin/rails server -b 0.0.0.0 -p 3000
+    command: bash -lc "bin/rails db:prepare && bin/rails s -b 0.0.0.0 -p 3000"
     environment:
       RAILS_ENV: development
       DB_HOST: db
       DB_USERNAME: root
       DB_PASSWORD: password
-    ports: ["3000:3000"]
+      TZ: Asia/Tokyo
+    ports:
+      - "3000:3000"
     volumes:
-      - .:/rails
-    depends_on: [db]
+      - .:/rails:cached
+    depends_on:
+      db:
+        condition: service_healthy
+
+  tailwind:
+    build: .
+    command: bash -lc "bin/rails tailwindcss:watch"
+    environment:
+      RAILS_ENV: development
+      TZ: Asia/Tokyo
+    volumes:
+      - .:/rails:cached
+    depends_on:
+      - web
 
 volumes:
   db-data:
