@@ -1,4 +1,4 @@
-/* app/assets/stylesheets/landing.css */
+/* app/assets/stylesheets/landing.scss */
 
 /* ===== Hero（トップページ） ===== */
 @layer components {
@@ -9,7 +9,7 @@
 
   .hero-top { @apply absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-transparent; }
 
-  /* @apply では表現しづらい中央ハイライト */
+  /* 中央ハイライト（@apply では表現しづらいので生CSS） */
   .hero-center {
     position: absolute; inset: 0;
     background: radial-gradient(circle at center,
@@ -18,50 +18,52 @@
       rgba(255,255,255,0) 75%);
   }
 
-  .hero-title { @apply select-none absolute top-6 md:top-10 left-1/2 -translate-x-1/2 z-20
-                        text-white text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-wide
-                        drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)]; }
+  /* fasty をさらに上へ（被り解消） */
+  .hero-title {
+    @apply select-none absolute top-2 md:top-4 left-1/2 -translate-x-1/2 z-20
+           text-white text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide
+           drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)];
+  }
 
-  .hero-box  { @apply relative z-10 w-full mx-auto max-w-[1100px] px-6 text-center text-gray-900; }
-  .hero-copy { @apply mt-24 md:mt-28 lg:mt-32 text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight; }
-  .hero-list { @apply mt-6 space-y-3 text-xl md:text-2xl lg:text-3xl font-bold; }
+  .hero-box  { @apply relative z-10 w-full mx-auto max-w-[960px] px-6 text-center text-gray-900; }
+
+  /* ロゴとの間隔を広めに／全体をワンサイズ控えめに */
+  .hero-copy { @apply mt-16 sm:mt-20 text-xl md:text-2xl font-extrabold leading-snug; }
+  .hero-list { @apply mt-4 space-y-2 text-lg md:text-xl font-bold text-center; }
 
   /* CTAボタンの並び */
-  .hero-cta { @apply mt-10 flex flex-wrap items-center justify-center gap-6; }
+  .hero-cta  { @apply mt-6 flex flex-wrap items-center justify-center gap-4; }
 
-  /* ランディング専用ミントのボタン */
-  .btn-mint     { @apply inline-flex items-center justify-center rounded-full px-5 py-4 md:py-4 font-bold text-white shadow-lg; background:#2bd4c3; }
-  .btn-mint--lg { @apply w-[220px] md:w-[280px] lg:w-[320px] text-2xl md:text-3xl lg:text-4xl; }
+  /* ミント色ボタン（ランディング専用） */
+  .btn-mint     { @apply inline-flex items-center justify-center rounded-full px-5 py-3 md:py-3 font-bold text-white; background:#2bd4c3; }
+  .btn-mint--lg { @apply w-[180px] md:w-[220px] lg:w-[320px] text-lg md:text-xl lg:text-2xl; }
 }
 
-/* ===== 共通ボタン（MyPageや各画面で使用）===== */
+/* ===== 共通ボタン（Tailwind版 btn/btn-primary 相当） ===== */
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center
+    @apply inline-flex items-center justify-center font-semibold
            rounded-3xl shadow-2xl transition-all duration-200
-           font-semibold leading-tight tracking-wide
-           align-middle whitespace-nowrap
            focus-visible:outline-none focus-visible:ring-4
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
-
   .btn-cta {
     @apply w-full max-w-4xl
            py-10 sm:py-12 px-16 sm:px-20
            text-3xl sm:text-4xl font-extrabold tracking-wide;
   }
-
   .btn-primary { @apply text-white bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-emerald-200/70; }
   .btn-danger  { @apply text-white bg-rose-600    hover:bg-rose-700    focus-visible:ring-rose-200/70; }
 }
 
-/* ===== Utilities（細かなユーティリティ） ===== */
+/* ===== Utilities ===== */
 @layer utilities {
-  .btn-mint { transition: transform .15s ease, box-shadow .15s ease; box-shadow: 0 10px 30px rgba(43,212,195,.35); }
+  .btn-mint       { transition: transform .15s ease, box-shadow .15s ease; box-shadow: 0 10px 30px rgba(43,212,195,.35); }
   .btn-mint:hover { transform: translateY(-1.5px); box-shadow: 0 14px 34px rgba(43,212,195,.45); }
+  .btn-cta:active { transform: scale(0.99); }
 
   /* ヘッダーのブランド色（スクショに近いグレー） */
-  .bg-brand-header { background-color: #bdb6b2; }
+  .bg-brand-header        { background-color: #bdb6b2; }
   .bg-brand-header--light { background-color: #c4bdbb; }
   .bg-brand-header--dark  { background-color: #a9a3a0; }
 }
@@ -79,50 +81,44 @@
 
 /* ===== Auth（ログイン/登録/パスワード再設定） ===== */
 @layer components {
-  .auth-bg {
-    @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat;
-    background-image: image-url("landing/hero.jpg");
-  }
-  .auth-dim    { @apply absolute inset-0 bg-black/30; }
+  .auth-bg { @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat; background-image: image-url("landing/hero.jpg"); }
+  .auth-dim { @apply absolute inset-0 bg-black/30; }
   .auth-center { @apply relative min-h-[100svh] flex items-center justify-center p-4 sm:p-6 md:p-10; }
-
-  .auth-card {
-    @apply w-full max-w-[680px] md:max-w-[720px]
-           rounded-2xl bg-white/65 backdrop-blur-md
-           shadow-2xl ring-1 ring-black/10
-           p-6 md:p-8 lg:p-10
-           bg-gradient-to-b from-white/80 to-white/55
-           border border-white/50;
-  }
-  .auth-title {
-    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-  }
+  .auth-card { @apply w-full max-w-[680px] md:max-w-[720px] rounded-2xl bg-white/65 backdrop-blur-md shadow-2xl ring-1 ring-black/10 p-6 md:p-8 lg:p-10 bg-gradient-to-b from-white/80 to-white/55 border border-white/50; }
+  .auth-title { font-size: clamp(1.5rem, 3.5vw, 2.25rem); line-height: 1.2; letter-spacing: 0.02em; }
   .devise-links { @apply mt-6 text-center space-y-2; }
   .devise-links a { @apply text-blue-600 hover:text-blue-700 underline underline-offset-4; }
 }
 
-/* ===== MyPage（背景は白でOK） ===== */
+/* ===== MyPage：やさしいグラデ背景（※マイページだけに適用） ===== */
 @layer components {
-  .mypage-bg { @apply relative bg-white; }
+  .mypage-bg { position: relative; min-height: 100svh; }
+  .mypage-bg::before {
+    content: ""; position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(1100px 520px at 50% 0%, rgba(59,130,246,0.06) 0%, rgba(59,130,246,0.00) 55%),
+      linear-gradient(180deg, #fafafa 0%, #f7f5f2 60%, #f4f1ed 100%);
+  }
 }
 
-/* ===== Landing (home) 追加（必要なら使う） ===== */
+/* ===== Landing (home)：トップは野菜画像（上までピタッと） ===== */
 @layer components {
-  /* 背景画像を上までピタッと */
   .landing-bg {
     @apply bg-center bg-cover bg-no-repeat;
     background-image: image-url("landing/hero.jpg");
+    background-size: cover; background-position: center; background-repeat: no-repeat;
   }
 
-  /* 少しコンパクトなヒーロー */
   .home-hero       { @apply min-h-[72svh] sm:min-h-[68svh] relative; }
   .home-hero-title { @apply text-4xl md:text-5xl lg:text-6xl; }
   .home-hero-copy  { @apply text-xl md:text-2xl leading-snug; }
   .home-hero-list  { @apply mt-4 space-y-2 text-lg md:text-xl; }
   .home-hero-cta   { @apply mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6; }
 
-  /* 小さめのピル型CTA */
   .btn-cta-sm { @apply rounded-full w-[200px] md:w-[220px] px-6 py-4 text-xl md:text-2xl; }
+}
+
+/* （任意）フラッシュ後にヒーローを少し上げたい時用 */
+@layer utilities {
+  .landing-root > .pull-up-after-flash { @apply -mt-4 sm:-mt-6; }
 }
