@@ -39,7 +39,7 @@
 
       <!-- CTA：上は少し空ける / 下はフッターに寄せる（mb-1 sm:mb-0） -->
       <div class="mt-6 sm:mt-8 mb-0 sm:mb-0 flex justify-center">
-        <%= button_to "ファスティングを終了する",
+        <%= button_to "ファスティング終了",
               finish_fasting_record_path(@running),
               method: :post,
               form:  { class: "mx-auto w-5/6 sm:w-2/3 md:w-1/2 max-w-md" },
@@ -64,7 +64,7 @@
 
         <!-- 開始ボタンも同様に下を詰める -->
         <div class="pt-1 mb-1 sm:mb-0 flex justify-center">
-          <%= submit_tag "ファスティングを開始する",
+          <%= submit_tag "ファスティング開始",
                 class: "btn btn-primary w-5/6 sm:w-2/3 md:w-1/2 max-w-md whitespace-nowrap
                         py-5 sm:py-6 md:py-7
                         px-6 sm:px-8 md:px-10

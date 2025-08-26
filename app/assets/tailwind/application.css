@@ -1,6 +1,12 @@
-/* app/assets/tailwind/application.css (Tailwind v4 入力) */
+/* app/assets/tailwind/application.css (Tailwind v4 input) */
+
+/* どこからクラス名を拾うか（このファイルからの相対パス） */
+@source "../../views/**/*.html.erb";
+@source "../../helpers/**/*.rb";
+@source "../../javascript/**/*.{js,ts}";
+
+/* Tailwind 本体 */
 @import "tailwindcss";
 
-/* ここに自作の Tailwind ベースCSSを取り込む */
+/* プロジェクトの Tailwind 拡張CSS（←ここを修正） */
 @import "../stylesheets/landing.css";
-/* 他にも増やしたければここに import を追加 */
