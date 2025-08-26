@@ -1,38 +1,40 @@
-<%# app/views/pages/home.html.erb （トップページ） %>
+<%# ===== Hero：全画面＋中央配置 ===== %>
+<% signup_url = defined?(new_user_registration_path) ? new_user_registration_path : "#" %>
+<% login_url  = defined?(new_user_session_path)      ? new_user_session_path      : "#" %>
 
-<div class="hero"
-     style="background-image: url('<%= asset_path("landing/hero.jpg") %>');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;">
+<section class="relative">
+  <div
+    class="hero"
+    style="background-image:url('<%= asset_path('landing/hero.jpg') %>')"
+  >
+    <div class="hero-dim"></div>
+    <div class="hero-top"></div>
+    <div class="hero-center"></div>
 
-  <!-- オーバーレイ（薄く白＋グラデーション） -->
-  <div class="hero-dim"></div>
-  <div class="hero-top"></div>
-  <div class="hero-center"></div>
+    <!-- タイトル（上部中央） -->
+    <h1 class="hero-title">fasty</h1>
 
-  <div class="hero-box">
-    <!-- タイトル：さらに上へ配置 -->
-    <h1 class="hero-title !top-1 sm:!top-2 md:!top-3">fasty</h1>
+    <!-- 中央コンテンツ -->
+    <div class="hero-box">
+      <!-- ベネフィットを端的に -->
+      <p class="hero-copy">
+        毎日つづく、やさしいファスティング。<br>内側から“きれい”を育てよう。
+      </p>
 
-    <!-- キャッチコピー：ワンサイズ控えめ／余白少なめ -->
-    <p class="hero-copy mt-20 sm:mt-24 md:mt-28">
-      毎日つづく、やさしいファスティング。<br>
-      内側から“きれい”を育てよう。
-    </p>
+      <!-- 習慣化に効く要素だけを箇条書き -->
+      <ul class="hero-list">
+        <li>✅ 目標時間に合わせて無理なく継続</li>
+        <li>✅ 成功も失敗もワンタップで記録</li>
+      </ul>
 
-    <!-- チェックリスト（中央寄せ／余白調整） -->
-    <ul class="hero-list text-center mt-6">
-      <li>✅ 目標時間に合わせて無理なく継続</li>
-      <li>✅ 成功も失敗もワンタップで記録</li>
-    </ul>
+      <!-- CTA：プライマリは登録／ログインは控えめ -->
+      <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6 justify-items-center">
+        <%= link_to "新規登録", signup_url,
+              class: "btn-mint btn-mint--lg" %>
 
-    <!-- CTAボタン（新規登録・ログインを同じデザインで並列） -->
-    <div class="hero-cta mt-8">
-      <%= link_to "新規登録", new_user_registration_path,
-                  class: "btn-mint btn-mint--lg" %>
-      <%= link_to "ログイン", new_user_session_path,
-                  class: "btn-mint btn-mint--lg" %>
+        <%= link_to "ログイン", login_url,
+              class: "btn-mint btn-mint--lg" %>
+      </div>
     </div>
   </div>
-</div>
+</section>
