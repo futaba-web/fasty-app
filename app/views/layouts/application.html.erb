@@ -4,10 +4,13 @@
     <title><%= content_for(:title) || "Fasty App" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= javascript_importmap_tags %>
+    <!-- ★ これが無いと Stimulus/Turbo が動きません -->
+    <%= javascript_import_module_tag "application" %>
 
     <%= yield :head %>
 
@@ -27,7 +30,12 @@
     <%= render "shared/header" %>
 
     <% if landing %>
-      <main class="grow">
+      <!-- ランディング：ヒーローを上に詰めるためのクラスを付与 -->
+      <main class="grow landing-root">
+        <!-- フラッシュを出す場合はヒーローを少し引き上げたいときに使える -->
+        <div class="pull-up-after-flash">
+          <%= render "shared/flash" %>
+        </div>
         <%= yield %>
       </main>
     <% else %>

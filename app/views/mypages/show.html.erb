@@ -1,0 +1,77 @@
+<%# app/views/mypages/show.html.erb %>
+
+<div class="mypage-bg">
+  <!-- 上は広め / 下は最小限（pb-2） / セクション間は少しゆったり -->
+  <div class="max-w-3xl mx-auto px-6 pt-6 sm:pt-8 pb-0 space-y-5 sm:space-y-6">
+    <% title_text, kind = fasting_hero(current_user) %>
+
+    <!-- ステータスメッセージ：視認性は保ちつつ高さ控えめ -->
+    <div class="<%= hero_class_for(kind) %> !py-3 sm:!py-4" role="region" aria-label="ステータスメッセージ">
+      <h1 class="text-xl sm:text-2xl font-extrabold tracking-wide leading-tight"><%= title_text %></h1>
+    </div>
+
+    <div class="text-gray-700">
+      本日：<strong><%= l Time.zone.today, format: :long %></strong>
+    </div>
+
+    <% if @running.present? && @running.target_hours.present? %>
+      <div class="text-gray-700">
+        目標時間：<strong><%= @running.target_hours %>時間</strong>
+      </div>
+    <% end %>
+
+    <% if @running.present? %>
+      <!-- 進行中カード：ゆとりを少し増やす -->
+      <div class="rounded-lg border p-4 sm:p-5 space-y-3 bg-white/70">
+        <div class="flex items-center gap-3 text-lg sm:text-xl">
+          <span class="text-2xl sm:text-3xl">🕒</span>
+          <span
+            data-controller="timer"
+            data-timer-start-at-value="<%= @running.start_time.to_i %>"
+            class="font-mono text-2xl sm:text-3xl align-middle">00:00:00</span>
+        </div>
+        <div class="text-sm text-gray-600">開始：<%= l @running.start_time %></div>
+        <p class="text-xs text-gray-500">※ 終了後に「達成/失敗」は編集画面で選択します</p>
+        <div class="text-right">
+          <%= link_to "記録一覧へ", fasting_records_path, class: "text-blue-600 underline text-sm" %>
+        </div>
+      </div>
+
+      <!-- CTA：上は少し空ける / 下はフッターに寄せる（mb-1 sm:mb-0） -->
+      <div class="mt-6 sm:mt-8 mb-0 sm:mb-0 flex justify-center">
+        <%= button_to "ファスティング終了",
+              finish_fasting_record_path(@running),
+              method: :post,
+              form:  { class: "mx-auto w-5/6 sm:w-2/3 md:w-1/2 max-w-md" },
+              class: "btn btn-danger w-full whitespace-nowrap
+                      py-5 sm:py-6 md:py-7
+                      px-6 sm:px-8 md:px-10
+                      text-lg sm:text-xl md:text-2xl
+                      rounded-xl shadow-lg" %>
+      </div>
+
+    <% else %>
+      <%= form_with url: start_fasting_records_path, method: :post, local: true,
+                    html: { id: "start-form" }, class: "space-y-5 sm:space-y-6" do %>
+        <div class="rounded-lg border p-4 sm:p-5 space-y-3 bg-white/70">
+          <label class="block text-sm text-gray-600">目標時間</label>
+          <%= select_tag :target_hours,
+                options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }),
+                include_blank: "選択してください🔽",
+                required: true,
+                class: "border rounded px-3 py-2 w-full max-w-xs" %>
+        </div>
+
+        <!-- 開始ボタンも同様に下を詰める -->
+        <div class="pt-1 mb-1 sm:mb-0 flex justify-center">
+          <%= submit_tag "ファスティング開始",
+                class: "btn btn-primary w-5/6 sm:w-2/3 md:w-1/2 max-w-md whitespace-nowrap
+                        py-5 sm:py-6 md:py-7
+                        px-6 sm:px-8 md:px-10
+                        text-lg sm:text-xl md:text-2xl
+                        rounded-xl shadow-lg" %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
