@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "set"
 
 module MypagesHelper
@@ -15,19 +16,19 @@ module MypagesHelper
   def fasting_hero(user)
     recs = fasting_records_for(user)
 
-    return ["ファスティングに挑戦しましょう！", :start] if recs.blank?
+    return [ "ファスティングに挑戦しましょう！", :start ] if recs.blank?
 
     if recs.where(end_time: nil).exists?
       days = consecutive_success_days(user)
-      return ["#{days + 1}日連続で、ファスティングに挑戦中です！", :ongoing]
+      return [ "#{days + 1}日連続で、ファスティングに挑戦中です！", :ongoing ]
     end
 
     last = recs.where.not(end_time: nil).maximum(:end_time)&.in_time_zone&.to_date
-    return ["今日は記録済みです。おつかれさま！", :done] if last && last >= Date.current
+    return [ "今日は記録済みです。おつかれさま！", :done ] if last && last >= Date.current
 
     days_ago = last ? (Date.current - last).to_i : nil
     msg = days_ago ? "最後にファスティングの記録をしたのは#{days_ago}日前です" : "ファスティングに挑戦しましょう！"
-    [msg, :gap]
+    [ msg, :gap ]
   end
 
   # 直近の“成功”連続日数（success列 or result='success' を自動判定）
@@ -59,11 +60,11 @@ module MypagesHelper
   def hero_class_for(kind)
     base = "mb-6 rounded-2xl border p-5 sm:p-6 text-center"
     case kind
-      when :start   then "#{base} bg-sky-50     border-sky-200     text-sky-900"
-      when :ongoing then "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
-      when :gap     then "#{base} bg-amber-50   border-amber-200   text-amber-900"
-      when :done    then "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
-      else               "#{base} bg-gray-50    border-gray-200    text-gray-900"
+    when :start   then "#{base} bg-sky-50     border-sky-200     text-sky-900"
+    when :ongoing then "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
+    when :gap     then "#{base} bg-amber-50   border-amber-200   text-amber-900"
+    when :done    then "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
+    else               "#{base} bg-gray-50    border-gray-200    text-gray-900"
     end
   end
 end
