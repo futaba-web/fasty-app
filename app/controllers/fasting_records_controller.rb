@@ -16,9 +16,9 @@ class FastingRecordsController < ApplicationController
 
     @records = if defined?(Kaminari)
                   scope.page(params[:page]).per(20)
-               else 
+    else
                 scope.limit(20)
-               end
+    end
   end
 
   def show; end
