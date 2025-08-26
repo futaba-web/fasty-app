@@ -14,7 +14,11 @@ class FastingRecordsController < ApplicationController
       scope = scope.where(success: false)
     end
 
-    @records = scope.page(params[:page]).per(20) # kaminari/pagy を使っていなければ .page/.per は外してください
+    @records = if defined?(Kaminari)
+                  scope.page(params[:page]).per(20)
+               else 
+                scope.limit(20)
+               end
   end
 
   def show; end
