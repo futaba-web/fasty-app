@@ -1,4 +1,4 @@
-<header class="bg-brand-header text-white shadow-sm">
+<header class="sticky top-0 z-50 h-14 bg-brand-header text-white shadow-sm">
   <div class="mx-auto max-w-[1200px] h-16 px-4 md:px-8 flex items-center gap-4">
     <!-- 左：ロゴ（ログイン前後でリンク先を出し分け） -->
     <%= link_to (user_signed_in? ? authenticated_root_path : unauthenticated_root_path),
