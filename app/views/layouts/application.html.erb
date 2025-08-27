@@ -9,7 +9,6 @@
     <%= csp_meta_tag %>
 
     <%= javascript_importmap_tags %>
-    <!-- ★ これが無いと Stimulus/Turbo が動きません -->
     <%= javascript_import_module_tag "application" %>
 
     <%= yield :head %>
@@ -23,27 +22,19 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body class="text-gray-900 min-h-screen flex flex-col">
-    <% landing = (controller_path == "pages" && action_name == "home") %>
+  <% landing = (controller_path == "pages" && action_name == "home") %>
 
-    <!-- ヘッダーは常に表示 -->
+  <body
+    class="text-gray-900 min-h-dvh flex flex-col <%= 'landing-root' if landing %>"
+    style="<%= "--hero-bg: url('#{asset_path('landing/hero.jpg')}')" if landing %>">
     <%= render "shared/header" %>
 
-    <% if landing %>
-      <!-- ランディング：ヒーローを上に詰めるためのクラスを付与 -->
-      <main class="grow landing-root">
-        <!-- フラッシュを出す場合はヒーローを少し引き上げたいときに使える -->
-        <div class="pull-up-after-flash">
-          <%= render "shared/flash" %>
-        </div>
-        <%= yield %>
-      </main>
-    <% else %>
-      <main class="grow max-w-5xl mx-auto p-4 pt-4">
+    <main class="grow">
+      <div class="mx-auto max-w-5xl px-4">
         <%= render "shared/flash" %>
-        <%= yield %>
-      </main>
-    <% end %>
+      </div>
+      <%= yield %>
+    </main>
 
     <%= render "shared/footer" %>
   </body>

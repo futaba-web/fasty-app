@@ -1,38 +1,20 @@
-<%# app/views/pages/home.html.erb （トップページ） %>
+<div class="hero">
+  <div class="hero__inner">
+    <h1 class="hero__title">fasty</h1>
 
-<div class="hero"
-     style="background-image: url('<%= asset_path("landing/hero.jpg") %>');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;">
-
-  <!-- オーバーレイ（薄く白＋グラデーション） -->
-  <div class="hero-dim"></div>
-  <div class="hero-top"></div>
-  <div class="hero-center"></div>
-
-  <div class="hero-box">
-    <!-- タイトル：さらに上へ配置 -->
-    <h1 class="hero-title !top-1 sm:!top-2 md:!top-3">fasty</h1>
-
-    <!-- キャッチコピー：ワンサイズ控えめ／余白少なめ -->
-    <p class="hero-copy mt-20 sm:mt-24 md:mt-28">
+    <p class="hero__copy">
       毎日つづく、やさしいファスティング。<br>
       内側から“きれい”を育てよう。
     </p>
 
-    <!-- チェックリスト（中央寄せ／余白調整） -->
-    <ul class="hero-list text-center mt-6">
+    <ul class="hero__list">
       <li>✅ 目標時間に合わせて無理なく継続</li>
       <li>✅ 成功も失敗もワンタップで記録</li>
     </ul>
 
-    <!-- CTAボタン（新規登録・ログインを同じデザインで並列） -->
-    <div class="hero-cta mt-8">
-      <%= link_to "新規登録", new_user_registration_path,
-                  class: "btn-mint btn-mint--lg" %>
-      <%= link_to "ログイン", new_user_session_path,
-                  class: "btn-mint btn-mint--lg" %>
+    <div class="hero__cta">
+      <%= link_to "新規登録", new_user_registration_path, class: "btn-mint btn-mint--lg" %>
+      <%= link_to "ログイン", new_user_session_path,       class: "btn-mint btn-mint--lg" %>
     </div>
   </div>
 </div>

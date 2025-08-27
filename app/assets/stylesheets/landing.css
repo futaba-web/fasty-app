@@ -1,44 +1,97 @@
-/* app/assets/stylesheets/landing.scss */
+/* =========================================================
+   Landing 全面背景（body に敷く）
+   ========================================================= */
+@layer base {
+  :root {
+    /* ぼかし量（モバイルやや強め）と白ベールの濃さ */
+    --hero-blur: 6px;          /* ← 全体ぼかし：4〜7px で調整可 */
+    --hero-fog:  .10;          /* ← 画面全体の白ベール（0〜.15） */
+    --hero-veil-alpha: .30;    /* ← 中央ハイライトの白さ */
+    --hero-veil-w: 1000px;     /* 中央楕円の幅 */
+    --hero-veil-h: 460px;      /* 中央楕円の高さ */
+  }
+  @media (min-width: 768px) {
+    :root { --hero-blur: 5px; --hero-fog: .08; }
+  }
 
-/* ===== Hero（トップページ） ===== */
+  /* 背景画像（最背面） */
+  body.landing-root::before {
+    content: "";
+    position: fixed; inset: 0;
+    z-index: -2;               /* 画像は最背面に */
+    pointer-events: none;
+
+    /* レイアウトから渡す CSS 変数が無い場合のフォールバックも用意 */
+    background-image: var(--hero-bg, image-url("landing/hero.jpg"));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    /* ぼかし縁ケアの微拡大＋トーン調整（画像自体はぼかさない） */
+    transform: scale(1.04);
+    filter: contrast(1.03) brightness(1.02) saturate(0.96);
+  }
+
+  /* 透ける薄膜＋ぼかし（前面オーバーレイ＝ここで背景をぼかす） */
+  body.landing-root::after {
+    content: "";
+    position: fixed; inset: 0;
+    z-index: -1;               /* 画像より前、コンテンツより後ろ */
+    pointer-events: none;
+
+    /* 背景（=背後）をぼかすのはコチラ */
+    backdrop-filter: blur(var(--hero-blur));
+    -webkit-backdrop-filter: blur(var(--hero-blur));
+
+    /* うっすら白（全体）＋なじませ用のグラデ */
+    background:
+      radial-gradient(
+        ellipse var(--hero-veil-w) var(--hero-veil-h) at 50% 45%,
+        rgba(255,255,255,var(--hero-veil-alpha)) 0%,
+        rgba(255,255,255,calc(var(--hero-veil-alpha) - .12)) 42%,
+        rgba(255,255,255,0) 68%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(255,255,255,.14) 0%,
+        rgba(255,255,255,.06) 30%,
+        rgba(255,255,255,0)   60%
+      ),
+      rgba(255,255,255,var(--hero-fog));
+  }
+
+  /* コンテンツは前面に固定 */
+  header, main, footer { position: relative; z-index: 1; }
+}
+
+/* =========================================================
+   Hero（中身だけ、背景は持たせない）
+   ========================================================= */
 @layer components {
-  .hero { @apply relative w-full min-h-[100svh] bg-center bg-cover flex items-center justify-center; }
-
-  /* うっすら白でコントラスト安定 */
-  .hero-dim { @apply absolute inset-0 bg-white/35; }
-
-  .hero-top { @apply absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-transparent; }
-
-  /* 中央ハイライト（@apply では表現しづらいので生CSS） */
-  .hero-center {
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at center,
-      rgba(255,255,255,.50) 0%,
-      rgba(255,255,255,.25) 40%,
-      rgba(255,255,255,0) 75%);
+  .hero {
+    @apply relative isolate w-full flex items-center justify-center;
+    @apply min-h-[72svh] sm:min-h-[68svh];
   }
 
-  /* fasty をさらに上へ（被り解消） */
-  .hero-title {
-    @apply select-none absolute top-2 md:top-4 left-1/2 -translate-x-1/2 z-20
-           text-white text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide
-           drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)];
+  .hero__inner { @apply relative z-10 w-full mx-auto max-w-[960px] px-6 text-center text-gray-900; }
+  .hero__title { @apply select-none text-white text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)]; }
+
+  /* 黒文字の可読性をさらに上げる薄い白グロー */
+  .hero__copy,
+  .hero__list {
+    text-shadow:
+      0 1px 0 rgba(255,255,255,.85),
+      0 0 10px rgba(255,255,255,.25);
   }
 
-  .hero-box  { @apply relative z-10 w-full mx-auto max-w-[960px] px-6 text-center text-gray-900; }
+  .hero__copy  { @apply mt-6 md:mt-8 text-xl md:text-2xl font-extrabold leading-snug; }
+  .hero__list  { @apply mt-4 space-y-2 text-lg md:text-xl font-bold; }
+  .hero__cta   { @apply mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6; }
 
-  /* ロゴとの間隔を広めに／全体をワンサイズ控えめに */
-  .hero-copy { @apply mt-16 sm:mt-20 text-xl md:text-2xl font-extrabold leading-snug; }
-  .hero-list { @apply mt-4 space-y-2 text-lg md:text-xl font-bold text-center; }
-
-  /* CTAボタンの並び */
-  .hero-cta  { @apply mt-6 flex flex-wrap items-center justify-center gap-4; }
-
-  /* ミント色ボタン（ランディング専用） */
+  /* ミントボタン（既存流用） */
   .btn-mint     { @apply inline-flex items-center justify-center rounded-full px-5 py-3 md:py-3 font-bold text-white; background:#2bd4c3; }
   .btn-mint--lg { @apply w-[180px] md:w-[220px] lg:w-[320px] text-lg md:text-xl lg:text-2xl; }
 }
-
 /* ===== 共通ボタン（Tailwind版 btn/btn-primary 相当） ===== */
 @layer components {
   .btn {
@@ -62,7 +115,6 @@
   .btn-mint:hover { transform: translateY(-1.5px); box-shadow: 0 14px 34px rgba(43,212,195,.45); }
   .btn-cta:active { transform: scale(0.99); }
 
-  /* ヘッダーのブランド色（スクショに近いグレー） */
   .bg-brand-header        { background-color: #bdb6b2; }
   .bg-brand-header--light { background-color: #c4bdbb; }
   .bg-brand-header--dark  { background-color: #a9a3a0; }
@@ -79,7 +131,7 @@
   .badge-soft { @apply px-3 py-1 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-sm; }
 }
 
-/* ===== Auth（ログイン/登録/パスワード再設定） ===== */
+/* ===== Auth（ログイン等） ===== */
 @layer components {
   .auth-bg { @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat; background-image: image-url("landing/hero.jpg"); }
   .auth-dim { @apply absolute inset-0 bg-black/30; }
@@ -90,7 +142,7 @@
   .devise-links a { @apply text-blue-600 hover:text-blue-700 underline underline-offset-4; }
 }
 
-/* ===== MyPage：やさしいグラデ背景（※マイページだけに適用） ===== */
+/* ===== MyPage：やさしいグラデ背景 ===== */
 @layer components {
   .mypage-bg { position: relative; min-height: 100svh; }
   .mypage-bg::before {
@@ -101,24 +153,21 @@
   }
 }
 
-/* ===== Landing (home)：トップは野菜画像（上までピタッと） ===== */
+/* ===== 既存 landing セクション系（互換用） ===== */
 @layer components {
   .landing-bg {
     @apply bg-center bg-cover bg-no-repeat;
     background-image: image-url("landing/hero.jpg");
-    background-size: cover; background-position: center; background-repeat: no-repeat;
   }
-
   .home-hero       { @apply min-h-[72svh] sm:min-h-[68svh] relative; }
   .home-hero-title { @apply text-4xl md:text-5xl lg:text-6xl; }
   .home-hero-copy  { @apply text-xl md:text-2xl leading-snug; }
   .home-hero-list  { @apply mt-4 space-y-2 text-lg md:text-xl; }
   .home-hero-cta   { @apply mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6; }
-
-  .btn-cta-sm { @apply rounded-full w-[200px] md:w-[220px] px-6 py-4 text-xl md:text-2xl; }
+  .btn-cta-sm      { @apply rounded-full w-[200px] md:w-[220px] px-6 py-4 text-xl md:text-2xl; }
 }
 
-/* （任意）フラッシュ後にヒーローを少し上げたい時用 */
+/* フラッシュ直後に少しだけ引き上げたい場合のオプション */
 @layer utilities {
   .landing-root > .pull-up-after-flash { @apply -mt-4 sm:-mt-6; }
 }
