@@ -40,7 +40,7 @@ class FastingRecordsController < ApplicationController
 
   def update
     if @record.update(fasting_record_params)
-      redirect_to @record, notice: "更新しました"
+      redirect_to @record, notice: flash_message_for(@record)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -68,9 +68,9 @@ class FastingRecordsController < ApplicationController
       redirect_to mypage_path, alert: "この記録はすでに終了しています。" and return
     end
 
-    @record.update!(end_time: Time.current) # 成否は未確定のまま
+    @record.update!(end_time: Time.current)
     redirect_to edit_fasting_record_path(@record),
-                notice: "ファスティングを終了しました。結果（達成/失敗）を選択して保存してください。"
+                notice: "ファスティングを終了しました。今の気持ちをコメントしましょう"
   end
 
 
@@ -94,5 +94,19 @@ class FastingRecordsController < ApplicationController
   # create/update 共通 Strong Params
   def fasting_record_params
     params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment)
+  end
+
+  # 結果に応じてポジティブな文言を返す
+  def flash_message_for(record)
+    return "保存しました。" unless record.end_time.present?
+
+    case record.success
+    when true
+      "保存しました。達成おめでとう！🎉 いい流れ、今日は自分を褒めよう。"
+    when false
+      "保存しました。おつかれさま！今回は休息デー。明日に向けてリスタート！"
+    else
+      "保存しました。"
+    end
   end
 end
