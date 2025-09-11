@@ -10,13 +10,18 @@
 
   <div>
     <label class="block text-sm text-gray-600">開始</label>
-    <%= f.datetime_field :start_time,
+    <%= f.datetime_local_field :start_time,
+          value:  datetime_local_value(@record.start_time || Time.current),
+          step:   1,
           data: { "fasting-form-target": "start", action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
   </div>
 
   <div>
     <label class="block text-sm text-gray-600">終了（必須・自動入力）</label>
-    <%= f.datetime_field :end_time, required: true,
+    <%= f.datetime_local_field :end_time,
+          value:  datetime_local_value(@record.end_time || Time.current),
+          step:   1,
+          required: true,
           data: { "fasting-form-target": "end" } %>
   </div>
 
