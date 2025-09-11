@@ -1,7 +1,7 @@
 class FastingRecord < ApplicationRecord
   belongs_to :user, optional: true
 
-  TARGET_HOURS_CHOICES = [12, 14, 16, 18, 20, 22, 24].freeze
+  TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
   GRACE_SECONDS = 30 # 判定の猶予（必要に応じて 0〜60 で調整）
 
   scope :running, -> { where(end_time: nil) }
