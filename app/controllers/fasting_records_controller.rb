@@ -68,7 +68,7 @@ class FastingRecordsController < ApplicationController
       redirect_to mypage_path, alert: "この記録はすでに終了しています。" and return
     end
 
-    @record.update!(end_time: Time.current, success: nil) # 成否は未確定のまま
+    @record.update!(end_time: Time.current) # 成否は未確定のまま
     redirect_to edit_fasting_record_path(@record),
                 notice: "ファスティングを終了しました。結果（達成/失敗）を選択して保存してください。"
   end
@@ -93,6 +93,6 @@ class FastingRecordsController < ApplicationController
 
   # create/update 共通 Strong Params
   def fasting_record_params
-    params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment, :success)
+    params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment)
   end
 end
