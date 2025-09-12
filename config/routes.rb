@@ -23,8 +23,11 @@ Rails.application.routes.draw do
     post :finish, on: :member       # POST /fasting_records/:id/finish
   end
 
+  # --- 瞑想リンク（MVPは外部リンク一覧のみ） ---
+  resources :meditations, only: :index
+
   # --- ヘルスチェック / PWA ---
   get "up" => "rails/health#show", as: :rails_health_check
-  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "service-worker.js" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest.json"     => "rails/pwa#manifest",       as: :pwa_manifest
 end

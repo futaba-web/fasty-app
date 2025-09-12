@@ -1,0 +1,20 @@
+# TODO: 実運用時はあなたが選んだガイドに置き換えてください（再配布せずリンクのみ）
+- title: "[初めての瞑想 5分] 寝たまま5分間で心も体もスッキリ!!"
+  url: "https://youtu.be/Wx4d1B-Wniw?si=c6sYE0XucisXty7E"
+  duration_min: 5
+  tags: [短時間, すぐ始める]
+
+- title: "[初めての瞑想 10分] 毎日10分間で自己肯定感と集中力を高める瞑想"
+  url: "https://youtu.be/kg5L2aIMOHg?si=lio9Zg7viA5H5JXT"
+  duration_min: 10
+  tags: [集中, リセット]
+
+- title: "[寝る前の瞑想 20分] 20分カンタン瞑想『ヨガ二ドラ(眠りのヨガ)』"
+  url: "https://youtu.be/58bmqCgJWJ4?si=Gk-GaGMH2yKtx1un"
+  duration_min: 20
+  tags: [夜, じっくり]
+
+- title: "[感謝の瞑想 30分] 1日30分で幸福感と感謝力を高めるマインドフルネス瞑想"
+  url: "https://youtu.be/Mt0ffj8u5uw?si=ooBvQPxRkM_FSsdp"
+  duration_min: 30
+  tags: [休日, 感謝, 深呼吸]
