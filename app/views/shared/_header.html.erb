@@ -21,13 +21,8 @@
     <!-- 右：リンク -->
     <nav class="ml-auto flex items-center gap-6">
       <% if user_signed_in? %>
-        <%= link_to "記録一覧", fasting_records_path,
-              class: "text-sm md:text-base font-medium text-white/95 hover:text-white hover:underline transition" %>
-
-        <!-- ★ 追加：瞑想ガイド -->
-        <% active_meditations = request.path.start_with?("/meditations") %>
-        <%= link_to "瞑想ガイド", meditations_path,
-              class: "text-sm md:text-base font-medium #{active_meditations ? 'text-white underline' : 'text-white/95 hover:text-white hover:underline'} transition" %>
+        <%= nav_link_to "記録一覧", fasting_records_path, active_match: %r{\A/fasting_records} %>
+        <%= nav_link_to "瞑想ガイド", meditations_path,   active_match: %r{\A/meditations} %>
 
         <!-- DELETE を確実に送りつつ“リンク風”に見せる -->
         <%= button_to "ログアウト", destroy_user_session_path,
@@ -35,8 +30,7 @@
               form: { class: "inline" },
               class: "text-sm md:text-base font-medium text-white/95 hover:text-white hover:underline bg-transparent p-0 border-0 cursor-pointer" %>
       <% else %>
-        <%= link_to "ログイン", new_user_session_path,
-              class: "text-base md:text-lg font-medium text-white/95 hover:text-white hover:underline transition" %>
+        <%= nav_link_to "ログイン", new_user_session_path %>
       <% end %>
     </nav>
   </div>
