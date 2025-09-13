@@ -28,7 +28,7 @@ module ApplicationHelper
 
     base   = "text-sm md:text-base font-medium transition"
     states = active ? "text-white underline" : "text-white/95 hover:text-white hover:underline"
-    classes = [base, states, opts.delete(:class)].compact.join(" ")
+    classes = [ base, states, opts.delete(:class) ].compact.join(" ")
 
     link_to name, href, { class: classes, "aria-current": (active ? "page" : nil) }.merge(opts)
   end
