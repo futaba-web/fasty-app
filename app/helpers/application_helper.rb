@@ -32,4 +32,21 @@ module ApplicationHelper
 
     link_to name, href, { class: classes, "aria-current": (active ? "page" : nil) }.merge(opts)
   end
+
+  # 秒 → "X時間Y分"（Y=0なら省略）。nilなら "−"
+  def human_duration(seconds, blank: "-")
+    return blank if seconds.nil?
+
+    total = seconds.to_i.abs
+    h = total / 3600
+    m = (total % 3600) / 60
+
+    if h.positive? && m.positive?
+      "#{h}時間#{m}分"
+    elsif h.positive?
+      "#{h}時間"
+    else
+      "#{m}分"
+    end
+  end
 end
