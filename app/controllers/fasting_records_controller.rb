@@ -5,20 +5,23 @@ class FastingRecordsController < ApplicationController
 
   # 記録一覧ページ（フィルタ付き）
   def index
-    scope = @scope.order(start_time: :desc)
+    # 終了があれば終了日時、なければ開始日時で新しい順
+    scope = @scope.order(Arel.sql("COALESCE(end_time, start_time) DESC"))
 
-    case params[:status]
-    when "success"
-      scope = scope.where(success: true)
-    when "failure"
-      scope = scope.where(success: false)
-    end
-
-    @records = if defined?(Kaminari)
-                  scope.page(params[:page]).per(20)
+    case normalize_status(params[:status])
+    when "achieved"    then scope = scope.respond_to?(:achieved)    ? scope.achieved    : scope.where(success: true).where.not(end_time: nil)
+    when "unachieved"  then scope = scope.respond_to?(:unachieved)  ? scope.unachieved  : scope.where(success: [false, nil]).where.not(end_time: nil)
+    when "in_progress" then scope = scope.respond_to?(:running)     ? scope.running     : scope.where(end_time: nil)
     else
-                scope.limit(20)
+      # すべて表示
     end
+
+    @records =
+      if defined?(Kaminari)
+        scope.page(params[:page]).per(20)
+      else
+        scope.limit(20)
+      end
   end
 
   def show; end
@@ -48,7 +51,7 @@ class FastingRecordsController < ApplicationController
 
   # 今すぐ開始（進行中があればブロック）
   def start
-    if @scope.running.exists?
+    if @scope.where(end_time: nil).exists?
       redirect_to mypage_path, alert: "進行中の記録があります" and return
     end
 
@@ -62,7 +65,7 @@ class FastingRecordsController < ApplicationController
     end
   end
 
-  # 今すぐ終了（params[:success] を true/false で受ける／未指定なら nil）
+  # 今すぐ終了（終了時に自動で success を判定）
   def finish
     if @record.end_time.present?
       redirect_to mypage_path, alert: "この記録はすでに終了しています。" and return
@@ -72,7 +75,6 @@ class FastingRecordsController < ApplicationController
     redirect_to edit_fasting_record_path(@record),
                 notice: "ファスティングを終了しました。今の気持ちをコメントしましょう"
   end
-
 
   def destroy
     @record.destroy!
@@ -96,17 +98,26 @@ class FastingRecordsController < ApplicationController
     params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment)
   end
 
+  # "success"/"failure"（旧）→ "achieved"/"unachieved"（新）へ正規化
+  def normalize_status(s)
+    case s
+    when "success"   then "achieved"
+    when "failure"   then "unachieved"
+    when "achieved", "unachieved", "in_progress"
+      s
+    else
+      nil
+    end
+  end
+
   # 結果に応じてポジティブな文言を返す
   def flash_message_for(record)
     return "保存しました。" unless record.end_time.present?
 
     case record.success
-    when true
-      "保存しました。達成おめでとう！🎉 いい流れ、今日は自分を褒めよう。"
-    when false
-      "保存しました。おつかれさま！今回は休息デー。明日に向けてリスタート！"
-    else
-      "保存しました。"
+    when true  then "保存しました。達成おめでとう！🎉 いい流れ、今日は自分を褒めよう。"
+    when false then "保存しました。おつかれさま！今回は休息デー。明日に向けてリスタート！"
+    else            "保存しました。"
     end
   end
 end
