@@ -171,3 +171,42 @@
 @layer utilities {
   .landing-root > .pull-up-after-flash { @apply -mt-4 sm:-mt-6; }
 }
+
+/* ===== Fasting Records: 操作アイコンの共通スタイル ===== */
+@layer components {
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 0.5rem;              /* rounded-md */
+    background: #fff;
+    border: 1px solid #e5e7eb;          /* ring-gray-300 */
+    color: #374151;                     /* text-gray-700 */
+    transition: background-color .15s, border-color .15s;
+  }
+  .icon-btn:hover { background: #f9fafb; } /* hover:bg-gray-50 */
+
+  /* 危険操作（削除） */
+  .icon-btn--danger {
+    border-color: #fca5a5;              /* ring-rose-300 */
+    color: #b91c1c;                     /* 近いローズ系 */
+    background: #fff;
+  }
+  .icon-btn--danger:hover { background: #fff1f2; } /* hover:bg-rose-50 */
+
+  /* 中のSVGサイズを明示して、ビルドの影響を受けないように */
+  .icon {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+}
+
+/* アイコン内テキストが省略記号に潰れないようガード */
+.icon-btn, .icon-btn * {
+  text-overflow: clip !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
