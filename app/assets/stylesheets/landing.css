@@ -22,7 +22,7 @@
     pointer-events: none;
 
     /* レイアウトから渡す CSS 変数が無い場合のフォールバックも用意 */
-    background-image: var(--hero-bg, image-url("landing/hero.jpg"));
+    background-image: var(--hero-bg, url("/assets/landing/hero.jpg"));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -133,7 +133,7 @@
 
 /* ===== Auth（ログイン等） ===== */
 @layer components {
-  .auth-bg { @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat; background-image: image-url("landing/hero.jpg"); }
+  .auth-bg { @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat; background-image: var(--hero-bg, url("/assets/landing/hero.jpg")); }
   .auth-dim { @apply absolute inset-0 bg-black/30; }
   .auth-center { @apply relative min-h-[100svh] flex items-center justify-center p-4 sm:p-6 md:p-10; }
   .auth-card { @apply w-full max-w-[680px] md:max-w-[720px] rounded-2xl bg-white/65 backdrop-blur-md shadow-2xl ring-1 ring-black/10 p-6 md:p-8 lg:p-10 bg-gradient-to-b from-white/80 to-white/55 border border-white/50; }
@@ -157,7 +157,7 @@
 @layer components {
   .landing-bg {
     @apply bg-center bg-cover bg-no-repeat;
-    background-image: image-url("landing/hero.jpg");
+    background-image: var(--hero-bg, url("/assets/landing/hero.jpg"));
   }
   .home-hero       { @apply min-h-[72svh] sm:min-h-[68svh] relative; }
   .home-hero-title { @apply text-4xl md:text-5xl lg:text-6xl; }
@@ -203,10 +203,29 @@
     display: block;
   }
 }
+@layer components {
+  /* アイコン内テキストが省略記号に潰れないようガード */
+  .icon-btn, .icon-btn * {
+    text-overflow: clip !important;
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+ }
 
-/* アイコン内テキストが省略記号に潰れないようガード */
-.icon-btn, .icon-btn * {
-  text-overflow: clip !important;
-  overflow: visible !important;
-  white-space: normal !important;
+
+/* === Fasting Records: badges & comment snippet === */
+@layer components {
+  .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1; }
+  .badge--ok   { @apply bg-emerald-100 text-emerald-800 ring-emerald-200; }
+  .badge--ng   { @apply bg-rose-100 text-rose-800 ring-rose-200; }
+  .badge--info { @apply bg-indigo-100 text-indigo-800 ring-indigo-200; }
+
+  /* コメントは2行で省略（プラグイン無し運用） */
+  .record-comment {
+    @apply text-sm text-gray-600 mt-0.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
