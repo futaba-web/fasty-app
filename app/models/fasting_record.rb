@@ -1,13 +1,13 @@
 class FastingRecord < ApplicationRecord
   belongs_to :user, optional: true
 
-  TARGET_HOURS_CHOICES = [12, 14, 16, 18, 20, 22, 24].freeze
+  TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
   GRACE_SECONDS = 30 # 判定の猶予（必要に応じて 0〜60 で調整）
 
   scope :running,  -> { where(end_time: nil) }
   scope :finished, -> { where.not(end_time: nil) }
   scope :achieved, -> { finished.where(success: true) }
-  scope :unachieved, -> { finished.where(success: [false, nil]) }
+  scope :unachieved, -> { finished.where(success: [ false, nil ]) }
 
   # 同一ユーザーで「進行中（end_time: nil）」が複数できないように
   validates :user_id, uniqueness: { conditions: -> { where(end_time: nil) } }
@@ -74,9 +74,9 @@ class FastingRecord < ApplicationRecord
 
   def elapsed_hm
     s = elapsed_seconds
-    return [0, 0] unless s
+    return [ 0, 0 ] unless s
     mins = s / 60
-    [mins / 60, mins % 60]
+    [ mins / 60, mins % 60 ]
   end
 
   # 自動判定（猶予付き）

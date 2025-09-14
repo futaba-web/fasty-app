@@ -10,7 +10,7 @@ class FastingRecordsController < ApplicationController
 
     case normalize_status(params[:status])
     when "achieved"    then scope = scope.respond_to?(:achieved)    ? scope.achieved    : scope.where(success: true).where.not(end_time: nil)
-    when "unachieved"  then scope = scope.respond_to?(:unachieved)  ? scope.unachieved  : scope.where(success: [false, nil]).where.not(end_time: nil)
+    when "unachieved"  then scope = scope.respond_to?(:unachieved)  ? scope.unachieved  : scope.where(success: [ false, nil ]).where.not(end_time: nil)
     when "in_progress" then scope = scope.respond_to?(:running)     ? scope.running     : scope.where(end_time: nil)
     else
       # すべて表示
