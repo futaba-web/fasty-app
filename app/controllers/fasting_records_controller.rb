@@ -9,9 +9,12 @@ class FastingRecordsController < ApplicationController
     scope = @scope.order(Arel.sql("COALESCE(end_time, start_time) DESC"))
 
     case normalize_status(params[:status])
-    when "achieved"    then scope = scope.respond_to?(:achieved)    ? scope.achieved    : scope.where(success: true).where.not(end_time: nil)
-    when "unachieved"  then scope = scope.respond_to?(:unachieved)  ? scope.unachieved  : scope.where(success: [ false, nil ]).where.not(end_time: nil)
-    when "in_progress" then scope = scope.respond_to?(:running)     ? scope.running     : scope.where(end_time: nil)
+    when "achieved"
+      scope = scope.respond_to?(:achieved) ? scope.achieved : scope.where(success: true).where.not(end_time: nil)
+    when "unachieved"
+      scope = scope.respond_to?(:unachieved) ? scope.unachieved : scope.where(success: false).where.not(end_time: nil)
+    when "in_progress"
+      scope = scope.respond_to?(:running) ? scope.running : scope.where(end_time: nil)
     else
       # すべて表示
     end
@@ -42,7 +45,16 @@ class FastingRecordsController < ApplicationController
   def edit; end
 
   def update
-    if @record.update(fasting_record_params)
+    attrs = fasting_record_params.to_h
+
+    # 終了済みは基本ロック：明示フラグがない限り start_time / end_time / target_hours は上書きしない
+    if @record.end_time.present?
+      attrs.delete("start_time")   if params[:allow_change_start_time].blank?
+      attrs.delete("end_time")     if params[:allow_change_end_time].blank?
+      attrs.delete("target_hours") if params[:allow_change_target_hours].blank?
+    end
+
+    if @record.update(attrs)
       redirect_to @record, notice: flash_message_for(@record)
     else
       render :edit, status: :unprocessable_entity
@@ -71,7 +83,10 @@ class FastingRecordsController < ApplicationController
       redirect_to mypage_path, alert: "この記録はすでに終了しています。" and return
     end
 
-    @record.update!(end_time: Time.current)
+    @record.end_time = Time.current
+    @record.success  = @record.auto_success? # 念のため明示再計算
+    @record.save!
+
     redirect_to edit_fasting_record_path(@record),
                 notice: "ファスティングを終了しました。今の気持ちをコメントしましょう"
   end
@@ -84,12 +99,10 @@ class FastingRecordsController < ApplicationController
   private
 
   def set_scope
-    # 自分の記録だけを対象にする
     @scope = current_user.fasting_records
   end
 
   def set_record
-    # ID直叩きでも他人のは取れない
     @record = @scope.find(params[:id])
   end
 
@@ -103,10 +116,8 @@ class FastingRecordsController < ApplicationController
     case s
     when "success"   then "achieved"
     when "failure"   then "unachieved"
-    when "achieved", "unachieved", "in_progress"
-      s
-    else
-      nil
+    when "achieved", "unachieved", "in_progress" then s
+    else nil
     end
   end
 
