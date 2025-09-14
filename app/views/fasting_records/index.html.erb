@@ -1,81 +1,107 @@
 <%# app/views/fasting_records/index.html.erb %>
 
-<!-- 見出し（固定） -->
 <div class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b px-4 py-2">
   <strong>ファスティング記録一覧</strong>
 </div>
 
-<div class="max-w-3xl mx-auto p-4 space-y-6">
+<div class="max-w-4xl mx-auto p-4 space-y-6">
   <div class="flex items-center justify-between">
     <h1 class="text-xl font-bold">記録一覧</h1>
-    <%= link_to "マイページへ", mypage_path, class: "text-blue-600 underline" %>
+    <%= link_to "マイページへ", mypage_path, class: "text-blue-600 hover:text-blue-700 underline" %>
   </div>
 
-  <!-- フィルタ（すべて / 達成 / 失敗） -->
+  <!-- フィルタ -->
   <div class="flex gap-2">
     <% cur = params[:status].presence %>
     <%= link_to "すべて", fasting_records_path,
-          class: ["px-3 py-1 rounded border",
-                  (cur.nil? ? "bg-gray-900 text-white" : "bg-white")].join(" "),
+          class: ["px-3 py-1 rounded-md ring-1",
+                  (cur.nil? ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
           "aria-current": (cur.nil? ? "page" : nil) %>
-
     <%= link_to "達成", fasting_records_path(status: "success"),
-          class: ["px-3 py-1 rounded border",
-                  (cur == "success" ? "bg-gray-900 text-white" : "bg-white")].join(" "),
+          class: ["px-3 py-1 rounded-md ring-1",
+                  (cur == "success" ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
           "aria-current": (cur == "success" ? "page" : nil) %>
-
     <%= link_to "失敗", fasting_records_path(status: "failure"),
-          class: ["px-3 py-1 rounded border",
-                  (cur == "failure" ? "bg-gray-900 text-white" : "bg-white")].join(" "),
+          class: ["px-3 py-1 rounded-md ring-1",
+                  (cur == "failure" ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
           "aria-current": (cur == "failure" ? "page" : nil) %>
   </div>
 
   <% if @records.blank? %>
-    <!-- 空状態 -->
-    <div class="rounded-lg border bg-white/70 p-6 text-center text-gray-600">
+    <div class="rounded-lg ring-1 ring-gray-200 bg-white/70 p-6 text-center text-gray-600">
       まだ記録がありません。<br class="sm:hidden">
-      <%= link_to "マイページからファスティングを開始", mypage_path, class: "text-blue-600 underline font-medium" %>
+      <%= link_to "マイページからファスティングを開始", mypage_path, class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
     </div>
   <% else %>
     <div class="overflow-x-auto">
-      <table class="min-w-full border text-sm bg-white/70">
-        <thead class="bg-gray-50">
+      <table class="min-w-full text-sm bg-white/80 ring-1 ring-gray-200 rounded-lg overflow-hidden">
+        <thead class="bg-gray-50 text-gray-600">
           <tr>
-            <th class="px-3 py-2 text-left">開始</th>
-            <th class="px-3 py-2 text-left">終了</th>
-            <th class="px-3 py-2 text-center">目標(h)</th>
-            <th class="px-3 py-2 text-left">結果</th>
-            <th class="px-3 py-2 text-left"></th>
+            <th class="px-3 py-2 text-left font-semibold">開始</th>
+            <th class="px-3 py-2 text-left font-semibold">終了</th>
+            <th class="px-3 py-2 text-center font-semibold">目標(h)</th>
+            <th class="px-3 py-2 text-left font-semibold">結果</th>
+            <th class="px-3 py-2 text-left font-semibold">操作</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-100">
         <% @records.each do |r| %>
-          <%# --- 結果ラベル（達成/失敗/進行中） + 所要時間の生成 --- %>
-          <% dur = r.duration_seconds.to_i %>
-          <% h   = dur / 3600
-             m   = (dur % 3600) / 60
-             dur_text = [("#{h}時間" if h.positive?), ("#{m}分" if m.positive?)].compact.join %>
-          <% result_text =
+          <% status, badge =
                if r.end_time.nil?
-                 "進行中（#{dur_text}）"
+                 ["進行中", "bg-amber-100 text-amber-800 ring-amber-200"]
+               elsif r.success
+                 ["達成", "bg-emerald-100 text-emerald-800 ring-emerald-200"]
                else
-                 base = r.success.nil? ? "" : (r.success ? "達成" : "失敗")
-                 base.present? ? "#{base}（#{dur_text}）" : dur_text
+                 ["失敗", "bg-rose-100 text-rose-800 ring-rose-200"]
                end %>
+          <% dur_text = human_duration(r.duration_seconds, blank: "計測中") %>
 
-          <tr class="border-t">
+          <tr>
             <td class="px-3 py-2"><%= fmt_jp(r.start_time) %></td>
-            <td class="px-3 py-2"><%= fmt_jp(r.end_time) %></td>
+            <td class="px-3 py-2"><%= fmt_jp(r.end_time) || "-" %></td>
             <td class="px-3 py-2 text-center"><%= r.target_hours || "-" %></td>
-            <td class="px-3 py-2"><%= result_text %></td>
             <td class="px-3 py-2">
-              <%= link_to "詳細", r, class: "text-blue-600 underline" %>
-              <span class="text-gray-300 mx-1">/</span>
-              <%= link_to "編集", edit_fasting_record_path(r), class: "text-blue-600 underline" %>
-              <%= button_to "削除", fasting_record_path(r),
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 <%= badge %>">
+                <%= status %>
+              </span>
+              <span class="ml-2 text-gray-600">（<%= dur_text %>）</span>
+            </td>
+
+            <td class="px-3 py-2">
+              <div class="flex items-center gap-2">
+                <!-- 詳細 -->
+                <%= link_to r, class: "inline-flex w-9 h-9 items-center justify-center rounded-md hover:bg-black/5",
+                            title: "詳細", "aria-label": "詳細" do %>
+                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="#374151">
+                    <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <span class="sr-only">詳細</span>
+                <% end %>
+
+                <!-- 編集 -->
+                <%= link_to edit_fasting_record_path(r),
+                    class: "inline-flex w-9 h-9 items-center justify-center rounded-md hover:bg-black/5",
+                    title: "編集", "aria-label": "編集" do %>
+                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="#2563eb">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0L15.13 5.1l3.75 3.75 1.83-1.81z"/>
+                  </svg>
+                  <span class="sr-only">編集</span>
+                <% end %>
+
+                <!-- 削除 -->
+                <%= button_to fasting_record_path(r),
                     method: :delete,
+                    form: { class: "inline" },
                     data: { turbo_confirm: "本当に削除しますか？" },
-                    class: "text-red-600 underline inline-block ml-2" %>
+                    class: "inline-flex w-9 h-9 items-center justify-center rounded-md hover:bg-black/5",
+                    title: "削除", "aria-label": "削除" do %>
+                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="#e11d48">
+                    <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zm3.5-9h1.5v8H9.5v-8zm5 0h1.5v8h-1.5v-8zM15.5 4l-1-1h-5l-1 1H5v2h14V4h-3.5z"/>
+                  </svg>
+                  <span class="sr-only">削除</span>
+                <% end %>
+              </div>
             </td>
           </tr>
         <% end %>
@@ -83,7 +109,6 @@
       </table>
     </div>
 
-    <!-- Kaminari ページネーション（未導入でも落ちないガード） -->
     <% if defined?(Kaminari) && @records.respond_to?(:current_page) %>
       <div class="mt-6">
         <%= paginate @records %>
