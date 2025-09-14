@@ -1,4 +1,10 @@
-<%= form_with model: @record, local: true, class: "space-y-4", data: { controller: "fasting-form" } do |f| %>
+<%# app/views/fasting_records/_form.html.erb %>
+
+<%= form_with model: @record,
+              local: true,
+              class: "space-y-4",
+              data: (@record.running? ? { controller: "fasting-form" } : {}) do |f| %>
+
   <% if @record.errors.any? %>
     <div class="rounded border border-rose-200 bg-rose-50 p-3 text-rose-700">
       <strong><%= pluralize(@record.errors.count, "error") %> prohibited this record from being saved:</strong>
@@ -8,48 +14,64 @@
     </div>
   <% end %>
 
+  <!-- 開始 -->
   <div>
     <label class="block text-sm text-gray-600">開始</label>
-    <%= f.datetime_local_field :start_time,
-          value:  datetime_local_value(@record.start_time || Time.current),
-          step:   1,
-          data: { "fasting-form-target": "start", action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
+    <% if @record.running? %>
+      <%= f.datetime_local_field :start_time,
+            value: datetime_local_value(@record.start_time || Time.current),
+            step: 60,
+            data: { "fasting-form-target": "start",
+                    action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
+    <% else %>
+      <div class="py-2"><%= fmt_jp(@record.start_time) %></div>
+    <% end %>
   </div>
 
+  <!-- 終了 -->
   <div>
-    <label class="block text-sm text-gray-600">終了（自動入力）</label>
-    <%= f.datetime_local_field :end_time,
-          value:  datetime_local_value(@record.end_time || Time.current),
-          min:    datetime_local_value(@record.start_time),
-          step:   1,
-          required: true,
-          data: { "fasting-form-target": "end" } %>
-    <p class="mt-1 text-xs text-gray-500">※ 保存時に「達成/失敗」を自動判定します。</p>
+    <label class="block text-sm text-gray-600">終了</label>
+    <% if @record.running? %>
+      <%= f.datetime_local_field :end_time,
+            value: datetime_local_value(@record.end_time || Time.current),
+            min:   (@record.start_time.present? ? datetime_local_value(@record.start_time) : nil),
+            step:  60,
+            required: true,
+            data: { "fasting-form-target": "end" } %>
+      <p class="mt-1 text-xs text-gray-500">※ 保存時に「達成/未達」を自動判定します。</p>
+    <% else %>
+      <div class="py-2"><%= fmt_jp(@record.end_time) %></div>
+    <% end %>
   </div>
 
+  <!-- 目標 -->
   <div>
     <label class="block text-sm text-gray-600">目標</label>
-    <%= f.select :target_hours,
-      options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }, @record.target_hours),
-      { include_blank: "選択してください" },
-      class: "border rounded px-2 py-1",
-      data: { "fasting-form-target": "targetHours", action: "change->fasting-form#updateEnd" },
-      required: true %>
+    <% if @record.running? %>
+      <%= f.select :target_hours,
+            options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }, @record.target_hours),
+            { include_blank: "選択してください" },
+            class: "border rounded px-2 py-1",
+            data: { "fasting-form-target": "targetHours", action: "change->fasting-form#updateEnd" },
+            required: true %>
+    <% else %>
+      <div class="py-2">
+        <%= @record.respond_to?(:target_hours_label) ? @record.target_hours_label : "#{@record.target_hours}h" %>
+      </div>
+    <% end %>
   </div>
 
+  <!-- 結果（表示のみ） -->
   <div>
-    <label class="block text-sm text-gray-600">結果（自動判定）</label>
-    <% if @record.end_time.present? && @record.start_time.present? && @record.target_hours.present? %>
-      <% ok = @record.auto_success? %>
-      <span class="inline-block px-2 py-0.5 rounded text-white <%= ok ? 'bg-emerald-600' : 'bg-rose-600' %>">
-        <%= ok ? '達成' : '失敗' %>
-      </span>
-      <span class="ml-2 text-xs text-gray-500">（保存時に更新）</span>
+    <label class="block text-sm text-gray-600">結果</label>
+    <% if @record.end_time.present? %>
+      <div class="py-2"><%= status_badge(@record) %></div>
     <% else %>
       <span class="text-sm text-gray-500">終了時刻と目標を入力すると自動判定されます</span>
     <% end %>
   </div>
 
+  <!-- コメント -->
   <div>
     <label class="block text-sm text-gray-600">コメント</label>
     <%= f.text_area :comment, rows: 4, class: "w-full border rounded px-2 py-1" %>
