@@ -1,14 +1,16 @@
 <%# app/views/fasting_records/index.html.erb %>
 
-<div class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b px-4 py-2">
-  <strong>ファスティング記録一覧</strong>
+<!-- 画面上部のスティッキーヘッダー：タイトルは中央、リンクは右上固定 -->
+<div class="sticky top-0 z-50 bg-white/90 backdrop-blur px-4 py-2">
+  <div class="relative max-w-4xl mx-auto">
+    <h1 class="text-lg sm:text-xl font-bold text-center">ファスティング記録一覧</h1>
+    <%= link_to "マイページへ", mypage_path,
+          class: "absolute right-0 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-700 underline text-sm" %>
+  </div>
 </div>
 
 <div class="max-w-4xl mx-auto p-4 space-y-6">
-  <div class="flex items-center justify-between">
-    <h1 class="text-xl font-bold">記録一覧</h1>
-    <%= link_to "マイページへ", mypage_path, class: "text-blue-600 hover:text-blue-700 underline" %>
-  </div>
+  <!-- ※ ここでの「記録一覧」見出しは削除済み -->
 
   <!-- フィルタ -->
   <div class="flex gap-2">
