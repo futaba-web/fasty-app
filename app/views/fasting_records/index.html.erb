@@ -1,60 +1,52 @@
 <%# app/views/fasting_records/index.html.erb %>
 
-<!-- スティッキーヘッダー：タイトル中央、リンク右上固定（下線なし） -->
-<div class="sticky top-0 z-50 bg-white/90 backdrop-blur px-4 py-2">
-  <div class="relative max-w-4xl mx-auto">
-    <h1 class="text-lg sm:text-xl font-bold text-center">ファスティング記録一覧</h1>
-    <%= link_to "マイページへ", mypage_path,
-          class: "absolute right-0 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-700 underline text-sm" %>
+<% raw_cur = params[:status].presence %>
+<% cur = case raw_cur
+         when "success"   then "achieved"
+         when "failure"   then "unachieved"
+         else raw_cur
+         end %>
+<!-- スティッキーヘッダー -->
+<div class="sticky top-0 z-50 bg-white/90 backdrop-blur">
+  <!-- ★ relative を必ず付ける（absolute の基準） -->
+  <div class="max-w-4xl mx-auto px-4 py-2 relative">
+    <!-- 中央タイトル（このまま text-center でOK） -->
+    <h1 class="text-center text-lg sm:text-xl font-bold">
+      ファスティング記録一覧
+    </h1>
+
+    <!-- 右上：絞り込み（絶対配置で右端＆縦中央 / 右余白も調整） -->
+    <%= form_with url: fasting_records_path, method: :get, local: true,
+                  html: { class: "absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 inline-flex items-center gap-2" } do %>
+      <label for="status" class="text-sm text-gray-700">絞り込み</label>
+      <%= select_tag :status,
+            options_for_select([["すべて",""],["目標達成","achieved"],["未達成","unachieved"],["進行中","in_progress"]], (cur || "").to_s),
+            include_blank: false,
+            onchange: "this.form.requestSubmit ? this.form.requestSubmit() : this.form.submit()",
+            class: "pl-3 pr-3 py-1.5 rounded-md ring-1 ring-gray-300 bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 text-sm" %>
+      <noscript>
+        <%= submit_tag "適用", class: "ml-2 px-3 py-1.5 rounded-md bg-gray-900 text-white text-sm" %>
+      </noscript>
+    <% end %>
   </div>
 </div>
 
 <div class="max-w-4xl mx-auto p-4 space-y-6">
-  <!-- フィルタ：モバイル=中央 / PC=左 -->
-  <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
-    <% raw_cur = params[:status].presence %>
-    <%# 旧URLの "success"/"failure" を新語に正規化して扱う %>
-    <% cur = case raw_cur when "success" then "achieved" when "failure" then "unachieved" else raw_cur end %>
-
-    <%= link_to "すべて", fasting_records_path,
-          class: ["px-3 py-1 rounded-md ring-1",
-                  (cur.nil? ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
-          "aria-current": (cur.nil? ? "page" : nil) %>
-
-    <%= link_to "達成", fasting_records_path(status: "achieved"),
-          class: ["px-3 py-1 rounded-md ring-1",
-                  (cur == "achieved" ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
-          "aria-current": (cur == "achieved" ? "page" : nil) %>
-
-    <%= link_to "未達成", fasting_records_path(status: "unachieved"),
-          class: ["px-3 py-1 rounded-md ring-1",
-                  (cur == "unachieved" ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
-          "aria-current": (cur == "unachieved" ? "page" : nil) %>
-
-    <%= link_to "進行中", fasting_records_path(status: "in_progress"),
-          class: ["px-3 py-1 rounded-md ring-1",
-                  (cur == "in_progress" ? "bg-gray-900 ring-gray-900 text-white" : "bg-white ring-gray-300 text-gray-700 hover:bg-gray-50")].join(" "),
-          "aria-current": (cur == "in_progress" ? "page" : nil) %>
-  </div>
-
   <% if @records.blank? %>
     <div class="rounded-lg ring-1 ring-gray-200 bg-white/70 p-6 text-center text-gray-600">
       まだ記録がありません。<br class="sm:hidden">
       <%= link_to "マイページからファスティングを開始", mypage_path, class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
     </div>
   <% else %>
-    <!-- ▼ 1行=1記録：モバイル=中央 / PC=左。目標・達成表示は一覧から削除 -->
     <div class="record-list divide-y divide-gray-100 rounded-lg ring-1 ring-gray-200 overflow-hidden bg-white/80">
       <% @records.each do |r| %>
         <%= link_to fasting_record_path(r),
-                    class: "record-row flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 px-4 py-3 hover:bg-gray-50 transition-colors text-center sm:text-left",
-                    "aria-label": "#{list_date(r.date_for_list)} / 所要時間 #{r.duration_text}" do %>
+            class: "record-row flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 px-4 py-3 hover:bg-gray-50 transition-colors text-center sm:text-left",
+            "aria-label": "#{list_date(r.date_for_list)} / 所要時間 #{r.duration_text}" do %>
 
           <div class="row-left flex flex-col gap-1 items-center sm:items-start">
-            <!-- 日付：太字＋カレンダーアイコン（SVG） -->
             <div class="record-date text-sm text-gray-800 font-bold flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   viewBox="0 0 20 20" aria-hidden="true" focusable="false"
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
                    style="width:20px;height:20px;display:inline-block;vertical-align:middle;color:#111827;flex:0 0 auto;">
                 <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
                       d="M6 2a1 1 0 0 0-1 1v1H4a2 2 0 0 0-2 2v2h16V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H7V3a1 1 0 0 0-1-1zM2 9h16v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"/>
@@ -62,12 +54,10 @@
               <time datetime="<%= r.date_for_list.to_date.iso8601 %>"><%= list_date(r.date_for_list) %></time>
             </div>
 
-            <!-- 所要時間：時計アイコン（SVG）＋テキスト -->
             <div class="record-title font-semibold flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                    style="width:18px;height:18px;display:inline-block;vertical-align:middle;color:#111827;flex:0 0 auto;"
                    fill="currentColor" aria-hidden="true" focusable="false">
-                <!-- Heroicons 20/solid 風の時計：外円＋短針長針 -->
                 <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm.75-12a.75.75 0 0 0-1.5 0v3.69l-2.03 2.03a.75.75 0 1 0 1.06 1.06l2.31-2.31a.75.75 0 0 0 .16-.47V6z"/>
               </svg>
@@ -75,7 +65,6 @@
               <% if r.running? %><span class="progress-note text-xs text-gray-500 ml-1">（計測中）</span><% end %>
             </div>
 
-            <!-- コメント：吹き出しアイコン（SVG）＋テキスト -->
             <% snippet_text = strip_tags(comment_snippet(r).to_s).sub(/\A\s*💬\s*/, '') %>
             <% if snippet_text.present? %>
               <div class="flex items-center gap-1.5 text-sm text-gray-600">
@@ -90,7 +79,6 @@
             <% end %>
           </div>
 
-          <!-- 右側は矢印のみ -->
           <div class="row-right flex items-center justify-center sm:justify-end">
             <svg class="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 0 1 0-1.414L10.586 10 7.293 6.707a1 1 0 1 1 1.414-1.414l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414 0z" clip-rule="evenodd"/>
