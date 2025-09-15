@@ -1,37 +1,26 @@
 <%# app/views/fasting_records/index.html.erb %>
 
 <% raw_cur = params[:status].presence %>
-<% cur = case raw_cur
-         when "success"   then "achieved"
-         when "failure"   then "unachieved"
-         else raw_cur
-         end %>
+<% cur     = normalized_status_param(raw_cur) %>
 
 <!-- スティッキーヘッダー -->
 <div class="sticky top-0 z-50 bg-white/90 backdrop-blur">
-  <!-- 絶対配置の基準にするため relative を付与 -->
-  <div class="max-w-4xl mx-auto px-4 py-2 relative">
-    <!-- タイトルは中央寄せ -->
+  <!-- ← ここを relative にして、絶対配置の基準にする -->
+  <div class="relative max-w-4xl mx-auto px-4 py-2">
+    <!-- タイトルは中央寄せだけにしてOK（中央に“見える”のが目的） -->
     <h1 class="text-center text-lg sm:text-xl font-bold">
       ファスティング記録一覧
     </h1>
 
-    <!-- 右上：絞り込み（右端 & 縦中央） -->
-    <%= form_with url: fasting_records_path, method: :get, local: true,
-                  html: { class: "absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 inline-flex items-center gap-2" } do %>
-      <label for="status" class="text-sm text-gray-700">絞り込み</label>
-      <%= select_tag :status,
-            options_for_select(
-              [["すべて",""], ["目標達成","achieved"], ["未達成","unachieved"], ["進行中","in_progress"]],
-              (cur || "").to_s
-            ),
-            include_blank: false,
-            onchange: "this.form.requestSubmit ? this.form.requestSubmit() : this.form.submit()",
-            class: "pl-3 pr-3 py-1.5 rounded-md ring-1 ring-gray-300 bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 text-sm" %>
-      <noscript>
-        <%= submit_tag "適用", class: "ml-2 px-3 py-1.5 rounded-md bg-gray-900 text-white text-sm" %>
-      </noscript>
-    <% end %>
+    <!-- 右端：絞り込み（絶対配置で right 固定＆縦中央） -->
+    <%= render "shared/filter_dropdown",
+          url: fasting_records_path,
+          param: :status,
+          current: cur,
+          options: status_filter_options,
+          label: "絞り込み",
+          wrapper_class: "",
+          wrapper_style: "position:absolute; right:30px; top:50%; transform:translateY(-50%);" %>
   </div>
 </div>
 
@@ -42,7 +31,6 @@
       <%= link_to "マイページからファスティングを開始", mypage_path, class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
     </div>
   <% else %>
-    <!-- カードのグリッド（1列 → md以上で2列） -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <%= render partial: "record", collection: @records, as: :record %>
     </div>
