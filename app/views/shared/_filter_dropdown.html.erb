@@ -1,0 +1,31 @@
+<%# app/views/shared/_filter_dropdown.html.erb %>
+<%# locals: url:, param:, current:, options:, label:(optional), wrapper_class:(optional), wrapper_style:(optional) %>
+
+<% label ||= "絞り込み" %>
+
+<%# wrapper_class は空でもOK。位置は wrapper_style に明示します。 %>
+<% wrapper_classes = wrapper_class.presence || "" %>
+<% wrapper_style   = wrapper_style.presence   || "" %>
+
+<div class="<%= wrapper_classes %>" style="<%= wrapper_style %>">
+  <%= form_with url: url, method: :get, local: true,
+        html: {
+          # ここがポイント：幅が広がらない・横並びを強制
+          class: "items-center gap-2 whitespace-nowrap",
+          style: "display:inline-flex;width:max-content"
+        } do %>
+
+    <label for="<%= param %>" class="text-sm text-gray-700"><%= label %></label>
+
+    <%= select_tag param,
+          options_for_select(options, (current || "").to_s),
+          include_blank: false,
+          id: param,
+          onchange: "this.form.requestSubmit ? this.form.requestSubmit() : this.form.submit()",
+          class: "pl-3 pr-3 py-1.5 rounded-md ring-1 ring-gray-300 bg-white text-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900 text-sm" %>
+
+    <noscript>
+      <%= submit_tag "適用", class: "ml-2 px-3 py-1.5 rounded-md bg-gray-900 text-white text-sm" %>
+    </noscript>
+  <% end %>
+</div>

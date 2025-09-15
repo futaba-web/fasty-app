@@ -16,10 +16,35 @@ module FastingRecordsHelper
     t.strftime("%Y/%m/%d(#{WDAY_JA[t.wday]})")
   end
 
+  # === 絞り込みUI用（パーシャルから参照） ===
+  def status_filter_options
+    [
+      ["すべて",      ""],
+      ["目標達成",    "achieved"],
+      ["未達成",      "unachieved"],
+      ["進行中",      "in_progress"]
+    ]
+  end
+
+  # 旧パラメータ(success/failure)との互換
+  def normalized_status_param(raw)
+    case raw.to_s
+    when "success"   then "achieved"
+    when "failure"   then "unachieved"
+    else raw
+    end
+  end
+
   # バッジ（達成/未達成/進行中）
   def status_badge(record)
-    base = "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold ring-1"
-    case record.status_key
+    key =
+      if record.respond_to?(:status_key)
+        record.status_key
+      elsif record.respond_to?(:status)
+        record.status.to_sym rescue nil
+      end
+
+    case key
     when :achieved
       content_tag(:span, "達成", class: "badge badge--ok")
     when :unachieved
@@ -30,8 +55,9 @@ module FastingRecordsHelper
   end
 
   # コメントの抜粋（2行想定。CSS で line-clamp する想定）
+  # ※ ビューでSVGを使う場合は strip_tags して先頭の 💬 を外す運用もOK
   def comment_snippet(record, length: 60)
-    text = record.comment_text.to_s.strip
+    text = record.respond_to?(:comment_text) ? record.comment_text.to_s.strip : ""
     return "".html_safe if text.blank?
 
     content_tag(:div, class: "record-comment", title: text) do
@@ -39,6 +65,12 @@ module FastingRecordsHelper
       content_tag(:span, " ") <<
       content_tag(:span, truncate(text, length: length))
     end
+  end
+
+  # 素のテキストだけ欲しい場面向け（任意利用）
+  def snippet_plain_text(record, length: 60)
+    text = record.respond_to?(:comment_text) ? record.comment_text.to_s.strip : ""
+    truncate(text, length: length)
   end
 
   # 終了が開始より前/未設定なら "-" を返す、安全版
@@ -61,6 +93,9 @@ module FastingRecordsHelper
   private
 
   def to_time_in_zone(dt)
-    dt.respond_to?(:in_time_zone) ? dt.in_time_zone : Time.zone.parse(dt.to_s)
+    return dt.in_time_zone if dt.respond_to?(:in_time_zone)
+    Time.zone.parse(dt.to_s)
+  rescue ArgumentError, TypeError
+    nil
   end
 end
