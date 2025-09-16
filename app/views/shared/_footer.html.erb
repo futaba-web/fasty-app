@@ -1,6 +1,9 @@
+<!-- app/views/shared/_footer.html.erb -->
 <footer class="bg-brand-header text-white">
-  <div class="mx-auto max-w-[1200px] px-4 md:px-8 py-3
-              flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+  <div
+    class="mx-auto max-w-[1200px] px-4 md:px-8 py-3
+           flex flex-col sm:flex-row items-center gap-2 sm:gap-4"
+  >
     <!-- 左：スローガン -->
     <p class="mr-auto w-full sm:w-auto text-sm sm:text-base opacity-95">
       毎日のファスティングを、もっと楽しく！
@@ -10,14 +13,26 @@
     <nav class="flex items-center gap-6 text-sm whitespace-nowrap">
       <span class="opacity-90">&copy; <%= Time.zone.now.year %> Fasty</span>
 
-      <%= link_to "お問い合わせ", (defined?(contact_path) ? contact_path : "#"),
-            class: "opacity-95 hover:opacity-100 hover:underline" %>
+      <%= link_to "お問い合わせ",
+          (defined?(contact_path) ? contact_path : "#"),
+          class: "opacity-95 hover:opacity-100 hover:underline" %>
 
-      <%= link_to "利用規約", (defined?(terms_path) ? terms_path : "#"),
-            class: "opacity-95 hover:opacity-100 hover:underline" %>
+      <%= link_to "利用規約",
+          (defined?(terms_path) ? terms_path : "#"),
+          class: "opacity-95 hover:opacity-100 hover:underline" %>
 
-      <%= link_to "プライバシーポリシー", (defined?(privacy_path) ? privacy_path : "#"),
-            class: "opacity-95 hover:opacity-100 hover:underline" %>
+      <%= link_to "プライバシーポリシー",
+          (defined?(privacy_path) ? privacy_path : "#"),
+          class: "opacity-95 hover:opacity-100 hover:underline" %>
+
+      <!-- 追加：健康と安全 -->
+      <%= link_to "健康と安全",
+          health_notice_path,
+          class: "opacity-95 hover:opacity-100 hover:underline" %>
+      <%# ログイン時のみ表示したい場合は下記に置き換え:
+          <%# if user_signed_in? %>
+          <%#   = link_to "健康と安全", health_notice_path, class: "opacity-95 hover:opacity-100 hover:underline" %>
+          <%# end %>
     </nav>
   </div>
 </footer>
