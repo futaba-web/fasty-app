@@ -1,0 +1,21 @@
+<% required        = Rails.configuration.x.health_notice.version %>
+<% needs_reconsent = current_user&.health_notice_version != required %>
+
+<%= link_to health_notice_path,
+      class: "group relative inline-flex items-center justify-center rounded-full z-10
+              h-9 w-9 sm:h-10 sm:w-10
+              bg-white/80 backdrop-blur ring-1 ring-gray-300 shadow-sm
+              text-gray-600 hover:text-gray-800 hover:bg-white transition
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50",
+      title: (needs_reconsent ? "健康と安全（再同意が必要）" : "健康と安全"),
+      aria:  { label: (needs_reconsent ? "健康と安全（再同意が必要）" : "健康と安全") } do %>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+       width="22" height="22" aria-hidden="true"
+       class="block shrink-0">
+    <path fill="currentColor"
+      d="M12 2l7 4v5c0 5-3.6 9.3-7 10.8C8.6 20.3 5 16 5 11V6l7-4zm-1 12l5-5-1.4-1.4L11 10.2 9.4 8.6 8 10l3 4z"/>
+  </svg>
+  <% if needs_reconsent %>
+    <span class="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-white"></span>
+  <% end %>
+<% end %>
