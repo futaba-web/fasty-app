@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   # 画面: GET  /health-notice  -> HealthNoticeController#show
   # 同意: POST /health-notice  -> HealthNoticeController#create
   resource :health_notice,
-           only: [:show, :create],
+           only: [ :show, :create ],
            controller: "health_notice",
            path: "health-notice"
 
