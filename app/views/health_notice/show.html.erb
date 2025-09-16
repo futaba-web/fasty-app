@@ -1,0 +1,58 @@
+<!-- app/views/health_notice/show.html.erb -->
+<div class="min-h-[60vh] flex items-center justify-center p-4">
+  <div class="w-full max-w-xl rounded-2xl bg-white/90 backdrop-blur shadow-2xl ring-1 ring-gray-200 p-6">
+    <h1 class="text-xl font-bold text-center">健康と安全について</h1>
+    <p class="mt-2 text-center text-xs text-gray-500">
+      バージョン <%= Rails.configuration.x.health_notice.version %>
+    </p>
+
+    <ul class="mt-4 space-y-2 text-sm text-gray-700">
+      <li>・本アプリは医療行為ではありません。体調や持病・服薬によってはリスクが生じます。</li>
+      <li>・該当する方（妊娠/授乳、小児/思春期、摂食障害の既往/症状、糖尿病など慢性疾患、低栄養）は必ず医療専門職に相談してください。</li>
+      <li>・体調不良時は直ちに中止し、水分・電解質を補給のうえ医療機関に相談してください。</li>
+    </ul>
+
+    <%= form_with url: health_notice_path, method: :post, local: true,
+          html: { id: "health-notice-form", class: "mt-6 space-y-4" } do %>
+      <div class="flex items-start gap-2">
+        <%= check_box_tag :agree, "1", false, id: "agree", class: "mt-1" %>
+        <label for="agree" class="text-sm text-gray-800">
+          以上を読み理解しました（同意する）
+        </label>
+      </div>
+
+      <!-- 中央寄せ。初期状態は disabled で薄い色 -->
+      <div class="mt-4 text-center">
+        <%= button_tag "同意して続ける",
+              type: :submit,
+              id: "agree-submit",
+              class: "btn btn-primary px-6 py-2 text-sm",
+              disabled: true,
+              aria: { disabled: true } %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= javascript_tag nonce: true do %>
+  (function () {
+    function init() {
+      var cb  = document.getElementById('agree');
+      var btn = document.getElementById('agree-submit');
+      if (!cb || !btn) return;
+
+      function sync() {
+        var on = cb.checked;
+        btn.disabled = !on;
+        btn.setAttribute('aria-disabled', String(!on));
+      }
+
+      cb.addEventListener('change', sync);
+      sync(); // 初期反映
+    }
+
+    // Turboでも通常DOMでも発火
+    document.addEventListener('turbo:load', init);
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+<% end %>
