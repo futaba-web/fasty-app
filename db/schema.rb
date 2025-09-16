@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_19_123238) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_16_042726) do
   create_table "fasting_records", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.datetime "start_time", null: false
@@ -36,6 +36,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_19_123238) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "accepted_health_notice_at"
+    t.string "health_notice_version"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

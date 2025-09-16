@@ -2,6 +2,14 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  # --- 健康と安全（同意フロー / 単数リソース） ---
+  # 画面: GET  /health-notice  -> HealthNoticeController#show
+  # 同意: POST /health-notice  -> HealthNoticeController#create
+  resource :health_notice,
+           only: [ :show, :create ],
+           controller: "health_notice",
+           path: "health-notice"
+
   # --- マイページ（ログイン後の着地点） ---
   resource :mypage, only: :show  # /mypage -> MypagesController#show
 
@@ -18,7 +26,6 @@ Rails.application.routes.draw do
 
   # --- ファスティング記録 ---
   resources :fasting_records, only: %i[index show new create edit update destroy] do
-    # 開始はコレクション、終了はレコード単位
     post :start,  on: :collection   # POST /fasting_records/start
     post :finish, on: :member       # POST /fasting_records/:id/finish
   end
