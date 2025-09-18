@@ -5,34 +5,43 @@
   <div class="w-full max-w-xl rounded-2xl bg-white/90 backdrop-blur shadow-2xl ring-1 ring-gray-200 p-6 sm:p-8">
 
     <!-- 見出し + サブ見出し -->
-    <h1 class="text-xl sm:text-2xl font-bold text-center tracking-tight">健康と安全について</h1>
+    <h1 class="text-lg sm:text-xl font-bold text-center tracking-tight">長時間のファスティングについて</h1>
     <p class="mt-1 text-center text-xs sm:text-sm text-gray-500">
-      バージョン <%= Rails.configuration.x.health_notice.version %>
+      目標時間：<strong><%= @hours %>時間</strong>
     </p>
 
     <!-- 本文（中央寄せ、箇条書きは inline-block で自然な左右幅） -->
     <div class="mt-5 sm:mt-6 text-sm sm:text-base text-gray-700 text-center">
+      <p class="mb-2">以下の注意事項を必ず確認してください。</p>
       <ul class="inline-block text-left list-disc pl-5 space-y-1">
-        <li>本アプリは医療行為ではありません。体調や持病・服薬によってはリスクが生じます。</li>
-        <li>該当する方（妊娠/授乳、小児/思春期、摂食障害の既往/症状、糖尿病など慢性疾患、低栄養）は必ず医療専門職に相談してください。</li>
-        <li>体調不良時は直ちに中止し、水分・電解質を補給のうえ医療機関に相談してください。</li>
+        <li>水分・電解質の補給を忘れないでください。</li>
+        <li>体調不良時は直ちに中止してください。</li>
       </ul>
+
+      <% if @very_long %>
+        <div class="mt-4 sm:mt-5 rounded-md border border-rose-300 bg-rose-50 text-rose-800 p-3 text-left inline-block">
+          <p class="font-semibold">24時間以上のファスティングは特に注意が必要です。</p>
+          <p class="text-sm mt-1">無理をせず、体調に異変があればすぐに中止してください。</p>
+        </div>
+      <% end %>
     </div>
 
-    <%= form_with url: health_notice_path, method: :post, local: true,
-          html: { id: "health-notice-form", class: "mt-6 sm:mt-7 space-y-4" } do %>
+    <%= form_with url: start_fasting_records_path, method: :post, local: true,
+          html: { id: "long-notice-form", class: "mt-6 sm:mt-7 space-y-4" } do %>
+      <%= hidden_field_tag :target_hours, @hours %>
+      <%= hidden_field_tag :confirmed_long_notice, "1" %>
 
       <!-- 同意チェック（中央寄せ） -->
       <div class="flex items-center justify-center gap-2">
-        <%= check_box_tag :agree, "1", false, id: "agree", class: "mt-0.5" %>
-        <label for="agree" class="text-sm text-gray-800">以上を読み理解しました（同意する）</label>
+        <%= check_box_tag :agree_long, "1", false, id: "agree_long", class: "mt-0.5" %>
+        <label for="agree_long" class="text-sm text-gray-800">上記の注意点を理解しました（同意する）</label>
       </div>
 
       <!-- ボタン（中央寄せ） -->
       <div class="mt-5 text-center">
-        <%= button_tag "同意して続ける",
+        <%= button_tag "同意して開始する",
               type: :submit,
-              id: "agree-submit",
+              id: "agree-long-submit",
               class: "btn btn-primary px-6 py-2 text-sm",
               disabled: true,
               aria: { disabled: true } %>
@@ -44,8 +53,8 @@
 <%= javascript_tag nonce: true do %>
   (function () {
     function init() {
-      var cb  = document.getElementById('agree');
-      var btn = document.getElementById('agree-submit');
+      var cb  = document.getElementById('agree_long');
+      var btn = document.getElementById('agree-long-submit');
       if (!cb || !btn) return;
       function sync() {
         var on = cb.checked;

@@ -3,12 +3,15 @@ Rails.application.routes.draw do
   devise_for :users
 
   # --- 健康と安全（同意フロー / 単数リソース） ---
-  # 画面: GET  /health-notice  -> HealthNoticeController#show
-  # 同意: POST /health-notice  -> HealthNoticeController#create
+  # 画面:  GET  /health-notice        -> HealthNoticeController#show
+  # 同意:  POST /health-notice        -> HealthNoticeController#create
+  # 長時間: GET  /health-notice/long  -> HealthNoticeController#long
   resource :health_notice,
            only: [ :show, :create ],
            controller: "health_notice",
-           path: "health-notice"
+           path: "health-notice" do
+    get :long
+  end
 
   # --- マイページ（ログイン後の着地点） ---
   resource :mypage, only: :show  # /mypage -> MypagesController#show

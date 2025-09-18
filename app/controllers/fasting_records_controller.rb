@@ -1,3 +1,4 @@
+# app/controllers/fasting_records_controller.rb
 class FastingRecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_scope
@@ -5,18 +6,17 @@ class FastingRecordsController < ApplicationController
 
   # 記録一覧ページ（フィルタ付き）
   def index
-    # 終了があれば終了日時、なければ開始日時で新しい順
     scope = @scope.order(Arel.sql("COALESCE(end_time, start_time) DESC"))
 
     case normalize_status(params[:status])
     when "achieved"
-      scope = scope.respond_to?(:achieved) ? scope.achieved : scope.where(success: true).where.not(end_time: nil)
+      scope = scope.respond_to?(:achieved)   ? scope.achieved   : scope.where(success: true).where.not(end_time: nil)
     when "unachieved"
       scope = scope.respond_to?(:unachieved) ? scope.unachieved : scope.where(success: false).where.not(end_time: nil)
     when "in_progress"
-      scope = scope.respond_to?(:running) ? scope.running : scope.where(end_time: nil)
+      scope = scope.respond_to?(:running)    ? scope.running    : scope.where(end_time: nil)
     else
-      # すべて表示
+      # すべて
     end
 
     @records =
@@ -47,7 +47,7 @@ class FastingRecordsController < ApplicationController
   def update
     attrs = fasting_record_params.to_h
 
-    # 終了済みは基本ロック：明示フラグがない限り start_time / end_time / target_hours は上書きしない
+    # 終了済みは基本ロック
     if @record.end_time.present?
       attrs.delete("start_time")   if params[:allow_change_start_time].blank?
       attrs.delete("end_time")     if params[:allow_change_end_time].blank?
@@ -61,13 +61,29 @@ class FastingRecordsController < ApplicationController
     end
   end
 
-  # 今すぐ開始（進行中があればブロック）
+  # 今すぐ開始（進行中があればブロック／18h+ は追加確認）
   def start
     if @scope.where(end_time: nil).exists?
       redirect_to mypage_path, alert: "進行中の記録があります" and return
     end
 
-    hours  = params[:target_hours].presence&.to_i
+    hours = params[:target_hours].presence&.to_i
+    if hours.nil? || hours <= 0
+      redirect_to mypage_path, alert: "目標時間を選択してください" and return
+    end
+
+    # 18h 以上なら追加確認（/health-notice/long）
+    if long_notice_required?(hours)
+      # まだ確認していない → 長時間注意画面へ
+      if params[:confirmed_long_notice] != "1"
+        redirect_to long_health_notice_path(hours: hours) and return
+      end
+      # 確認フラグはあるが、同意チェックがない場合（念のためのサーバー側バリデーション）
+      if params[:agree_long] != "1"
+        redirect_to long_health_notice_path(hours: hours), alert: "同意チェックが必要です。" and return
+      end
+    end
+
     record = @scope.new(start_time: Time.current, target_hours: hours, success: nil)
 
     if record.save
@@ -84,7 +100,7 @@ class FastingRecordsController < ApplicationController
     end
 
     @record.end_time = Time.current
-    @record.success  = @record.auto_success? # 念のため明示再計算
+    @record.success  = @record.auto_success?
     @record.save!
 
     redirect_to edit_fasting_record_path(@record),
@@ -111,17 +127,23 @@ class FastingRecordsController < ApplicationController
     params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment)
   end
 
-  # "success"/"failure"（旧）→ "achieved"/"unachieved"（新）へ正規化
+  # 旧→新フィルタキー正規化
   def normalize_status(s)
     case s
     when "success"   then "achieved"
     when "failure"   then "unachieved"
     when "achieved", "unachieved", "in_progress" then s
-    else nil
+    else
+      nil
     end
   end
 
-  # 結果に応じてポジティブな文言を返す
+  # 18h 以上で注意画面
+  def long_notice_required?(hours)
+    hours.to_i >= 18
+  end
+
+  # 結果に応じてポジティブな文言
   def flash_message_for(record)
     return "保存しました。" unless record.end_time.present?
 

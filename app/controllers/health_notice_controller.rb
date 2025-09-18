@@ -1,8 +1,7 @@
 # app/controllers/health_notice_controller.rb
 class HealthNoticeController < ApplicationController
-  # 無限リダイレクト防止
-  skip_before_action :require_health_notice!, only: %i[show create], raise: false
-
+  # HealthNotice 配下は同意チェックによるリダイレクト対象外（明示）
+  skip_before_action :require_health_notice!, only: %i[show create long], raise: false
   before_action :authenticate_user!
 
   def show
@@ -10,6 +9,18 @@ class HealthNoticeController < ApplicationController
     if current_user.health_notice_version == notice_version
       redirect_back_or_to_after_consent and return
     end
+    # 画面はそのまま表示
+  end
+
+  # 18h 以上の開始時の追加確認（24h 以上なら強調）
+  def long
+    @hours = params[:hours].to_i
+    @very_long = @hours >= 24
+
+    if @hours <= 0
+      redirect_to mypage_path, alert: "目標時間が不明です。" and return
+    end
+    # 画面はそのまま表示（views/health_notice/long.html.erb を用意）
   end
 
   def create
@@ -37,7 +48,7 @@ class HealthNoticeController < ApplicationController
   end
 
   def redirect_back_or_to_after_consent(**flash)
-    # Devise の戻り先 or マイページへ
+    # Devise の保存済み戻り先 or マイページへ
     redirect_to(stored_location_for(:user).presence || mypage_path, **flash)
   end
 end
