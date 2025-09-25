@@ -11,6 +11,9 @@ Figma : <https://www.figma.com/design/ScFMOAr4EFUWSO7vvssFmx/%E7%84%A1%E9%A1%8C?
 
 ---
 
+## ER図
+draw.ioのER図リンク: <https://drive.google.com/file/d/1bSqFGu3fWilWBu2lvpHGrll2frx6C8FW/view?usp=sharing>
+
 ## サービス概要（3行）
 - ファスティングと**瞑想/呼吸**を組み合わせ、空腹の波・ストレスを“やり過ごす力”を育てる習慣化アプリ。  
 - 断食は**保存時に自動判定**、瞑想は**5/10/20/30分の短尺ガイド**へワンタップ導線（MVPは外部リンク）。  
