@@ -11,7 +11,7 @@ gem "bootsnap", require: false
 gem "importmap-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
-gem "sprockets-rails"      # 必要なら残す（Rails 8 でも使用可）
+gem "sprockets-rails"      # 必要なら使用
 gem "tailwindcss-rails"    # Node不要
 gem "dartsass-rails"       # Node不要（Sassビルド）
 
@@ -22,15 +22,15 @@ gem "devise", "~> 4.9"
 # Windows/JRuby向けタイムゾーンデータ
 gem "tzinfo-data", platforms: %i[windows jruby]
 
-# --- Production（Heroku）---
-# HerokuではPostgresを使う
+# --- Production（Render/本番）---
+# 本番は PostgreSQL を使用
 group :production do
   gem "pg", "~> 1.5"
 end
 
 # --- Development / Test ---
 group :development, :test do
-  # ローカル/テストはMySQLを利用（Herokuでは使わない）
+  # ローカル＆CIは MySQL を使用（本番ではインストールしない）
   gem "mysql2", "~> 0.5"
 
   # デバッグ & 静的解析
