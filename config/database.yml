@@ -21,5 +21,5 @@ test:
 # Heroku（production）は Postgres を使用（DATABASE_URL をそのまま参照）
 # ※ default を継承しない（adapter が mysql2 になってしまうため）
 production:
-  url: <%= ENV.fetch("DATABASE_URL") %>
+  url: <%= ENV["DATABASE_URL"] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
