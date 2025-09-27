@@ -47,3 +47,6 @@
 
 # dev-only: Figma overlay
 app/assets/images/landing/figma-comp.*
+
+# use migrations only in prod
+/db/schema.rb
