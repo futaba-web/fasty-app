@@ -9,6 +9,7 @@
     <%= csp_meta_tag %>
 
     <%= javascript_importmap_tags %>
+    <%# ← Stimulus/Turbo 等を実行するエントリ。必ず入れる！ %>
     <%= javascript_import_module_tag "application" %>
 
     <%= yield :head %>
@@ -18,18 +19,24 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind",      "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application",   "data-turbo-track": "reload" %>
   </head>
 
   <% landing = (controller_path == "pages" && action_name == "home") %>
 
   <body
+    data-controller="menu"
     class="text-gray-900 min-h-dvh flex flex-col <%= 'landing-root' if landing %>"
     style="<%= "--hero-bg: url('#{asset_path('landing/hero.jpg')}')" if landing %>">
+
     <%= render "shared/header" %>
 
-    <main class="grow">
+    <%# ← ログイン時だけ 1 回描画 %>
+    <%= render("shared/menu_drawer") if user_signed_in? %>
+
+    <%# flow-root で margin 合成による上部の空白を防ぐ %>
+    <main class="grow mt-0 flow-root">
       <div class="mx-auto max-w-5xl px-4">
         <%= render "shared/flash" %>
       </div>

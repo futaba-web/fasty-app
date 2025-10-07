@@ -1,0 +1,49 @@
+<%# app/views/shared/_menu_drawer.html.erb %>
+
+<%# ▼ 左ドロワー：必ず 1 回だけ描画（初期は閉） %>
+<div id="site-drawer"
+     data-menu-target="drawer"
+     data-action="keydown.esc@window->menu#close"
+     class="fixed inset-y-0 left-0 w-72 max-w-[85vw]
+            -translate-x-full transform
+            bg-brand-header text-white shadow-xl
+            transition-transform duration-200 ease-out will-change-transform z-[70]"
+     role="dialog" aria-modal="true" aria-label="メニュー" tabindex="-1">
+
+  <div class="h-14 px-4 md:px-6 flex items-center justify-between">
+    <span class="text-lg font-semibold">メニュー</span>
+    <button class="p-2 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60"
+            data-action="click->menu#close" aria-label="閉じる">
+      ✕
+    </button>
+  </div>
+
+  <nav class="px-4 md:px-6 pb-6">
+    <ul class="space-y-1 text-white">
+      <li>
+        <%= button_to destroy_user_session_path,
+              method: :delete, form: { class: "block" },
+              class: "w-full text-left px-3 py-2 rounded hover:bg-white/10 font-medium" do %>
+          ログアウト
+        <% end %>
+      </li>
+
+      <li><%= link_to (defined?(health_and_safety_path) ? health_and_safety_path : "#"),
+              class: "block px-3 py-2 rounded hover:bg-white/10" do %>健康と安全<% end %></li>
+      <li><%= link_to (defined?(contact_path) ? contact_path : "#"),
+              class: "block px-3 py-2 rounded hover:bg-white/10" do %>お問い合わせ<% end %></li>
+      <li><%= link_to (defined?(privacy_path) ? privacy_path : "#"),
+              class: "block px-3 py-2 rounded hover:bg-white/10" do %>プライバシーポリシー<% end %></li>
+      <li><%= link_to (defined?(terms_path) ? terms_path : "#"),
+              class: "block px-3 py-2 rounded hover:bg-white/10" do %>利用規約<% end %></li>
+    </ul>
+
+    <div class="mt-6 px-3 text-xs opacity-80 select-none">
+      &copy; <%= Time.current.year %> Fasty
+    </div>
+  </nav>
+</div>
+
+<%# ▼ 画面全体のオーバーレイ（クリックで閉）※ controller が opacity/pointer-events を直接切替 %>
+<div data-menu-target="overlay" data-action="click->menu#close"
+     class="menu-overlay fixed inset-0 bg-black/50 transition-opacity z-[55]" aria-hidden="true"></div>
