@@ -21,6 +21,7 @@
 
     <%= stylesheet_link_tag "tailwind",      "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application",   "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "drawer",      "data-turbo-track": "reload" %>  <!-- ← 追加 -->
   </head>
 
   <% landing = (controller_path == "pages" && action_name == "home") %>

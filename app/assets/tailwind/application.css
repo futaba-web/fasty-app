@@ -1,2 +1,39 @@
-/* wrapper: tailwindcss:build が探す既定パスを維持 */
-@import "../stylesheets/application.tailwind.css";
+/* app/assets/tailwind/application.css (Tailwind v4 input) */
+
+/* どのファイルをスキャンしてユーティリティを出力するか */
+@source "../../views/**/*.html.erb";
+@source "../../views/**/*.turbo_stream.erb";
+@source "../../helpers/**/*.rb";
+@source "../../javascript/**/*.{js,ts}";
+
+@import "tailwindcss";
+
+/* --- Drawer/Overlay: ここに直書き（必ず出力される） --- */
+@layer components {
+  #site-drawer{
+    position: fixed; top: 0; bottom: 0; left: 0;
+    height: 100svh;
+    transform: translateX(-100%);
+    transition: transform .2s ease-out;
+    z-index: 60;
+  }
+  .menu-open #site-drawer{ transform: translateX(0) !important; }
+
+  .menu-overlay{
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease-out;
+    z-index: 55;
+  }
+  .menu-open .menu-overlay,
+  .menu-overlay.is-open{
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* ユーティリティの出力を確実化（呼び水） */
+@layer utilities {
+  ._safelist_tailwind { @apply fixed inset-y-0 left-0; }
+}

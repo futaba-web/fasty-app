@@ -1,5 +1,6 @@
 /* =========================================================
    Landing 全面背景（body に敷く）
+   ※ ドロワー関連(#site-drawer / .menu-overlay)は drawer.css に集約
    ========================================================= */
 @layer base {
   :root {
@@ -213,41 +214,9 @@
 }
 
 /* =========================================================
-   Hamburger（保険つき最終形：Tailwind 競合に必ず勝つ）
-   - JS は body に .menu-open を付け外しするだけ
+   “謎の空白”ケア（必要に応じて）
    ========================================================= */
-
-/* ドロワー：デフォは閉 */
-#site-drawer {
-  transform: translateX(-100%);                 /* 基本 */
-  transition: transform .2s ease-out;
-  z-index: 60;                                   /* 前面に固定 */
+@layer base {
+  main { margin-top: 0 !important; padding-top: 0 !important; }
+  main > :first-child { margin-top: 0 !important; }
 }
-/* body に .menu-open が付いたら確実に開く */
-.menu-open #site-drawer {
-  transform: translateX(0) !important;          /* ← 競合に勝つ */
-}
-
-/* オーバーレイ（閉状態） */
-.menu-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.5);
-  opacity: 0; pointer-events: none;
-  transition: opacity .2s ease-out;
-  z-index: 55;                                   /* ドロワーの一段下 */
-}
-/* 開状態（body に .menu-open） */
-.menu-open .menu-overlay {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-}
-
-/* 念押し z-index（他CSSに負けないため） */
-#site-drawer { z-index: 60 !important; }
-.menu-overlay { z-index: 55 !important; }
-
-/* =========================================================
-   “謎の空白”ケア
-   ========================================================= */
-main { margin-top: 0 !important; padding-top: 0 !important; }
-main > :first-child { margin-top: 0 !important; }
