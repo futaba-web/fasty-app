@@ -1,0 +1,2 @@
+/* wrapper: tailwindcss:build が探す既定パスを維持 */
+@import "../stylesheets/application.tailwind.css";
