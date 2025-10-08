@@ -1,8 +1,0 @@
-/* app/assets/tailwind/application.css  (Tailwind v4 input) */
-@source "../../views/**/*.html.erb";
-@source "../../views/**/*.turbo_stream.erb";
-@source "../../helpers/**/*.rb";
-@source "../../javascript/**/*.{js,ts}";
-
-@import "tailwindcss";
-@import "../stylesheets/landing.css";
