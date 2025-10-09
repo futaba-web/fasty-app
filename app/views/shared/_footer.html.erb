@@ -1,27 +1,26 @@
 <!-- app/views/shared/_footer.html.erb -->
+<% thick = (defined?(user_signed_in?) && user_signed_in?) ? 'footer-thick' : '' %>
+
 <footer class="bg-brand-header text-white">
-  <div class="mx-auto max-w-[1200px] px-4 md:px-6 py-3">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
-      <!-- 左：著作権表示（スローガンは削除） -->
-      <p class="mr-auto sm:mr-0 text-sm sm:text-base opacity-90">
+  <div class="<%= [thick, 'mx-auto max-w-[1200px] px-4 md:px-8 py-4 sm:py-5 pb-safe'].join(' ') %>">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+      <!-- 左：著作権表示 -->
+      <p class="mr-auto sm:mr-0 text-sm sm:text-base opacity-90 select-none">
         &copy; <%= Time.zone.now.year %> Fasty
       </p>
 
-      <!-- 右：法務系リンク（十分なスペースを付与） -->
+      <!-- 右：法務系リンク -->
       <nav class="flex items-center gap-6 sm:gap-8 text-sm whitespace-nowrap" aria-label="フッターナビ">
         <%= link_to "健康と安全", health_notice_path,
               class: "opacity-95 hover:opacity-100 hover:underline" %>
-
         <%= link_to "利用規約",
-              (respond_to?(:terms_path) ? terms_path : "#"),
+              (defined?(terms_path) ? terms_path : "#"),
               class: "opacity-95 hover:opacity-100 hover:underline" %>
-
         <%= link_to "お問い合わせ",
-              (respond_to?(:contact_path) ? contact_path : "#"),
+              (defined?(contact_path) ? contact_path : "#"),
               class: "opacity-95 hover:opacity-100 hover:underline" %>
-
         <%= link_to "プライバシーポリシー",
-              (respond_to?(:privacy_path) ? privacy_path : "#"),
+              (defined?(privacy_path) ? privacy_path : "#"),
               class: "opacity-95 hover:opacity-100 hover:underline" %>
       </nav>
     </div>

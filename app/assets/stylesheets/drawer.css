@@ -25,3 +25,15 @@
 /* 念のため：main の謎の上マージン消し */
 main { margin-top: 0 !important; padding-top: 0 !important; }
 main > :first-child { margin-top: 0 !important; }
+
+/* ---- footer: thicker (quick fix) ---- */
+.footer-thick{
+  padding-block: 1.25rem;   /* 20px */
+  min-height: 64px;
+}
+@media (min-width: 640px){  /* sm: */
+  .footer-thick{ padding-block: 1.75rem; min-height: 72px; }
+}
+@media (min-width: 768px){  /* md: */
+  .footer-thick{ padding-block: 2rem; }
+}
