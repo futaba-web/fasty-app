@@ -37,3 +37,30 @@ main > :first-child { margin-top: 0 !important; }
 @media (min-width: 768px){  /* md: */
   .footer-thick{ padding-block: 2rem; }
 }
+
+/* === Header: 全ページで“より控えめ”にする ====================== */
+header.bg-brand-header > div{
+  padding-block: .375rem; /* 6px */
+  min-height: 44px;       /* モバイル最小タップサイズに準拠 */
+}
+
+@media (min-width: 640px){ /* sm: */
+  header.bg-brand-header > div{
+    padding-block: .5rem;  /* 8px */
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 768px){ /* md: */
+  header.bg-brand-header > div{
+    padding-block: .5rem; /* 10px */
+    /* min-heightは 48～52px で十分。必要なら 52px に。*/
+    min-height: 48px;
+  }
+}
+
+/* アイテムの縦位置を中央に（保険） */
+header.bg-brand-header nav,
+header.bg-brand-header a,
+header.bg-brand-header .btn,
+header.bg-brand-header .flex { align-items: center; }
