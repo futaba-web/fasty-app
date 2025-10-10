@@ -1,28 +1,70 @@
 <!-- app/views/shared/_footer.html.erb -->
-<% thick = (defined?(user_signed_in?) && user_signed_in?) ? 'footer-thick' : '' %>
+<% if user_signed_in? %>
+  <!-- ログイン後：ボトムナビ -->
+  <footer class="bg-brand-header text-white">
+    <div class="footer-app footer-thick mx-auto max-w-[1200px] px-4 md:px-6">
+      <nav class="footer-app__nav" aria-label="アプリフッター">
 
-<footer class="bg-brand-header text-white">
-  <div class="<%= [thick, 'mx-auto max-w-[1200px] px-4 md:px-8 py-4 sm:py-5 pb-safe'].join(' ') %>">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-      <!-- 左：著作権表示 -->
-      <p class="mr-auto sm:mr-0 text-sm sm:text-base opacity-90 select-none">
-        &copy; <%= Time.zone.now.year %> Fasty
-      </p>
+        <!-- 記録一覧 -->
+        <%= link_to (respond_to?(:fasting_records_path) ? fasting_records_path : "#"),
+          class: "footer-app__link #{(respond_to?(:fasting_records_path) && current_page?(fasting_records_path)) ? 'is-active' : ''}",
+          aria: { label: "記録一覧" } do %>
+          <!-- ペン（ソリッド） -->
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15.232 5.232a2.5 2.5 0 0 1 3.536 3.536l-8.5 8.5-4.268.732.732-4.268 8.5-8.5Z M4 20h16v2H4z" fill="currentColor"/>
+          </svg>
+          <span>記録一覧</span>
+        <% end %>
 
-      <!-- 右：法務系リンク -->
-      <nav class="flex items-center gap-6 sm:gap-8 text-sm whitespace-nowrap" aria-label="フッターナビ">
-        <%= link_to "健康と安全", health_notice_path,
-              class: "opacity-95 hover:opacity-100 hover:underline" %>
-        <%= link_to "利用規約",
-              (defined?(terms_path) ? terms_path : "#"),
-              class: "opacity-95 hover:opacity-100 hover:underline" %>
-        <%= link_to "お問い合わせ",
-              (defined?(contact_path) ? contact_path : "#"),
-              class: "opacity-95 hover:opacity-100 hover:underline" %>
-        <%= link_to "プライバシーポリシー",
-              (defined?(privacy_path) ? privacy_path : "#"),
-              class: "opacity-95 hover:opacity-100 hover:underline" %>
+        <!-- 瞑想（B. ロータス：花びら風） -->
+        <%= link_to (respond_to?(:meditations_path) ? meditations_path : "#"),
+          class: "footer-app__link #{(respond_to?(:meditations_path) && current_page?(meditations_path)) ? 'is-active' : ''}",
+          aria: { label: "瞑想" } do %>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <!-- 中央の花びら -->
+            <path d="M12 4.8c2.0 2.2 3.0 4.2 3.0 6.0c-1.6.8-3.0.8-3.0.8s-1.4 0-3.0-.8c0-1.8 1.0-3.8 3.0-6.0Z"
+                  fill="none" stroke="currentColor" stroke-width="2.0" stroke-linejoin="round"/>
+            <!-- 左右の花びら -->
+            <path d="M6.5 7.4c.9 2.2 2.4 3.7 4.6 4.7c-2.3.8-4.2.7-6.1-.1c.1-1.7.6-3.2 1.5-4.6Z"
+                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M17.5 7.4c-.9 2.2-2.4 3.7-4.6 4.7c2.3.8 4.2.7 6.1-.1c-.1-1.7-.6-3.2-1.5-4.6Z"
+                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <!-- ベースのライン（花台） -->
+            <path d="M4 18c5.3 1.4 10.7 1.4 16 0"
+                  fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>瞑想</span>
+        <% end %>
+
+        <!-- マイページ -->
+        <%= link_to (respond_to?(:mypage_path) ? mypage_path : "#"),
+          class: "footer-app__link #{(respond_to?(:mypage_path) && current_page?(mypage_path)) ? 'is-active' : ''}",
+          aria: { label: "マイページ" } do %>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm-8 8a8 8 0 0 1 16 0v1H4z" fill="currentColor"/>
+          </svg>
+          <span>マイページ</span>
+        <% end %>
+
       </nav>
     </div>
-  </div>
-</footer>
+  </footer>
+
+<% else %>
+  <!-- ログイン前：コピーライト＋法務リンク -->
+  <footer class="bg-brand-header text-white">
+    <div class="mx-auto max-w-[1200px] px-4 md:px-8 py-4 sm:py-5 pb-safe">
+      <div class="flex items-center justify-between gap-4">
+        <p class="text-sm sm:text-base opacity-90 select-none">
+          &copy; <%= Time.zone.now.year %> Fasty
+        </p>
+        <nav class="flex items-center gap-6 sm:gap-8 text-sm whitespace-nowrap" aria-label="フッターナビ">
+          <%= link_to "健康と安全", health_notice_path, class: "opacity-95 hover:opacity-100 hover:underline" %>
+          <%= link_to "利用規約", (respond_to?(:terms_path) ? terms_path : "#"), class: "opacity-95 hover:opacity-100 hover:underline" %>
+          <%= link_to "お問い合わせ", (respond_to?(:contact_path) ? contact_path : "#"), class: "opacity-95 hover:opacity-100 hover:underline" %>
+          <%= link_to "プライバシーポリシー", (respond_to?(:privacy_path) ? privacy_path : "#"), class: "opacity-95 hover:opacity-100 hover:underline" %>
+        </nav>
+      </div>
+    </div>
+  </footer>
+<% end %>

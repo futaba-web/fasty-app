@@ -64,3 +64,42 @@ header.bg-brand-header nav,
 header.bg-brand-header a,
 header.bg-brand-header .btn,
 header.bg-brand-header .flex { align-items: center; }
+/* ==== Bottom App Nav（ログイン後） ===================== */
+/* ここを差し替え：中央寄せの“内容幅”グリッドに */
+.footer-app__nav{
+  display: grid;
+  grid-auto-flow: column;              /* 横方向に並べる */
+  grid-auto-columns: max-content;      /* 各リンクは内容幅だけ */
+  justify-content: center;             /* コンテナ中央に寄せる */
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 3.25rem);    /* 3つの間隔（少し狭め＆可変） */
+  margin-inline: auto;
+  max-width: min(820px, 92vw);         /* 画面が広い時も中央にコンパクト */
+}
+
+/* 各リンクは内容幅だけを占有（横いっぱいに広がらないように） */
+.footer-app__link{
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  inline-size: max-content;
+  gap: .3rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* アイコン・ラベル（お好みのサイズのままでOK） */
+.footer-app__link svg{
+  width: 32px; height: 32px; display: block;
+  color:#111;
+  transition: transform .15s ease, color .15s ease, filter .15s ease;
+}
+@media (min-width:640px){
+  .footer-app__link svg{ width:34px; height:34px; }
+}
+.footer-app__link span{
+  font-size:.8rem; line-height:1; color:#fff; letter-spacing:.02em;
+}
+
+/* ホバー/アクティブ */
+.footer-app__link:hover svg{ transform: translateY(-1px); color:#000; }
+.footer-app__link.is-active svg{ color:#fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); }
+.footer-app__link.is-active span{ color:#fff; font-weight:700; }
