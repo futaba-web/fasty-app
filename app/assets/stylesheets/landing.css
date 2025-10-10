@@ -220,3 +220,110 @@
   main { margin-top: 0 !important; padding-top: 0 !important; }
   main > :first-child { margin-top: 0 !important; }
 }
+/* ===== Landing Hero v2 (文言/ボタンの再配置) ===== */
+@layer components {
+  .landing-hero-v2{
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: clamp(24px, 6vh, 48px) auto;
+    padding: 0 clamp(16px, 4vw, 32px);
+    text-align: center;
+    color: #1f2937; /* text-gray-800 */
+  }
+
+  .landing-hero-v2__logo{
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-weight: 800;
+    letter-spacing: .03em;
+    font-size: clamp(28px, 5vw, 44px);
+    color: #ffffff;
+    text-shadow: 0 6px 12px rgba(0,0,0,.35);
+    margin: 0 0 clamp(14px, 2.4vh, 20px);
+  }
+
+  .landing-hero-v2__catch{
+    font-weight: 800;
+    letter-spacing: .02em;
+    line-height: 1.25;
+    margin: 0 auto clamp(18px, 3vh, 24px);
+    font-size: clamp(24px, 4.8vw, 40px);
+    color: #111827; /* text-gray-900 */
+    text-shadow: 0 1px 0 rgba(255,255,255,.75);
+  }
+
+  .landing-hero-v2__points{
+    list-style: none;
+    padding: 0;
+    margin: 0 auto clamp(18px, 3vh, 24px);
+    max-width: 780px;
+    text-align: left;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 700;
+  }
+  .landing-hero-v2__points li{
+    display: flex; align-items: flex-start;
+    gap: .5rem;
+    padding: 6px 0;
+  }
+  .landing-hero-v2__points li::before{
+    content: "✅";
+    flex: 0 0 auto;
+    transform: translateY(1px);
+  }
+
+  .landing-hero-v2__note{
+    margin: clamp(8px, 1.8vh, 12px) auto clamp(18px, 3.2vh, 26px);
+    font-size: clamp(11px, 1.8vw, 13px);
+    color: #4b5563; /* text-gray-600 */
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  }
+
+  .landing-hero-v2__cta{
+    display: flex;
+    justify-content: center;
+    gap: clamp(16px, 4vw, 28px);
+    flex-wrap: wrap;
+  }
+
+  /* 既存の .btn / .btn-cta を活かして上書き */
+  .hero-btn{
+    border-radius: 9999px;
+    padding: clamp(12px, 2.2vh, 16px) clamp(24px, 6vw, 40px);
+    min-width: clamp(220px, 26vw, 320px);
+    font-size: clamp(18px, 2.8vw, 26px);
+    font-weight: 800;
+    letter-spacing: .04em;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .hero-btn:active{ transform: scale(.99); }
+
+  /* 新規登録（塗り） */
+  .hero-btn--signup{
+    color: #fff;
+    background: #2bd4c3; /* ミント */
+    border: 2px solid transparent;
+  }
+  .hero-btn--signup:hover{
+    filter: brightness(1.05);
+    box-shadow: 0 14px 34px rgba(43,212,195,.35);
+  }
+
+  /* ログイン（アウトライン） */
+  .hero-btn--login{
+    color: #2bb7a9;
+    background: rgba(255,255,255,.7);
+    border: 3px solid #2bb7a9;
+    backdrop-filter: blur(2px);
+  }
+  .hero-btn--login:hover{
+    background: rgba(255,255,255,.9);
+    box-shadow: 0 12px 28px rgba(43,212,195,.18);
+  }
+}
+
+/* ちょっとだけ縦位置余白：モバイルで潰れにくくする */
+@layer utilities {
+  .landing-root main, .landing-root .landing-hero-v2 { scroll-margin-top: 12px; }
+}

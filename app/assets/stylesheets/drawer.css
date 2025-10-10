@@ -26,37 +26,77 @@
 main { margin-top: 0 !important; padding-top: 0 !important; }
 main > :first-child { margin-top: 0 !important; }
 
-/* ---- footer: thicker (quick fix) ---- */
-.footer-thick{
-  padding-block: 1.25rem;   /* 20px */
-  min-height: 64px;
+/* ==== Logged-out legal footer (ultra thin) ========================= */
+.footer-legal-thin{
+  padding-block: .375rem;                               /* 6px */
+  min-height: 32px;
+  padding-bottom: calc(.375rem + env(safe-area-inset-bottom, 0px));
 }
-@media (min-width: 640px){  /* sm: */
-  .footer-thick{ padding-block: 1.75rem; min-height: 72px; }
+@media (min-width: 640px){                              /* sm~ */
+  .footer-legal-thin{ padding-block: .5rem; min-height: 36px; }    /* 8px */
 }
-@media (min-width: 768px){  /* md: */
-  .footer-thick{ padding-block: 2rem; }
+
+/* 横並び：左にコピーライト、右端に法務リンク（折り返し禁止） */
+.footer-legal-thin .legal-wrap{
+  display: flex !important;
+  align-items: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: .75rem;
 }
+
+/* 左側：©表記（縮まない） */
+.footer-legal-thin .copyright{
+  flex: 0 0 auto;
+  font-size: .8rem;
+  line-height: 1;
+  opacity: .95;
+  white-space: nowrap;
+}
+
+/* 右側：法務リンク群（右端へ／インライン／自然な間隔） */
+.footer-legal-thin .legal-links{
+  margin-left: auto;          /* 右端へ押し出す */
+  display: flex;
+  align-items: center;
+  gap: 1.125rem;              /* 18px */
+  flex: 0 1 auto;
+  font-size: .85rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.footer-legal-thin .legal-links a{
+  text-decoration: none;
+  opacity: .95;
+  transition: opacity .15s ease;
+  white-space: nowrap;
+}
+.footer-legal-thin .legal-links a:hover{
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* 幅が狭い端末では少しだけ詰める */
+@media (max-width: 639px){
+  .footer-legal-thin .legal-links{ gap: .8rem; font-size: .8rem; }
+}
+@media (min-width: 640px){
+  .footer-legal-thin .legal-links{ gap: 1.375rem; }      /* 22px */
+}
+
+/* 追加の強制（親が footer のときも確実に効かせたい場合） */
+footer .footer-legal-thin .legal-wrap{ justify-content: space-between !important; }
 
 /* === Header: 全ページで“より控えめ”にする ====================== */
 header.bg-brand-header > div{
   padding-block: .375rem; /* 6px */
-  min-height: 44px;       /* モバイル最小タップサイズに準拠 */
+  min-height: 44px;
 }
-
-@media (min-width: 640px){ /* sm: */
-  header.bg-brand-header > div{
-    padding-block: .5rem;  /* 8px */
-    min-height: 44px;
-  }
+@media (min-width: 640px){
+  header.bg-brand-header > div{ padding-block: .5rem; min-height: 44px; }
 }
-
-@media (min-width: 768px){ /* md: */
-  header.bg-brand-header > div{
-    padding-block: .5rem; /* 10px */
-    /* min-heightは 48～52px で十分。必要なら 52px に。*/
-    min-height: 48px;
-  }
+@media (min-width: 768px){
+  header.bg-brand-header > div{ padding-block: .5rem; min-height: 48px; }
 }
 
 /* アイテムの縦位置を中央に（保険） */
@@ -64,20 +104,18 @@ header.bg-brand-header nav,
 header.bg-brand-header a,
 header.bg-brand-header .btn,
 header.bg-brand-header .flex { align-items: center; }
+
 /* ==== Bottom App Nav（ログイン後） ===================== */
-/* ここを差し替え：中央寄せの“内容幅”グリッドに */
 .footer-app__nav{
   display: grid;
-  grid-auto-flow: column;              /* 横方向に並べる */
-  grid-auto-columns: max-content;      /* 各リンクは内容幅だけ */
-  justify-content: center;             /* コンテナ中央に寄せる */
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  justify-content: center;
   align-items: center;
-  gap: clamp(1.5rem, 5vw, 3.25rem);    /* 3つの間隔（少し狭め＆可変） */
+  gap: clamp(1.5rem, 5vw, 3.25rem);
   margin-inline: auto;
-  max-width: min(820px, 92vw);         /* 画面が広い時も中央にコンパクト */
+  max-width: min(820px, 92vw);
 }
-
-/* 各リンクは内容幅だけを占有（横いっぱいに広がらないように） */
 .footer-app__link{
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   inline-size: max-content;
@@ -85,8 +123,6 @@ header.bg-brand-header .flex { align-items: center; }
   text-decoration: none;
   color: inherit;
 }
-
-/* アイコン・ラベル（お好みのサイズのままでOK） */
 .footer-app__link svg{
   width: 32px; height: 32px; display: block;
   color:#111;
@@ -98,8 +134,117 @@ header.bg-brand-header .flex { align-items: center; }
 .footer-app__link span{
   font-size:.8rem; line-height:1; color:#fff; letter-spacing:.02em;
 }
-
-/* ホバー/アクティブ */
 .footer-app__link:hover svg{ transform: translateY(-1px); color:#000; }
 .footer-app__link.is-active svg{ color:#fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); }
 .footer-app__link.is-active span{ color:#fff; font-weight:700; }
+
+/* ====== Landing hero : 最終版（重複削除済み） ==================== */
+/* ヒーロー全体 */
+body.landing-root .hero{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72svh;
+}
+@media (min-width:640px){
+  body.landing-root .hero{ min-height: 68svh; }
+}
+
+/* コンテンツ内側 */
+body.landing-root .hero__inner{
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  text-align: center;
+  color: #111;
+}
+
+/* タイトル（Fasty は太字・白・影） */
+body.landing-root .hero__title{
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .04em;
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  text-shadow: 0 6px 12px rgba(0,0,0,.5);
+  user-select: none;
+  margin: 0 0 .75rem;
+}
+
+/* キャッチコピー：太字 */
+body.landing-root .hero__kicker{
+  margin: .5rem auto 0;
+  font-weight: 800;
+  line-height: 1.45;
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  color: #111;
+  text-shadow: 0 1px 0 rgba(255,255,255,.85), 0 0 10px rgba(255,255,255,.25);
+}
+
+/* チェックリスト：太字にしない（600） */
+body.landing-root .hero__bullets{
+  margin: .8rem auto 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: .4rem;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  line-height: 1.7;
+  text-shadow: 0 1px 0 rgba(255,255,255,.80), 0 0 8px rgba(255,255,255,.22);
+}
+
+/* 注意書き：さらに控えめ */
+body.landing-root .hero__note{
+  margin-top: .75rem;
+  font-size: clamp(12px, 1.3vw, 13px);
+  line-height: 1.6;
+  opacity: .9;
+  text-shadow: 0 1px 0 rgba(255,255,255,.75), 0 0 6px rgba(255,255,255,.18);
+}
+
+/* CTA（2ボタン）横並び・中央寄せ・同サイズ */
+body.landing-root .hero__cta{
+  margin-top: clamp(14px, 2.2vw, 22px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(12px, 2.2vw, 18px);
+  flex-wrap: wrap;
+}
+/* 2ボタン共通 */
+body.landing-root .hero__cta .btn-hero{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  min-width: clamp(220px, 26vw, 320px);
+  padding: clamp(12px, 1.6vw, 16px) clamp(20px, 3vw, 28px);
+  font-size: clamp(16px, 1.6vw, 22px);
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+/* 新規登録（塗り） */
+body.landing-root .hero__cta .btn-mint.btn-hero{
+  background: #2bd4c3; color: #fff;
+  box-shadow: 0 10px 30px rgba(43,212,195,.35);
+}
+body.landing-root .hero__cta .btn-mint.btn-hero:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(43,212,195,.45);
+}
+/* ログイン（白背景＋ミント枠/文字） */
+body.landing-root .hero__cta .btn-hero--login{
+  background: #fff; color: #2bd4c3; border: 2px solid #2bd4c3;
+}
+body.landing-root .hero__cta .btn-hero--login:hover{
+  background: #f3fffd;
+  box-shadow: 0 12px 32px rgba(43,212,195,.20);
+  transform: translateY(-1px);
+}
