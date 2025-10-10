@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.2.2"
 
 # --- Core ---
-gem "rails", "~> 8.0.2"
+gem "rails", "~> 8.0.3"
 gem "puma", ">= 5.0"
 gem "bootsnap", require: false
 
