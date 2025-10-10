@@ -1,20 +1,33 @@
 <div class="hero">
   <div class="hero__inner">
-    <h1 class="hero__title">fasty</h1>
+    <h1 class="hero__title">Fasty</h1>
 
-    <p class="hero__copy">
-      毎日つづく、やさしいファスティング。<br>
-      内側から“きれい”を育てよう。
+    <!-- キャッチコピー：太字 -->
+    <p class="hero__kicker">
+      ファスティング × 瞑想で<br>
+      内側からきれいを育てる。
     </p>
 
-    <ul class="hero__list">
-      <li>✅ 目標時間に合わせて無理なく継続</li>
-      <li>✅ 成功も失敗もワンタップで記録</li>
+    <!-- チェックリスト：太字にしない -->
+    <ul class="hero__bullets">
+      <li>✅ 空腹時間をつくって、からだをリセット</li>
+      <li>✅ 5分からの瞑想で、心も整う</li>
+      <li>✅ ミニ目標(12・14・16h …)で無理なく継続</li>
     </ul>
 
+    <!-- 注意書き：さらに控えめ -->
+    <p class="hero__note">
+      ※体感には個人差があります。本アプリは医療サービスではありません。
+    </p>
+
     <div class="hero__cta">
-      <%= link_to "新規登録", new_user_registration_path, class: "btn-mint btn-mint--lg" %>
-      <%= link_to "ログイン", new_user_session_path,       class: "btn-mint btn-mint--lg" %>
+      <%= link_to "新規登録",
+                  new_user_registration_path,
+                  class: "btn-mint btn-hero" %>
+
+      <%= link_to "ログイン",
+                  new_user_session_path,
+                  class: "btn-hero btn-hero--login" %>
     </div>
   </div>
 </div>

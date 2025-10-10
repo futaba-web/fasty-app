@@ -45,3 +45,5 @@ end
 
 # ActiveStorage の画像変換を使う場合は有効化
 # gem "image_processing", "~> 1.2"
+
+gem "sassc-rails", "~> 2.1"

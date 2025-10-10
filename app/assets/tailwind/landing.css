@@ -1,0 +1,45 @@
+/* Tailwind v4 用: Landing（ログイン前） */
+
+@layer components {
+  .hero { @apply relative isolate w-full flex items-center justify-center min-h-[72svh] sm:min-h-[68svh]; }
+  .hero__inner { @apply relative z-10 w-full mx-auto max-w-[920px] px-6 text-center; }
+
+  .hero__title { @apply text-[clamp(36px,7vw,54px)] font-extrabold tracking-wide text-gray-900 drop-shadow; }
+
+  .hero__lead {
+    @apply mt-6 md:mt-8 text-[clamp(20px,3.6vw,32px)] font-extrabold leading-snug text-gray-900;
+  }
+
+  .hero__list { @apply mt-5 space-y-2 text-[clamp(16px,2.8vw,22px)] font-bold text-gray-900; }
+
+  .hero__note { @apply mt-8 text-sm text-gray-700/90; }
+
+  .hero__cta { @apply mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-5 md:gap-8; }
+
+  /* CTA ボタン（図の雰囲気） */
+  .btn-cta {
+    @apply inline-flex items-center justify-center rounded-[28px]
+           px-10 md:px-14 py-5 md:py-6 text-2xl font-extrabold
+           bg-emerald-400 text-white shadow-xl ring-2 ring-emerald-300/80;
+  }
+  .btn-cta:hover { @apply translate-y-[-1px]; }
+  .btn-cta:active { @apply translate-y-[1px]; }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-[28px]
+           px-10 md:px-14 py-5 md:py-6 text-2xl font-extrabold
+           bg-white/70 text-emerald-700 ring-2 ring-emerald-300/70 backdrop-blur;
+  }
+}
+
+/* 背景のぼかし/白ベール（既存 landing-root を活用） */
+@layer base {
+  .landing-root::after {
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    background:
+      radial-gradient(1000px 460px at 50% 45%, rgba(255,255,255,.30) 0%, rgba(255,255,255,.18) 42%, rgba(255,255,255,0) 68%),
+      linear-gradient(to bottom, rgba(255,255,255,.14) 0%, rgba(255,255,255,.06) 30%, rgba(255,255,255,0) 60%),
+      rgba(255,255,255,.10);
+  }
+}

@@ -103,3 +103,191 @@ header.bg-brand-header .flex { align-items: center; }
 .footer-app__link:hover svg{ transform: translateY(-1px); color:#000; }
 .footer-app__link.is-active svg{ color:#fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); }
 .footer-app__link.is-active span{ color:#fff; font-weight:700; }
+
+/* ====== Landing hero : final overrides (wins over Tailwind) ====== */
+body.landing-root .hero{ position:relative; display:flex; align-items:center; justify-content:center; min-height:72svh; }
+@media (min-width:640px){ body.landing-root .hero{ min-height:68svh; } }
+
+body.landing-root .hero__inner{ position:relative; z-index:1; width:100%; max-width:960px; margin-inline:auto; padding-inline:24px; text-align:center; color:#111; }
+
+/* タイトル */
+body.landing-root .hero__title{
+  color:#fff;
+  font-weight:800;
+  letter-spacing:.04em;
+  font-size:clamp(2.25rem, 4.5vw, 3.5rem); /* 36px〜56px */
+  text-shadow:0 6px 12px rgba(0,0,0,.5);
+  user-select:none;
+  margin:0 0 .75rem;
+}
+
+/* リードコピー */
+body.landing-root .hero__copy{
+  margin:.75rem auto 0;
+  font-weight:800;
+  line-height:1.35;
+  font-size:clamp(1.125rem, 2.2vw, 1.5rem); /* 18〜24px */
+  color:#111;
+  text-shadow:0 1px 0 rgba(255,255,255,.85), 0 0 10px rgba(255,255,255,.25);
+}
+
+/* 箇条書き */
+body.landing-root .hero__list{
+  margin:.75rem auto 0;
+  padding:0;
+  list-style:none;
+  font-weight:700;
+  font-size:clamp(1rem, 1.8vw, 1.25rem); /* 16〜20px */
+}
+body.landing-root .hero__list li{ margin:.4rem 0; }
+
+/* CTA ボタン */
+body.landing-root .hero__cta{
+  margin-top:1.25rem;
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:16px 24px;
+}
+body.landing-root .hero__cta a{
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:9999px; padding:.85rem 1.5rem;
+  font-weight:700; text-decoration:none;
+  color:#fff; background:#2bd4c3;           /* 新規登録（塗り） */
+  box-shadow:0 10px 30px rgba(43,212,195,.35);
+  transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease;
+}
+body.landing-root .hero__cta a:hover{ transform:translateY(-1.5px); box-shadow:0 14px 34px rgba(43,212,195,.45); }
+
+/* 右側の「ログイン」だけアウトラインにしたい場合（任意）
+   home.html.erb のリンクに .btn--outline を付けると適用されます */
+body.landing-root .hero__cta a.btn--outline{
+  background:transparent; color:#1f2937; border:2px solid rgba(31,41,55,.25);
+  box-shadow:none;
+}
+body.landing-root .hero__cta a.btn--outline:hover{ background:rgba(255,255,255,.35); }
+/* ====== Landing hero : final overrides (wins over Tailwind) ====== */
+
+/* ヒーロー全体 */
+body.landing-root .hero{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72svh;
+}
+@media (min-width:640px){
+  body.landing-root .hero{ min-height: 68svh; }
+}
+
+/* コンテンツ内側 */
+body.landing-root .hero__inner{
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  text-align: center;
+  color: #111;
+}
+
+/* タイトル（Fasty は太字・白・影） */
+body.landing-root .hero__title{
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .04em;
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem); /* 36px〜56px */
+  text-shadow: 0 6px 12px rgba(0,0,0,.5);
+  user-select: none;
+  margin: 0 0 .75rem;
+}
+
+/* キャッチコピー：太字 */
+body.landing-root .hero__kicker{
+  margin: .5rem auto 0;
+  font-weight: 800;
+  line-height: 1.45;
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem); /* 18〜24px */
+  color: #111;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.85),
+    0 0 10px rgba(255,255,255,.25);
+}
+
+/* チェックリスト：太字にしない（可読性重視で600） */
+body.landing-root .hero__bullets{
+  margin: .8rem auto 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: .4rem;
+  font-weight: 600;               /* 800にしない */
+  font-size: clamp(1rem, 1.8vw, 1.25rem); /* 16〜20px */
+  line-height: 1.7;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.80),
+    0 0 8px rgba(255,255,255,.22);
+}
+
+/* 注意書き：さらに控えめ */
+body.landing-root .hero__note{
+  margin-top: .75rem;
+  font-size: clamp(12px, 1.3vw, 13px);
+  line-height: 1.6;
+  opacity: .9;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.75),
+    0 0 6px rgba(255,255,255,.18);
+}
+
+/* CTA（2ボタン）横並び・中央寄せ・同サイズ */
+body.landing-root .hero__cta{
+  margin-top: clamp(14px, 2.2vw, 22px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(12px, 2.2vw, 18px);
+  flex-wrap: wrap;
+}
+
+/* 2ボタンの共通サイズ（同一幅・同一高さ） */
+body.landing-root .hero__cta .btn-hero{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  min-width: clamp(220px, 26vw, 320px);
+  padding: clamp(12px, 1.6vw, 16px) clamp(20px, 3vw, 28px);
+  font-size: clamp(16px, 1.6vw, 22px);
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    background-color .15s ease,
+    color .15s ease,
+    border-color .15s ease;
+}
+
+/* 新規登録（塗り・ミント） */
+body.landing-root .hero__cta .btn-mint.btn-hero{
+  background: #2bd4c3;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(43,212,195,.35);
+}
+body.landing-root .hero__cta .btn-mint.btn-hero:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(43,212,195,.45);
+}
+
+/* ログイン：白背景＋ミント枠＆文字（同サイズ） */
+body.landing-root .hero__cta .btn-hero--login{
+  background: #fff;
+  color: #2bd4c3;
+  border: 2px solid #2bd4c3;
+}
+body.landing-root .hero__cta .btn-hero--login:hover{
+  background: #f3fffd;                 /* うっすらミント */
+  box-shadow: 0 12px 32px rgba(43,212,195,.20);
+  transform: translateY(-1px);
+}
