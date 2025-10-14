@@ -4,6 +4,9 @@
   <!-- 上は広め / 下は最小限（pb-0） / セクション間は少しゆったり -->
   <div class="relative max-w-3xl mx-auto px-6 pt-6 sm:pt-8 pb-0 space-y-5 sm:space-y-6">
 
+    <!-- ▼ ここで挨拶バーを表示（マイページ限定） -->
+    <%= render "shared/greeting", user: current_user %>
+
     <% title_text, kind = fasting_hero(current_user) %>
 
     <!-- ステータスメッセージ：視認性は保ちつつ高さ控えめ -->

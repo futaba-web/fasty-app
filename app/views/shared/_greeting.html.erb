@@ -1,0 +1,9 @@
+<!-- app/views/shared/_greeting.html.erb -->
+<% if (defined?(user_signed_in?) && user_signed_in?) || local_assigns[:user].present? %>
+  <% u = local_assigns[:user] || (defined?(current_user) ? current_user : nil) %>
+  <div class="mx-auto max-w-3xl px-6 pt-3 sm:pt-4 pb-1"> <!-- 余白だけ -->
+    <p class="text-lg sm:text-xl text-gray-800 text-center font-bold">
+      こんにちは、<span class="font-bold"><%= display_name(u) %></span>さん！
+    </p>
+  </div>
+<% end %>
