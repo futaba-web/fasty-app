@@ -1,15 +1,18 @@
 <%# app/views/fasting_records/_form.html.erb %>
 
+<%# フォームを中央寄せ＆最大幅制限 %>
 <%= form_with model: @record,
               local: true,
-              class: "space-y-4",
+              class: "space-y-4 w-full max-w-xl mx-auto",
               data: (@record.running? ? { controller: "fasting-form" } : {}) do |f| %>
 
   <% if @record.errors.any? %>
     <div class="rounded border border-rose-200 bg-rose-50 p-3 text-rose-700">
       <strong><%= pluralize(@record.errors.count, "error") %> prohibited this record from being saved:</strong>
       <ul class="list-disc ml-5">
-        <% @record.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+        <% @record.errors.full_messages.each do |m| %>
+          <li><%= m %></li>
+        <% end %>
       </ul>
     </div>
   <% end %>
@@ -21,6 +24,7 @@
       <%= f.datetime_local_field :start_time,
             value: datetime_local_value(@record.start_time || Time.current),
             step: 60,
+            class: "border rounded px-2 py-1",
             data: { "fasting-form-target": "start",
                     action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
     <% else %>
@@ -37,6 +41,7 @@
             min:   (@record.start_time.present? ? datetime_local_value(@record.start_time) : nil),
             step:  60,
             required: true,
+            class: "border rounded px-2 py-1",
             data: { "fasting-form-target": "end" } %>
       <p class="mt-1 text-xs text-gray-500">※ 保存時に「達成/未達」を自動判定します。</p>
     <% else %>
@@ -64,7 +69,15 @@
   <!-- 結果（表示のみ） -->
   <div>
     <label class="block text-sm text-gray-600">結果</label>
-    <% if @record.end_time.present? %>
+    <% if @record.start_time.present? && @record.end_time.present? %>
+      <%# 経過時間（h）を 0.1h 刻みで表示。整数なら 12h のように整数表示 %>
+      <% duration_h  = ((@record.end_time - @record.start_time) / 3600.0).round(1) %>
+      <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}h" : "#{duration_h}h" %>
+      <div class="py-2 flex items-center gap-2">
+        <span class="text-base font-semibold"><%= hours_label %></span>
+        <%= status_badge(@record) %>
+      </div>
+    <% elsif @record.end_time.present? %>
       <div class="py-2"><%= status_badge(@record) %></div>
     <% else %>
       <span class="text-sm text-gray-500">終了時刻と目標を入力すると自動判定されます</span>
@@ -73,9 +86,16 @@
 
   <!-- コメント -->
   <div>
-    <label class="block text-sm text-gray-600">コメント</label>
-    <%= f.text_area :comment, rows: 4, class: "w-full border rounded px-2 py-1" %>
+    <label class="block text-sm text-gray-600 flex items-center gap-1">
+      <span class="text-base leading-none" aria-hidden="true">💬</span>
+      <span>コメント</span>
+    </label>
+    <%= f.text_area :comment,
+          rows: 2,
+          maxlength: 120,
+          placeholder: "例) 空腹に耐えられた！",
+          class: "w-full max-w-xl border-2 border-gray-400 rounded-md px-3 py-2 leading-snug bg-white
+                  focus:border-gray-500 focus:ring-0 outline-none resize-y" %>
   </div>
-
-  <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white" %>
+  <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white block mx-auto" %>
 <% end %>
