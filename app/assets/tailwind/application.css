@@ -1,17 +1,20 @@
-/* app/assets/tailwind/application.css (Tailwind v4 input) */
+/* app/assets/tailwind/application.css — Tailwind v4 input（一本化） */
 
-/* どのファイルをスキャンしてユーティリティを出力するか */
+/* 1) Tailwind本体 */
+@import "tailwindcss";
+
+/* 2) クラス生成のスキャン範囲 */
 @source "../../views/**/*.html.erb";
 @source "../../views/**/*.turbo_stream.erb";
 @source "../../helpers/**/*.rb";
 @source "../../javascript/**/*.{js,ts}";
 
-@import "tailwindcss";
+/* 3) 既存CSS（必要なら） */
 @import "../stylesheets/landing.css";
 
-
-/* --- Drawer/Overlay: ここに直書き（必ず出力される） --- */
+/* 4) 追加コンポーネント（drawer / buttons ほか） */
 @layer components {
+  /* Drawer / Overlay */
   #site-drawer{
     position: fixed; top: 0; bottom: 0; left: 0;
     height: 100svh;
@@ -33,9 +36,18 @@
     opacity: 1 !important;
     pointer-events: auto !important;
   }
+
+  /* Buttons（自然なサイズ感） */
+  .btn         { @apply inline-flex items-center justify-center rounded-xl font-semibold shadow-sm transition active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2; }
+  .btn-md      { @apply px-5 py-3 text-base; }     /* だいたい“普通” */
+  .btn-sm      { @apply px-4 py-2.5 text-sm; }     /* もう少し小さめ */
+  .btn-primary { @apply bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-emerald-600; }
+  .btn-danger  { @apply bg-rose-600    text-white hover:bg-rose-700    focus-visible:outline-rose-600; }
+  .btn-wrap    { @apply inline-flex w-auto max-w-[min(320px,80vw)]; } /* はみ出し防止の保険 */
+  .btn-lg { @apply px-6 py-3.5 text-lg; }
 }
 
-/* ユーティリティの出力を確実化（呼び水） */
+/* 5) ユーティリティ呼び水（必要なら） */
 @layer utilities {
   ._safelist_tailwind { @apply fixed inset-y-0 left-0; }
 }
