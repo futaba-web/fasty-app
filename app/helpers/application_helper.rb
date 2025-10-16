@@ -52,7 +52,7 @@ module ApplicationHelper
   end
 
   # 結果バッジ（達成/失敗/進行中）
-  def result_badge(record)
+  def result_badge(record, size: :sm)
     label, palette =
       if record.end_time.blank?
         [ "進行中", "bg-amber-100 text-amber-800 ring-amber-200" ]
@@ -64,12 +64,19 @@ module ApplicationHelper
         [ "-", "bg-gray-100 text-gray-700 ring-gray-200" ]
       end
 
+    size_map = {
+      sm: "text-[11px] px-2 py-0.5",
+      md: "text-xs px-2.5 py-0.5",
+      lg: "text-sm px-3 py-1"
+    }
+
     content_tag(
       :span,
       label,
-      class: "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 #{palette}"
+      class: "inline-flex items-center rounded-full font-semibold ring-1 #{size_map[size] || size_map[:sm]} #{palette}"
     )
   end
+
 
   # 必要最低限のHeroicons相当（インラインSVG）
   def heroicon(name, classes: "w-5 h-5")
@@ -89,5 +96,13 @@ module ApplicationHelper
       end
 
     content_tag(:span, svg.html_safe, class: classes)
+  end
+
+  # 例）10/16(木) 01:14 のように表示（年は非表示）
+  def fmt_md_wday_hm(time)
+    return "-" unless time
+    t = time.in_time_zone
+    wdays = %w[日 月 火 水 木 金 土]
+    t.strftime("%m/%d(#{wdays[t.wday]}) %H:%M")
   end
 end

@@ -1,0 +1,13 @@
+<%# app/views/shared/icons/_comment.svg.erb %>
+<% size = (local_assigns[:size_px] || 20).to_i %>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 16 16"
+  width="<%= size %>"
+  height="<%= size %>"
+  aria-hidden="true"
+  focusable="false"
+  class="<%= local_assigns[:class] %>">
+  <!-- 丸い吹き出し（filled） -->
+  <path fill="currentColor" d="M8 0a8 8 0 1 1 0 16H3.5a.5.5 0 0 0-.354.146L.146 19.146A.5.5 0 0 1 0 18.793V8A8 8 0 0 1 8 0z"/>
+</svg>

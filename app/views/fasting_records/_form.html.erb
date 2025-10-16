@@ -1,15 +1,18 @@
 <%# app/views/fasting_records/_form.html.erb %>
 
+<%# フォームを中央寄せ＆最大幅制限 %>
 <%= form_with model: @record,
               local: true,
-              class: "space-y-4",
+              class: "space-y-4 w-full max-w-xl mx-auto",
               data: (@record.running? ? { controller: "fasting-form" } : {}) do |f| %>
 
   <% if @record.errors.any? %>
     <div class="rounded border border-rose-200 bg-rose-50 p-3 text-rose-700">
       <strong><%= pluralize(@record.errors.count, "error") %> prohibited this record from being saved:</strong>
       <ul class="list-disc ml-5">
-        <% @record.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+        <% @record.errors.full_messages.each do |m| %>
+          <li><%= m %></li>
+        <% end %>
       </ul>
     </div>
   <% end %>
@@ -21,10 +24,11 @@
       <%= f.datetime_local_field :start_time,
             value: datetime_local_value(@record.start_time || Time.current),
             step: 60,
+            class: "border rounded px-2 py-1",
             data: { "fasting-form-target": "start",
                     action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
     <% else %>
-      <div class="py-2"><%= fmt_jp(@record.start_time) %></div>
+      <div class="py-2"><%= fmt_md_wday_hm(@record.start_time) %></div>
     <% end %>
   </div>
 
@@ -37,10 +41,11 @@
             min:   (@record.start_time.present? ? datetime_local_value(@record.start_time) : nil),
             step:  60,
             required: true,
+            class: "border rounded px-2 py-1",
             data: { "fasting-form-target": "end" } %>
       <p class="mt-1 text-xs text-gray-500">※ 保存時に「達成/未達」を自動判定します。</p>
     <% else %>
-      <div class="py-2"><%= fmt_jp(@record.end_time) %></div>
+      <div class="py-2"><%= fmt_md_wday_hm(@record.end_time) %></div>
     <% end %>
   </div>
 
@@ -55,17 +60,40 @@
             data: { "fasting-form-target": "targetHours", action: "change->fasting-form#updateEnd" },
             required: true %>
     <% else %>
-      <div class="py-2">
-        <%= @record.respond_to?(:target_hours_label) ? @record.target_hours_label : "#{@record.target_hours}h" %>
-      </div>
+      <%# 表示専用：必ず「◯◯時間」に統一 %>
+      <% raw =
+           if @record.target_hours.present?
+             @record.target_hours.to_s
+           else
+             (@record.respond_to?(:target_hours_label) ? @record.target_hours_label.to_s : "")
+           end %>
+      <% hours_ja =
+           if raw.ends_with?("時間")
+             raw
+           elsif raw =~ /\A\d+(?:\.\d+)?h\z/i
+             raw.gsub(/h\z/i, "時間")
+           elsif raw =~ /\A\d+(?:\.\d+)?\z/
+             "#{raw}時間"
+           else
+             raw
+           end %>
+      <div class="py-2"><%= hours_ja %></div>
     <% end %>
   </div>
 
   <!-- 結果（表示のみ） -->
   <div>
     <label class="block text-sm text-gray-600">結果</label>
-    <% if @record.end_time.present? %>
-      <div class="py-2"><%= status_badge(@record) %></div>
+    <% if @record.start_time.present? && @record.end_time.present? %>
+      <%# 経過時間（h）を 0.1h 刻みで表示。整数なら 12時間のように整数表示 %>
+      <% duration_h  = ((@record.end_time - @record.start_time) / 3600.0).round(1) %>
+      <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間" %>
+      <div class="py-2 flex items-center gap-2">
+        <span class="text-base font-semibold"><%= hours_label %></span>
+        <%= result_badge(@record, size: :lg) %>
+      </div>
+    <% elsif @record.end_time.present? %>
+      <div class="py-2"><%= result_badge(@record, size: :lg) %></div>
     <% else %>
       <span class="text-sm text-gray-500">終了時刻と目標を入力すると自動判定されます</span>
     <% end %>
@@ -73,9 +101,32 @@
 
   <!-- コメント -->
   <div>
-    <label class="block text-sm text-gray-600">コメント</label>
-    <%= f.text_area :comment, rows: 4, class: "w-full border rounded px-2 py-1" %>
+    <label class="block text-sm text-gray-600 flex items-center gap-1">
+      <%= render "shared/icons/comment", size_px: 16, class: "text-gray-500" %>
+      <span>コメント</span>
+    </label>
+    <%= f.text_area :comment,
+          rows: 2,
+          maxlength: 120,
+          placeholder: "例) 空腹に耐えられた！",
+          class: "w-full max-w-xl border-2 border-gray-400 rounded-md px-3 py-2 leading-snug bg-white
+                  focus:border-gray-500 focus:ring-0 outline-none resize-y" %>
   </div>
 
-  <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white" %>
+  <%# ===== フッター：保存 + 削除（ゴミ箱SVG） ===== %>
+  <div class="mt-4 flex items-center justify-center gap-3">
+    <%= f.submit "保存",
+          class: "px-3 py-2 rounded bg-blue-600 text-white" %>
+
+    <% if @record.persisted? %>
+      <%= link_to fasting_record_path(@record),
+            method: :delete,
+            data: { turbo_method: :delete,
+                    turbo_confirm: "この記録を削除します。よろしいですか？" },
+            class: "inline-flex items-center gap-1 px-3 py-2 rounded border border-rose-300 text-rose-700 hover:bg-rose-50" do %>
+        <%= render "shared/icons/trash", size_px: 18, class: "text-rose-700" %>
+        <span>削除</span>
+      <% end %>
+    <% end %>
+  </div>
 <% end %>
