@@ -60,9 +60,24 @@
             data: { "fasting-form-target": "targetHours", action: "change->fasting-form#updateEnd" },
             required: true %>
     <% else %>
-      <div class="py-2">
-        <%= @record.respond_to?(:target_hours_label) ? @record.target_hours_label : "#{@record.target_hours}h" %>
-      </div>
+      <%# 表示専用：必ず「◯◯時間」に統一 %>
+      <% raw =
+           if @record.target_hours.present?
+             @record.target_hours.to_s
+           else
+             (@record.respond_to?(:target_hours_label) ? @record.target_hours_label.to_s : "")
+           end %>
+      <% hours_ja =
+           if raw.ends_with?("時間")
+             raw
+           elsif raw =~ /\A\d+(?:\.\d+)?h\z/i
+             raw.gsub(/h\z/i, "時間")
+           elsif raw =~ /\A\d+(?:\.\d+)?\z/
+             "#{raw}時間"
+           else
+             raw
+           end %>
+      <div class="py-2"><%= hours_ja %></div>
     <% end %>
   </div>
 
@@ -70,9 +85,9 @@
   <div>
     <label class="block text-sm text-gray-600">結果</label>
     <% if @record.start_time.present? && @record.end_time.present? %>
-      <%# 経過時間（h）を 0.1h 刻みで表示。整数なら 12h のように整数表示 %>
+      <%# 経過時間（h）を 0.1h 刻みで表示。整数なら 12時間のように整数表示 %>
       <% duration_h  = ((@record.end_time - @record.start_time) / 3600.0).round(1) %>
-      <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}h" : "#{duration_h}h" %>
+      <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間" %>
       <div class="py-2 flex items-center gap-2">
         <span class="text-base font-semibold"><%= hours_label %></span>
         <%= status_badge(@record) %>
