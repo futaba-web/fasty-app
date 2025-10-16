@@ -87,7 +87,7 @@
   <!-- コメント -->
   <div>
     <label class="block text-sm text-gray-600 flex items-center gap-1">
-      <span class="text-base leading-none" aria-hidden="true">💬</span>
+      <%= render "shared/icons/comment", size_px: 16, class: "text-gray-500" %>
       <span>コメント</span>
     </label>
     <%= f.text_area :comment,
@@ -97,5 +97,6 @@
           class: "w-full max-w-xl border-2 border-gray-400 rounded-md px-3 py-2 leading-snug bg-white
                   focus:border-gray-500 focus:ring-0 outline-none resize-y" %>
   </div>
+
   <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white block mx-auto" %>
 <% end %>
