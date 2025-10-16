@@ -55,21 +55,21 @@ module ApplicationHelper
   def result_badge(record, size: :sm)
     label, palette =
       if record.end_time.blank?
-        ["進行中", "bg-amber-100 text-amber-800 ring-amber-200"]
+        [ "進行中", "bg-amber-100 text-amber-800 ring-amber-200" ]
       elsif record.success == true
-        ["達成", "bg-emerald-100 text-emerald-800 ring-emerald-200"]
+        [ "達成", "bg-emerald-100 text-emerald-800 ring-emerald-200" ]
       elsif record.success == false
-        ["失敗", "bg-rose-100 text-rose-800 ring-rose-200"]
+        [ "失敗", "bg-rose-100 text-rose-800 ring-rose-200" ]
       else
-        ["-", "bg-gray-100 text-gray-700 ring-gray-200"]
+        [ "-", "bg-gray-100 text-gray-700 ring-gray-200" ]
       end
-      
+
     size_map = {
       sm: "text-[11px] px-2 py-0.5",
       md: "text-xs px-2.5 py-0.5",
       lg: "text-sm px-3 py-1"
     }
-    
+
     content_tag(
       :span,
       label,
@@ -102,7 +102,7 @@ module ApplicationHelper
   def fmt_md_wday_hm(time)
     return "-" unless time
     t = time.in_time_zone
-    wdays = %w(日 月 火 水 木 金 土)
+    wdays = %w[日 月 火 水 木 金 土]
     t.strftime("%m/%d(#{wdays[t.wday]}) %H:%M")
   end
 end
