@@ -113,5 +113,20 @@
                   focus:border-gray-500 focus:ring-0 outline-none resize-y" %>
   </div>
 
-  <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white block mx-auto" %>
+  <%# ===== フッター：保存 + 削除（ゴミ箱SVG） ===== %>
+  <div class="mt-4 flex items-center justify-center gap-3">
+    <%= f.submit "保存",
+          class: "px-3 py-2 rounded bg-blue-600 text-white" %>
+
+    <% if @record.persisted? %>
+      <%= link_to fasting_record_path(@record),
+            method: :delete,
+            data: { turbo_method: :delete,
+                    turbo_confirm: "この記録を削除します。よろしいですか？" },
+            class: "inline-flex items-center gap-1 px-3 py-2 rounded border border-rose-300 text-rose-700 hover:bg-rose-50" do %>
+        <%= render "shared/icons/trash", size_px: 18, class: "text-rose-700" %>
+        <span>削除</span>
+      <% end %>
+    <% end %>
+  </div>
 <% end %>
