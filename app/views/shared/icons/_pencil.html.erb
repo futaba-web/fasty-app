@@ -1,0 +1,9 @@
+<%# usage: render "shared/icons/pencil", size_px: 18, class: "text-gray-500" %>
+<% px = (local_assigns[:size_px] || 18).to_i %>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="<%= px %>" height="<%= px %>"
+     viewBox="0 0 24 24" fill="currentColor"
+     class="<%= local_assigns[:class] %>">
+  <path d="M21 7.5 16.5 3 6 13.5V18h4.5L21 7.5z"/>
+  <path d="M3 21h18v-2H3z"/>
+</svg>
