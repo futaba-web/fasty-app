@@ -31,7 +31,7 @@
       <%= link_to "マイページからファスティングを開始", mypage_path, class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
     </div>
   <% else %>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-[minmax(8rem,auto)]">
       <%= render partial: "record", collection: @records, as: :record %>
     </div>
 

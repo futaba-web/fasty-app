@@ -1,44 +1,68 @@
-<%# ローカル変数: record %>
-<%= link_to fasting_record_path(record),
-            class: "block rounded-xl ring-1 ring-gray-200 bg-white/95 p-4 shadow-sm hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-emerald-400",
-            "aria-label": "#{list_date(record.date_for_list)} / 所要時間 #{record.duration_text}" do %>
-  <div class="space-y-2">
-    <!-- 日付 -->
-    <div class="flex items-center gap-2 text-sm text-gray-800 font-semibold">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
-           style="width:20px;height:20px;display:inline-block;vertical-align:middle;color:#111827;flex:0 0 auto;">
-        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
-              d="M6 2a1 1 0 0 0-1 1v1H4a2 2 0 0 0-2 2v2h16V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H7V3a1 1 0 0 0-1-1zM2 9h16v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"/>
-      </svg>
-      <time datetime="<%= record.date_for_list.to_date.iso8601 %>">
-        <%= list_date(record.date_for_list) %>
-      </time>
-    </div>
+<%# app/views/fasting_records/_record.html.erb %>
+<div class="relative w-full h-full">
+  <!-- 右上のアクション：編集 / 削除（カードの上に重ねる） -->
+  <div class="pointer-events-none absolute z-20 flex gap-2" style="right:8px; top:8px;">
+    <!-- 編集 -->
+    <%= link_to edit_fasting_record_path(record),
+          class: "pointer-events-auto inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/95 ring-1 ring-gray-300 text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400",
+          title: "編集する", "aria-label": "編集する" do %>
+      <%= render "shared/icons/pencil", size_px: 18, class: "text-current" %>
+    <% end %>
 
-    <!-- 所要時間 -->
-    <div class="flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
-           style="width:18px;height:18px;display:inline-block;vertical-align:middle;color:#111827;flex:0 0 auto;" fill="currentColor">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm.75-12a.75.75 0 0 0-1.5 0v3.69l-2.03 2.03a.75.75 0 1 0 1.06 1.06l2.31-2.31a.75.75 0 0 0 .16-.47V6z"/>
-      </svg>
-      <span class="font-bold text-gray-900 whitespace-nowrap"><%= record.duration_text %></span>
-      <% if record.running? %>
-        <span class="ml-1 text-xs text-gray-500 whitespace-nowrap">（計測中）</span>
-      <% end %>
-    </div>
-
-    <!-- コメント（吹き出し + 2行省略） -->
-    <% snippet_text = strip_tags(comment_snippet(record).to_s).sub(/\A\s*💬\s*/, '') %>
-    <% if snippet_text.present? %>
-      <div class="flex items-start gap-2 text-sm text-gray-600">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
-             style="width:16px;height:16px;display:inline-block;vertical-align:middle;color:#6B7280;flex:0 0 auto;margin-top:2px;">
-          <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
-                d="M18 10c0 4-3.582 7-8 7a8.96 8.96 0 0 1-3.5-.7L2 17l1.7-3.4A7.964 7.964 0 0 1 2 10c0-4 3.582-7 8-7s8 3 8 7z"/>
-        </svg>
-        <p class="record-comment"><%= snippet_text %></p>
-      </div>
+    <!-- 削除 -->
+    <%= link_to fasting_record_path(record),
+          method: :delete,
+          data: { turbo_method: :delete,
+                  turbo_confirm: "この記録を削除します。よろしいですか？" },
+          class: "pointer-events-auto inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/95 ring-1 ring-rose-300 text-rose-600 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400",
+          title: "削除する", "aria-label": "削除する" do %>
+      <%= render "shared/icons/trash", size_px: 18, class: "text-current" %>
     <% end %>
   </div>
-<% end %>
+
+  <!-- カード本体（全体がリンク） -->
+  <%= link_to fasting_record_path(record),
+        class: "block h-full min-h-32 rounded-xl ring-1 ring-gray-200 bg-white/95 p-4 shadow-sm hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-emerald-400 flex flex-col",
+        style: "min-height:8rem;",
+        "aria-label": "#{list_date(record.date_for_list)} / 所要時間 #{record.duration_text}" do %>
+    <div class="space-y-2 flex-1">
+      <!-- 日付 -->
+      <div class="flex items-center gap-2 text-sm text-gray-800 font-semibold">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
+             style="width:20px;height:20px;display:inline-block;vertical-align:middle;color:#111827;flex:0 0 auto;">
+          <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
+                d="M6 2a1 1 0 0 0-1 1v1H4a2 2 0 0 0-2 2v2h16V6a2 2 0 0 0-2-2h-1V3a1 1 0 1 0-2 0v1H7V3a1 1 0 0 0-1-1zM2 9h16v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9z"/>
+        </svg>
+        <time datetime="<%= record.date_for_list.to_date.iso8601 %>">
+          <%= list_date(record.date_for_list) %>
+        </time>
+      </div>
+
+      <!-- 所要時間 -->
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
+             style="width:18px;height:18px;display:inline-block;vertical-align:middle;color:#111827;flex:0 0 auto;" fill="currentColor">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm.75-12a.75.75 0 0 0-1.5 0v3.69l-2.03 2.03a.75.75 0 1 0 1.06 1.06l2.31-2.31a.75.75 0 0 0 .16-.47V6z"/>
+        </svg>
+        <span class="font-bold text-gray-900 whitespace-nowrap"><%= record.duration_text %></span>
+        <% if record.running? %>
+          <span class="ml-1 text-xs text-gray-500 whitespace-nowrap">（計測中）</span>
+        <% end %>
+      </div>
+
+      <!-- コメント（吹き出し + 2行省略） -->
+      <% snippet_text = strip_tags(comment_snippet(record).to_s).sub(/\A\s*💬\s*/, '') %>
+      <% if snippet_text.present? %>
+        <div class="flex items-start gap-2 text-sm text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" aria-hidden="true" focusable="false"
+               style="width:16px;height:16px;display:inline-block;vertical-align:middle;color:#6B7280;flex:0 0 auto;margin-top:2px;">
+            <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
+                  d="M18 10c0 4-3.582 7-8 7a8.96 8.96 0 0 1-3.5-.7L2 17l1.7-3.4A7.964 7.964 0 0 1 2 10c0-4 3.582-7 8-7s8 3 8 7z"/>
+          </svg>
+          <p class="record-comment"><%= snippet_text %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
