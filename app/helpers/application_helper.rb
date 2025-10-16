@@ -90,4 +90,12 @@ module ApplicationHelper
 
     content_tag(:span, svg.html_safe, class: classes)
   end
+
+  # 例）10/16(木) 01:14 のように表示（年は非表示）
+  def fmt_md_wday_hm(time)
+    return "-" unless time
+    t = time.in_time_zone
+    wdays = %w(日 月 火 水 木 金 土)
+    t.strftime("%m/%d(#{wdays[t.wday]}) %H:%M")
+  end
 end

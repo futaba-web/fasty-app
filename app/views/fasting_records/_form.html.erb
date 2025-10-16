@@ -28,7 +28,7 @@
             data: { "fasting-form-target": "start",
                     action: "input->fasting-form#updateEnd change->fasting-form#updateEnd" } %>
     <% else %>
-      <div class="py-2"><%= fmt_jp(@record.start_time) %></div>
+      <div class="py-2"><%= fmt_md_wday_hm(@record.start_time) %></div>
     <% end %>
   </div>
 
@@ -45,7 +45,7 @@
             data: { "fasting-form-target": "end" } %>
       <p class="mt-1 text-xs text-gray-500">※ 保存時に「達成/未達」を自動判定します。</p>
     <% else %>
-      <div class="py-2"><%= fmt_jp(@record.end_time) %></div>
+      <div class="py-2"><%= fmt_md_wday_hm(@record.end_time) %></div>
     <% end %>
   </div>
 
