@@ -52,24 +52,31 @@ module ApplicationHelper
   end
 
   # 結果バッジ（達成/失敗/進行中）
-  def result_badge(record)
+  def result_badge(record, size: :sm)
     label, palette =
       if record.end_time.blank?
-        [ "進行中", "bg-amber-100 text-amber-800 ring-amber-200" ]
+        ["進行中", "bg-amber-100 text-amber-800 ring-amber-200"]
       elsif record.success == true
-        [ "達成", "bg-emerald-100 text-emerald-800 ring-emerald-200" ]
+        ["達成", "bg-emerald-100 text-emerald-800 ring-emerald-200"]
       elsif record.success == false
-        [ "失敗", "bg-rose-100 text-rose-800 ring-rose-200" ]
+        ["失敗", "bg-rose-100 text-rose-800 ring-rose-200"]
       else
-        [ "-", "bg-gray-100 text-gray-700 ring-gray-200" ]
+        ["-", "bg-gray-100 text-gray-700 ring-gray-200"]
       end
-
+      
+    size_map = {
+      sm: "text-[11px] px-2 py-0.5",
+      md: "text-xs px-2.5 py-0.5",
+      lg: "text-sm px-3 py-1"
+    }
+    
     content_tag(
       :span,
       label,
-      class: "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 #{palette}"
+      class: "inline-flex items-center rounded-full font-semibold ring-1 #{size_map[size] || size_map[:sm]} #{palette}"
     )
   end
+
 
   # 必要最低限のHeroicons相当（インラインSVG）
   def heroicon(name, classes: "w-5 h-5")

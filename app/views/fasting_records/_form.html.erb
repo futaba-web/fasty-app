@@ -90,10 +90,10 @@
       <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間" %>
       <div class="py-2 flex items-center gap-2">
         <span class="text-base font-semibold"><%= hours_label %></span>
-        <%= status_badge(@record) %>
+        <%= result_badge(@record, size: :lg) %>
       </div>
     <% elsif @record.end_time.present? %>
-      <div class="py-2"><%= status_badge(@record) %></div>
+      <div class="py-2"><%= result_badge(@record, size: :lg) %></div>
     <% else %>
       <span class="text-sm text-gray-500">終了時刻と目標を入力すると自動判定されます</span>
     <% end %>
