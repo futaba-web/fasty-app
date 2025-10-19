@@ -248,3 +248,156 @@ body.landing-root .hero__cta .btn-hero--login:hover{
   box-shadow: 0 12px 32px rgba(43,212,195,.20);
   transform: translateY(-1px);
 }
+/* ====== 記録詳細ページ ====== */
+
+/* 実測値をここで一元管理（必要なら既存値に合わせて変更） */
+:root{
+  --vh-header: 64px;      /* ヘッダー高さ */
+  --vh-tabbar: 6rem;      /* 下タブバー高さ（約96px） */
+  --record-gap: 1.25rem;  /* 各行の上下間隔（Tailwind mt-5 相当） */
+}
+
+/* ページ全体：ヘッダー / 本文 / シェア の3行グリッド */
+.record-page{
+  min-height: calc(100dvh - var(--vh-header) - var(--vh-tabbar));
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  row-gap: 1.25rem;                           /* ヘッダーと本文、本文とシェアの間隔 */
+  padding: 0 1rem;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* 100dvh 非対応ブラウザのゆるいフォールバック */
+@supports not (height: 100dvh){
+  .record-page{ min-height: calc(100vh - var(--vh-header) - var(--vh-tabbar)); }
+}
+
+/* ===== ヘッダー：タイトル＋右のアイコン ===== */
+.record-header{
+  display: flex;
+  align-items: center;          /* タイトルとアイコンを縦方向に中央揃え */
+  justify-content: center;      /* まとまりを中央へ */
+  gap: .5rem;
+  margin-top: 1rem;
+}
+
+.record-title{
+  margin: 0;                    /* ずれの原因をリセット */
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(1.125rem, 1vw + 1rem, 1.5rem);
+  line-height: 1.2;
+}
+
+/* タイトル右のツールバー */
+.record-toolbar{
+  display: inline-flex;
+  gap: .5rem;
+}
+
+/* アイコンボタン（編集・削除） */
+.icon-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;              /* 30px */
+  height: 1.875rem;
+  border-radius: .5rem;
+  background: #f3f4f6;          /* gray-100/200 */
+  color: #374151;               /* gray-700 */
+  text-decoration: none;
+  transition: background .15s ease, transform .05s ease;
+}
+.icon-btn:hover{ background:#e5e7eb; }
+.icon-btn:active{ transform: translateY(1px); }
+
+/* 危険操作(削除)だけ配色差し替え */
+.icon-btn.icon-btn--danger{ background:#fee2e2; }   /* rose-100 */
+.icon-btn.icon-btn--danger:hover{ background:#fecaca; } /* rose-200 */
+
+/* ====== 記録詳細ページ（詳細ブロックだけ上寄せ + 各項目 mt-5） ====== */
+
+/* 一元管理用の変数（mt-5 相当の行間） */
+:root{
+  --record-gap: 1.25rem;   /* 20px 相当（Tailwind mt-5） */
+}
+
+/* --- 本文：中央に置くレイヤー（x は中央のまま） --- */
+.record-center{
+  display: grid;
+  place-content: center;     /* 縦横ど真ん中に配置（x はこれで中央維持） */
+  min-height: 0;
+}
+
+/* 詳細の束だけ、y 方向に少し上へ（タイトル/シェアは動かさない） */
+.record-body{
+  transform: translateY(-1rem);  /* 12px 上へ。好みで -0.5rem / -1rem 等に */
+  will-change: transform;
+  margin-bottom: .25rem;            /* 近づけすぎ防止の微調整（任意） */
+}
+
+/* 画面広めではほんの少しだけ追加で上へ（任意） */
+@media (min-width: 640px){
+  .record-body{ transform: translateY(-1rem); }  /* 16px */
+}
+
+/* 中身サイズの箱は中央に。テキストは左揃え */
+.record-box{
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin-inline: auto;       /* x 中央 */
+  text-align: left;
+}
+
+/* ▼ 各項目の縦余白（mt-5 相当）。詳細行のみを対象にする */
+.record-body > .record-line + .record-line{
+  margin-top: var(--record-gap);
+}
+
+/* 行レイアウト共通 */
+.record-line{
+  display: flex;
+  align-items: baseline;
+  gap: .75rem;
+}
+
+/* ラベル/値の色など */
+.record-label{ color:#64748b; flex:0 0 auto; }   /* slate-500 */
+.record-value{ color:#111827; }                  /* gray-900 */
+
+/* コメントの吹き出し */
+.record-comment{
+  display: inline-block;
+  border: 1px solid #e5e7eb;                      /* gray-200 */
+  background: #f9fafb;                            /* gray-50 */
+  padding: .5rem .75rem;
+  border-radius: .5rem;
+  color: #111827;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- 下部：結果をシェア（位置はキープ） --- */
+.record-share{
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* X ボタン（ピル型） */
+a.btn-x{
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .625rem 1.25rem;
+  border-radius: 9999px;
+  background: #000;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgb(0 0 0 / .15);
+  text-decoration: none;
+  transition: background .2s ease, opacity .2s ease;
+}
+a.btn-x:hover{ background:#222; opacity:.95; }
+a.btn-x svg{ width:18px; height:18px; }

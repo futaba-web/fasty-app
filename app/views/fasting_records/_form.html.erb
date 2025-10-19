@@ -1,6 +1,5 @@
 <%# app/views/fasting_records/_form.html.erb %>
 
-<%# フォームを中央寄せ＆最大幅制限 %>
 <%= form_with model: @record,
               local: true,
               class: "space-y-4 w-full max-w-xl mx-auto",
@@ -54,30 +53,21 @@
     <label class="block text-sm text-gray-600">目標</label>
     <% if @record.running? %>
       <%= f.select :target_hours,
-            options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }, @record.target_hours),
+            options_for_select(
+              FastingRecord::TARGET_HOURS_CHOICES.map { |h| [hours_ja(h), h] },
+              @record.target_hours
+            ),
             { include_blank: "選択してください" },
             class: "border rounded px-2 py-1",
             data: { "fasting-form-target": "targetHours", action: "change->fasting-form#updateEnd" },
             required: true %>
     <% else %>
-      <%# 表示専用：必ず「◯◯時間」に統一 %>
-      <% raw =
-           if @record.target_hours.present?
-             @record.target_hours.to_s
-           else
-             (@record.respond_to?(:target_hours_label) ? @record.target_hours_label.to_s : "")
-           end %>
-      <% hours_ja =
-           if raw.ends_with?("時間")
-             raw
-           elsif raw =~ /\A\d+(?:\.\d+)?h\z/i
-             raw.gsub(/h\z/i, "時間")
-           elsif raw =~ /\A\d+(?:\.\d+)?\z/
-             "#{raw}時間"
-           else
-             raw
-           end %>
-      <div class="py-2"><%= hours_ja %></div>
+      <div class="py-2">
+        <%= hours_ja(
+              @record.target_hours.presence ||
+              (@record.respond_to?(:target_hours_label) ? @record.target_hours_label : nil)
+            ) %>
+      </div>
     <% end %>
   </div>
 
@@ -85,7 +75,6 @@
   <div>
     <label class="block text-sm text-gray-600">結果</label>
     <% if @record.start_time.present? && @record.end_time.present? %>
-      <%# 経過時間（h）を 0.1h 刻みで表示。整数なら 12時間のように整数表示 %>
       <% duration_h  = ((@record.end_time - @record.start_time) / 3600.0).round(1) %>
       <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間" %>
       <div class="py-2 flex items-center gap-2">
@@ -113,10 +102,9 @@
                   focus:border-gray-500 focus:ring-0 outline-none resize-y" %>
   </div>
 
-  <%# ===== フッター：保存 + 削除（ゴミ箱SVG） ===== %>
+  <!-- フッター -->
   <div class="mt-4 flex items-center justify-center gap-3">
-    <%= f.submit "保存",
-          class: "px-3 py-2 rounded bg-blue-600 text-white" %>
+    <%= f.submit "保存", class: "px-3 py-2 rounded bg-blue-600 text-white" %>
 
     <% if @record.persisted? %>
       <%= link_to fasting_record_path(@record),
