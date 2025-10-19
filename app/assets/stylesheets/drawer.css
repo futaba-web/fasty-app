@@ -87,6 +87,28 @@ main > :first-child { margin-top: 0 !important; }
 /* 追加の強制（親が footer のときも確実に効かせたい場合） */
 footer .footer-legal-thin .legal-wrap{ justify-content: space-between !important; }
 
+/* ================================================================== */
+/* === Header / Footer: フォールバック（本番で色が消えても見える） === */
+/*  Tailwind の bg-brand-header / text-white がパージされても表示保証  */
+header.bg-brand-header,
+footer.bg-brand-header{
+  background-color: #bdb6b2 !important;  /* ブランドの薄グレー */
+  color: #fff !important;
+}
+
+/* ヘッダー内の文字やリンクも白にして可読性を担保 */
+header.bg-brand-header a,
+header.bg-brand-header nav,
+header.bg-brand-header .btn,
+header.bg-brand-header .flex{
+  color: #fff !important;
+}
+
+/* ログイン前の細い法務フッターのリンク色も白で固定（保険） */
+footer.bg-brand-header .footer-legal-thin .legal-links a{
+  color: #fff !important;
+}
+
 /* === Header: 全ページで“より控えめ”にする ====================== */
 header.bg-brand-header > div{
   padding-block: .375rem; /* 6px */
