@@ -2,7 +2,10 @@
 class FastingRecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_scope
-  before_action :set_record, only: %i[show edit update destroy finish]
+  before_action :set_record, only: %i[
+    show edit update destroy finish
+    edit_comment update_comment
+  ]
 
   # 記録一覧ページ（フィルタ付き）
   def index
@@ -74,11 +77,9 @@ class FastingRecordsController < ApplicationController
 
     # 18h 以上なら追加確認（/health-notice/long）
     if long_notice_required?(hours)
-      # まだ確認していない → 長時間注意画面へ
       if params[:confirmed_long_notice] != "1"
         redirect_to long_health_notice_path(hours: hours) and return
       end
-      # 確認フラグはあるが、同意チェックがない場合（念のためのサーバー側バリデーション）
       if params[:agree_long] != "1"
         redirect_to long_health_notice_path(hours: hours), alert: "同意チェックが必要です。" and return
       end
@@ -107,6 +108,22 @@ class FastingRecordsController < ApplicationController
                 notice: "ファスティングを終了しました。今の気持ちをコメントしましょう"
   end
 
+  # -----------------------------
+  # コメント専用: 編集 / 更新
+  # -----------------------------
+  def edit_comment
+    # 表示のみ（フォームは comment フィールドだけ）
+  end
+
+  def update_comment
+    if @record.update(comment_params)
+      redirect_to @record, notice: "コメントを更新しました"
+    else
+      flash.now[:alert] = "コメントを更新できませんでした"
+      render :edit_comment, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     @record.destroy!
     redirect_to fasting_records_path, notice: "記録を削除しました"
@@ -125,6 +142,11 @@ class FastingRecordsController < ApplicationController
   # create/update 共通 Strong Params
   def fasting_record_params
     params.require(:fasting_record).permit(:start_time, :end_time, :target_hours, :comment)
+  end
+
+  # コメント専用 Strong Params（user_id 等は触らない）
+  def comment_params
+    params.require(:fasting_record).permit(:comment)
   end
 
   # 旧→新フィルタキー正規化

@@ -1,16 +1,20 @@
+# app/models/fasting_record.rb
 class FastingRecord < ApplicationRecord
   belongs_to :user, optional: true
 
   TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
   GRACE_SECONDS = 30 # 判定の猶予（必要に応じて 0〜60 で調整）
 
-  scope :running,  -> { where(end_time: nil) }
-  scope :finished, -> { where.not(end_time: nil) }
-  scope :achieved, -> { finished.where(success: true) }
+  scope :running,    -> { where(end_time: nil) }
+  scope :finished,   -> { where.not(end_time: nil) }
+  scope :achieved,   -> { finished.where(success: true) }
   scope :unachieved, -> { finished.where(success: [ false, nil ]) }
 
-  # 同一ユーザーで「進行中（end_time: nil）」が複数できないように
-  validates :user_id, uniqueness: { conditions: -> { where(end_time: nil) } }
+  # 同一ユーザーで「進行中（end_time: nil）」が複数できないように。
+  # ※ このレコード自身が進行中のときだけ検証する（終了済みのコメント更新で弾かれないように）
+  validates :user_id,
+            uniqueness: { conditions: -> { where(end_time: nil) } },
+            if: :running?
 
   validates :start_time, presence: true
   validates :target_hours, presence: true, inclusion: { in: TARGET_HOURS_CHOICES }
