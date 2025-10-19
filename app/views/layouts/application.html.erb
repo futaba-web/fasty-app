@@ -8,18 +8,16 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <!-- CSS: Tailwind → application → drawer（後ろほど優先される） -->
-    <%= stylesheet_link_tag "tailwind",    "data-turbo-track": "reload" %>
+    <%# CSS は application.css（manifest）だけを読み込む %>
+    <%# application.css 側で `*= require tailwind`, `*= require landing`, `*= require drawer` の順に指定 %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "drawer",      "data-turbo-track": "reload" %>
 
-    <!-- ページ個別の追加タグがあればここに -->
     <%= yield :head %>
 
-    <!-- JS(importmap): これだけでOK（application も読み込まれる） -->
+    <%# importmap を使う場合はこれだけでOK %>
     <%= javascript_importmap_tags %>
 
-    <!-- PWA/アイコン -->
+    <%# PWA / Icons %>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -30,20 +28,25 @@
 
   <body
     data-controller="menu"
-    class="text-gray-900 min-h-dvh flex flex-col <%= 'landing-root' if landing %>"
+    class="min-h-dvh flex flex-col text-gray-900 <%= 'landing-root' if landing %>"
     style="<%= "--hero-bg: url('#{asset_path('landing/hero.jpg')}')" if landing %>">
 
     <%= render "shared/header" %>
 
+    <%# ログイン後のみドロワー %>
     <%= render("shared/menu_drawer") if user_signed_in? %>
 
-    <main class="grow mt-0 flow-root">
+    <%# 画面高に追従するメイン。grow で余白を占有し、footer を下に押す %>
+    <main class="grow">
       <div class="mx-auto max-w-5xl px-4">
         <%= render "shared/flash" %>
       </div>
       <%= yield %>
     </main>
 
-    <%= render "shared/footer" %>
+    <%# mt-auto でフッターを最下部へ %>
+    <footer class="mt-auto">
+      <%= render "shared/footer" %>
+    </footer>
   </body>
 </html>
