@@ -127,7 +127,7 @@ module ApplicationHelper
     parts << "開始: #{fmt_md_wday_hm(record.start_time)}" if record.start_time.present?
     parts << "終了: #{fmt_md_wday_hm(record.end_time)}"   if record.end_time.present?
     parts << "目標: #{hours_ja(record.target_hours)}"     if record.target_hours.present?
-    
+
     if record.start_time.present? && record.end_time.present?
       duration_h  = ((record.end_time - record.start_time) / 3600.0).round(1)
       hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間"
@@ -139,12 +139,12 @@ module ApplicationHelper
         end
       parts << "結果: #{hours_label} #{result_txt}"
     end
-    
+
     parts << "コメント: #{record.comment.to_s.strip}" if record.comment.present?
-    
+
     text = parts.join(" / ")
     url  = fasting_record_url(record)
-    
+
     "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(text)}&url=#{ERB::Util.url_encode(url)}"
   end
 
@@ -156,7 +156,7 @@ module ApplicationHelper
             target: "_blank",
             rel: "noopener",
             data: { turbo: false } do
-      safe_join([svg.html_safe, content_tag(:span, "結果をシェア")])
+      safe_join([ svg.html_safe, content_tag(:span, "結果をシェア") ])
     end
   end
 end
