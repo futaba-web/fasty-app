@@ -27,7 +27,7 @@
   <%# ===== 背景画像の切り替えロジック ===== %>
   <% landing    = (controller_path == "pages" && action_name == "home") %>
   <% default_bg = asset_path("landing/hero.jpg") %>        <%# 未ログイン（トップ用） %>
-  <% authed_bg  = asset_path("landing/hero-authed.jpg") %> <%# ログイン後用  %>
+  <% authed_bg  = asset_path("landing/hero-authed.png") %> <%# ログイン後用  %>
 
   <%# ページ側で content_for(:hero_bg_url) があれば最優先 %>
   <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>
