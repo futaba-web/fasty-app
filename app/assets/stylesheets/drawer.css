@@ -87,16 +87,19 @@ main > :first-child { margin-top: 0 !important; }
 /* 追加の強制（親が footer のときも確実に効かせたい場合） */
 footer .footer-legal-thin .legal-wrap{ justify-content: space-between !important; }
 
-/* ================================================================== */
-/* === Header / Footer: フォールバック（本番で色が消えても見える） === */
-/*  Tailwind の bg-brand-header / text-white がパージされても表示保証  */
+/* ==================================================================
+   Header / Footer フォールバック一式（本番で Tailwind が効かなくても崩さない）
+   - 置き場所: drawer.css の末尾付近（他ルールより後）を推奨
+   ================================================================== */
+
+/* 色の保険：Tailwind の bg-brand-header / text-white がパージされても見えるように */
 header.bg-brand-header,
 footer.bg-brand-header{
-  background-color: #bdb6b2 !important;  /* ブランドの薄グレー */
+  background-color: #bdb6b2 !important;   /* ブランド薄グレー */
   color: #fff !important;
 }
 
-/* ヘッダー内の文字やリンクも白にして可読性を担保 */
+/* ヘッダー内のテキスト/リンク/ボタン等は白を強制（可読性担保）*/
 header.bg-brand-header a,
 header.bg-brand-header nav,
 header.bg-brand-header .btn,
@@ -104,29 +107,65 @@ header.bg-brand-header .flex{
   color: #fff !important;
 }
 
-/* ログイン前の細い法務フッターのリンク色も白で固定（保険） */
+/* ログイン前の法務フッターのリンク色も白で固定（保険）*/
 footer.bg-brand-header .footer-legal-thin .legal-links a{
   color: #fff !important;
 }
 
-/* === Header: 全ページで“より控えめ”にする ====================== */
+/* ==================================================================
+   Header: レイアウトの保険（常に横並び・右寄せ）
+   ================================================================== */
+
+/* ヘッダーコンテナ（<header><div>）を横並び＆中央揃えに */
 header.bg-brand-header > div{
-  padding-block: .375rem; /* 6px */
-  min-height: 44px;
-}
-@media (min-width: 640px){
-  header.bg-brand-header > div{ padding-block: .5rem; min-height: 44px; }
+  display: flex !important;             /* 横並びを強制 */
+  align-items: center !important;        /* 縦中央 */
+  gap: .75rem;
+
+  /* 高さ/余白（Tailwind の h-16 / px-4, md:px-8 相当の保険）*/
+  height: 64px;
+  min-height: 64px;
+  padding-inline: 16px;
 }
 @media (min-width: 768px){
-  header.bg-brand-header > div{ padding-block: .5rem; min-height: 48px; }
+  header.bg-brand-header > div{ padding-inline: 32px; }
 }
 
-/* アイテムの縦位置を中央に（保険） */
-header.bg-brand-header nav,
-header.bg-brand-header a,
-header.bg-brand-header .btn,
-header.bg-brand-header .flex { align-items: center; }
+/* 右側ナビを必ず右端へ＆横並び */
+header.bg-brand-header nav{
+  margin-left: auto !important;          /* 右端へ押し出す */
+  display: flex !important;
+  align-items: center !important;
+  gap: 1.25rem;                           /* 20px */
+}
 
+/* リンクの基本挙動（下線は hover 時だけ）*/
+header.bg-brand-header a{
+  text-decoration: none;
+}
+header.bg-brand-header a:hover{
+  text-decoration: underline;
+}
+
+/* （保険）ヘッダー内のアイテムは縦中央に */
+header.bg-brand-header .btn,
+header.bg-brand-header .flex{
+  align-items: center;
+}
+
+/* ==================================================================
+   既存の “控えめヘッダー” 調整（高さだけ残す）
+   ※ 上のレイアウト保険より前に書かれている場合を想定して
+   ================================================================== */
+header.bg-brand-header > div{
+  padding-block: .375rem; /* 6px */
+}
+@media (min-width: 640px){
+  header.bg-brand-header > div{ padding-block: .5rem; }
+}
+@media (min-width: 768px){
+  header.bg-brand-header > div{ padding-block: .5rem; }
+}
 /* ==== Bottom App Nav（ログイン後） ===================== */
 .footer-app__nav{
   display: grid;
