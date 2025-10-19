@@ -8,23 +8,16 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# CSS は application.css 1本だけ（manifestで順序管理）
-        application.css 側の順序:
-          *= require tailwind
-          *= require landing
-          *= require drawer
-          *= require layout
-          *= require_self
-    %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%# --- CSS: Tailwind + application（@importで自作CSSを束ねる） --- %>
+    <%= stylesheet_link_tag "tailwind", "application", "data-turbo-track": "reload" %>
 
-    <%# 画面個別で <head> に追記したい場合は content_for :head を使う %>
+    <%# 画面個別で <head> 追記したい時に使う %>
     <%= yield :head %>
 
-    <%# importmap(JS) %>
+    <%# --- JS (importmap) --- %>
     <%= javascript_importmap_tags %>
 
-    <%# PWA / Icons %>
+    <%# --- PWA / Icons --- %>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -32,11 +25,11 @@
   </head>
 
   <%# ===== 背景画像の切替ロジック ===== %>
-  <% landing       = (controller_path == "pages" && action_name == "home") %>      <%# 未ログインのトップ %>
-  <% default_bg    = asset_path("landing/hero.jpg") %>                               <%# 未ログイン用 %>
-  <% authed_bg     = asset_path("landing/hero-authed.png") %>                        <%# ログイン後用 %>
-  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>       <%# ページ個別指定があれば最優先 %>
-  <% auth_page     = (respond_to?(:devise_controller?) && devise_controller?) %>     <%# Devise 画面 %>
+  <% landing       = (controller_path == "pages" && action_name == "home") %>  <%# 未ログインのトップ %>
+  <% default_bg    = asset_path("landing/hero.jpg") %>                          <%# 未ログイン用 %>
+  <% authed_bg     = asset_path("landing/hero-authed.png") %>                   <%# ログイン後用 %>
+  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>  <%# 個別指定があれば最優先 %>
+  <% auth_page     = (respond_to?(:devise_controller?) && devise_controller?) %><%# Devise 画面 %>
 
   <% show_hero = landing || auth_page || user_signed_in? || page_override.present? %>
   <% bg_url    = page_override || (user_signed_in? ? authed_bg : default_bg) %>
