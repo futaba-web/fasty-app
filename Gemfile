@@ -13,7 +13,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "sprockets-rails"      # 必要なら使用
 gem "tailwindcss-rails"    # Node不要
-gem "dartsass-rails"       # Node不要（Sassビルド）
+# gem "dartsass-rails"  # not needed (no SCSS)
 
 # --- App libs ---
 gem "kaminari"
