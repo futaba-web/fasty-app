@@ -8,13 +8,20 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# CSS は application.css（manifest）だけを読み込む %>
-    <%# application.css 側で `*= require tailwind`, `*= require landing`, `*= require drawer` の順に指定 %>
+    <%# CSS は application.css 1本だけ（manifestで順序管理）
+        application.css 側の順序:
+          *= require tailwind
+          *= require landing
+          *= require drawer
+          *= require layout
+          *= require_self
+    %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
+    <%# 画面個別で <head> に追記したい場合は content_for :head を使う %>
     <%= yield :head %>
 
-    <%# importmap を使う場合はこれだけでOK %>
+    <%# importmap(JS) %>
     <%= javascript_importmap_tags %>
 
     <%# PWA / Icons %>
@@ -24,19 +31,26 @@
     <link rel="apple-touch-icon" href="/icon.png">
   </head>
 
-  <% landing = (controller_path == "pages" && action_name == "home") %>
+  <%# ===== 背景画像の切替ロジック ===== %>
+  <% landing       = (controller_path == "pages" && action_name == "home") %>      <%# 未ログインのトップ %>
+  <% default_bg    = asset_path("landing/hero.jpg") %>                               <%# 未ログイン用 %>
+  <% authed_bg     = asset_path("landing/hero-authed.png") %>                        <%# ログイン後用 %>
+  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>       <%# ページ個別指定があれば最優先 %>
+  <% auth_page     = (respond_to?(:devise_controller?) && devise_controller?) %>     <%# Devise 画面 %>
+
+  <% show_hero = landing || auth_page || user_signed_in? || page_override.present? %>
+  <% bg_url    = page_override || (user_signed_in? ? authed_bg : default_bg) %>
 
   <body
     data-controller="menu"
-    class="min-h-dvh flex flex-col text-gray-900 <%= 'landing-root' if landing %>"
-    style="<%= "--hero-bg: url('#{asset_path('landing/hero.jpg')}')" if landing %>">
+    class="min-h-dvh flex flex-col text-gray-900<%= landing ? ' landing-root' : '' %><%= show_hero ? ' hero-bg' : '' %>"
+    style="<%= show_hero ? "--hero-bg: url('#{bg_url}')" : '' %>">
 
     <%= render "shared/header" %>
 
     <%# ログイン後のみドロワー %>
     <%= render("shared/menu_drawer") if user_signed_in? %>
 
-    <%# 画面高に追従するメイン。grow で余白を占有し、footer を下に押す %>
     <main class="grow">
       <div class="mx-auto max-w-5xl px-4">
         <%= render "shared/flash" %>
@@ -44,7 +58,6 @@
       <%= yield %>
     </main>
 
-    <%# mt-auto でフッターを最下部へ %>
     <footer class="mt-auto">
       <%= render "shared/footer" %>
     </footer>
