@@ -1,0 +1,58 @@
+<section class="record-center">
+  <div class="record-box">
+
+    <!-- ▼ 詳細行だけを上に寄せたいのでラップする -->
+    <div class="record-body">
+      <!-- 開始 -->
+      <div class="record-line">
+        <span class="record-label">開始：</span>
+        <span class="record-value"><%= fmt_md_wday_hm(record.start_time) %></span>
+      </div>
+
+      <!-- 終了 -->
+      <div class="record-line">
+        <span class="record-label">終了：</span>
+        <span class="record-value">
+          <%= record.end_time ? fmt_md_wday_hm(record.end_time) : "—" %>
+        </span>
+      </div>
+
+      <!-- 目標 -->
+      <div class="record-line">
+        <span class="record-label">目標：</span>
+        <span class="record-value"><%= hours_ja(record.target_hours) %></span>
+      </div>
+
+      <!-- 結果：経過時間 + バッジ -->
+      <div class="record-line">
+        <span class="record-label">結果：</span>
+        <span class="record-value">
+          <% if record.start_time.present? && record.end_time.present? %>
+            <% duration_h  = ((record.end_time - record.start_time) / 3600.0).round(1) %>
+            <% hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間" %>
+            <span class="inline-flex items-center gap-2">
+              <span class="font-semibold"><%= hours_label %></span>
+              <%= result_badge(record, size: :lg) %>
+            </span>
+          <% elsif record.end_time.present? %>
+            <%= result_badge(record, size: :lg) %>
+          <% else %>
+            —
+          <% end %>
+        </span>
+      </div>
+
+      <!-- コメント -->
+      <div class="record-line">
+        <span class="record-label">コメント：</span>
+        <span class="record-comment"><%= record.comment.presence || "—" %></span>
+      </div>
+    </div>
+    <!-- ▲ ここまでが“詳細の束” -->
+
+    <!-- 結果をシェア（これは動かさない） -->
+    <div class="record-share">
+      <%= share_to_x_button(record) %>
+    </div>
+  </div>
+</section>
