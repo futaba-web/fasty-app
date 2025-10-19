@@ -1,7 +1,0 @@
-/* Propshaft では Sprockets の `*= require` は無効。
-   自作CSSは @import で束ねる */
-@import "landing.css";
-@import "drawer.css";
-@import "layout.css";
-
-/* 必要ならここに上書き用の微調整を書く */
