@@ -1,4 +1,6 @@
 /*
- *= require_tree .
+ *= require tailwind
+ *= require landing
+ *= require drawer
  *= require_self
  */
