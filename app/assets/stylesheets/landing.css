@@ -9,14 +9,14 @@
 /* ========================= Base / 背景とリセット ========================= */
 @layer base {
   :root {
-    --hero-blur: 6px;        /* 4〜7px で調整可 */
-    --hero-fog: .10;         /* 画面全体の白ベール濃度(0〜.15) */
-    --hero-veil-alpha: .30;  /* 中央ハイライトの白さ */
+    --hero-blur: 3.5px;        /* 4〜7px で調整可 */
+    --hero-fog: .05;         /* 画面全体の白ベール濃度(0〜.15) */
+    --hero-veil-alpha: .28;  /* 中央ハイライトの白さ */
     --hero-veil-w: 1000px;   /* 楕円幅 */
     --hero-veil-h: 460px;    /* 楕円高さ */
   }
   @media (min-width: 768px) {
-    :root { --hero-blur: 5px; --hero-fog: .08; }
+    :root { --hero-blur: 4px; --hero-fog: .06; }
   }
 
   /* レイアウト安定用：余白リセット */
