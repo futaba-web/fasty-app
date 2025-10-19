@@ -24,12 +24,23 @@
     <link rel="apple-touch-icon" href="/icon.png">
   </head>
 
-  <% landing = (controller_path == "pages" && action_name == "home") %>
+  <%# ===== 背景画像の切り替えロジック ===== %>
+  <% landing    = (controller_path == "pages" && action_name == "home") %>
+  <% default_bg = asset_path("landing/hero.jpg") %>        <%# 未ログイン（トップ用） %>
+  <% authed_bg  = asset_path("landing/hero-authed.jpg") %> <%# ログイン後用  %>
+
+  <%# ページ側で content_for(:hero_bg_url) があれば最優先 %>
+  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>
+
+  <%# ルート（未ログイン）またはログイン後の画面で背景を表示。
+     さらに page_override があればそのページでも表示。 %>
+  <% show_hero = landing || user_signed_in? || page_override.present? %>
+  <% bg_url    = page_override || (user_signed_in? ? authed_bg : default_bg) %>
 
   <body
     data-controller="menu"
-    class="min-h-dvh flex flex-col text-gray-900 <%= 'landing-root' if landing %>"
-    style="<%= "--hero-bg: url('#{asset_path('landing/hero.jpg')}')" if landing %>">
+    class="min-h-dvh flex flex-col text-gray-900 <%= 'hero-bg' if show_hero %>"
+    style="<%= show_hero ? "--hero-bg: url('#{bg_url}')" : '' %>">
 
     <%= render "shared/header" %>
 

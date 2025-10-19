@@ -1,43 +1,47 @@
 /* =========================================================
-   Landing 全面背景（body に敷く）
-   ※ ドロワー関連(#site-drawer / .menu-overlay)は drawer.css に集約
+   landing.css  — Fasty
+   全面背景（cover）+ ぼかしオーバーレイ / ヒーロー / Auth / 共通UI
+   - Tailwind v4 (CSS) を前提 (@apply / @layer OK)
+   - 画像URLは CSSカスタムプロパティ --hero-bg を優先
+     （layout の <body style="--hero-bg: url('...')"> で上書き）
    ========================================================= */
+
+/* ========================= Base / 背景とリセット ========================= */
 @layer base {
   :root {
-    /* ぼかし量（モバイルやや強め）と白ベールの濃さ */
-    --hero-blur: 6px;          /* ← 全体ぼかし：4〜7px で調整可 */
-    --hero-fog:  .10;          /* ← 画面全体の白ベール（0〜.15） */
-    --hero-veil-alpha: .30;    /* ← 中央ハイライトの白さ */
-    --hero-veil-w: 1000px;     /* 中央楕円の幅 */
-    --hero-veil-h: 460px;      /* 中央楕円の高さ */
+    --hero-blur: 6px;        /* 4〜7px で調整可 */
+    --hero-fog: .10;         /* 画面全体の白ベール濃度(0〜.15) */
+    --hero-veil-alpha: .30;  /* 中央ハイライトの白さ */
+    --hero-veil-w: 1000px;   /* 楕円幅 */
+    --hero-veil-h: 460px;    /* 楕円高さ */
   }
   @media (min-width: 768px) {
     :root { --hero-blur: 5px; --hero-fog: .08; }
   }
 
-  /* 背景画像（最背面） */
-  body.landing-root::before {
+  /* レイアウト安定用：余白リセット */
+  html, body { margin: 0; padding: 0; }
+
+  /* 背景（最背面）— body.landing-root / .hero-bg どちらでも効くように */
+  body.landing-root::before,
+  body.hero-bg::before {
     content: "";
-    position: fixed; inset: 0;
-    z-index: -2;               /* 画像は最背面に */
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
 
     background-image: var(--hero-bg, url("/assets/landing/hero.jpg"));
-    background-size: cover;
+    background-size: cover;            /* ← 途切れ防止 */
     background-position: center;
     background-repeat: no-repeat;
 
-    /* ぼかし縁ケアの微拡大＋トーン調整（画像自体はぼかさない） */
     transform: scale(1.04);
     filter: contrast(1.03) brightness(1.02) saturate(0.96);
   }
 
-  /* 透ける薄膜＋ぼかし（前面オーバーレイ＝ここで背景をぼかす） */
-  body.landing-root::after {
+  /* ぼかし＆白ベール（前面オーバーレイ） */
+  body.landing-root::after,
+  body.hero-bg::after {
     content: "";
-    position: fixed; inset: 0;
-    z-index: -1;               /* 画像より前、コンテンツより後ろ */
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
 
     backdrop-filter: blur(var(--hero-blur));
     -webkit-backdrop-filter: blur(var(--hero-blur));
@@ -58,43 +62,35 @@
       rgba(255,255,255,var(--hero-fog));
   }
 
-  /* コンテンツは前面に固定（重なり順の安定化） */
+  /* コンテンツは前面へ（重なり順の安定化） */
   header, main, footer { position: relative; z-index: 1; }
-
-  /* 既定余白のリセット（最重要） */
-  html, body { margin: 0; padding: 0; }
 }
 
-/* =========================================================
-   Hero（中身だけ、背景は持たせない）
-   ========================================================= */
+/* ========================= Hero / ランディング要素 ========================= */
 @layer components {
   .hero {
     @apply relative isolate w-full flex items-center justify-center;
     @apply min-h-[72svh] sm:min-h-[68svh];
   }
-
   .hero__inner { @apply relative z-10 w-full mx-auto max-w-[960px] px-6 text-center text-gray-900; }
   .hero__title { @apply select-none text-white text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide drop-shadow-[0_6px_12px_rgba(0,0,0,0.5)]; }
 
-  /* 黒文字の可読性をさらに上げる薄い白グロー */
   .hero__copy,
   .hero__list {
     text-shadow:
       0 1px 0 rgba(255,255,255,.85),
       0 0 10px rgba(255,255,255,.25);
   }
-
   .hero__copy  { @apply mt-6 md:mt-8 text-xl md:text-2xl font-extrabold leading-snug; }
   .hero__list  { @apply mt-4 space-y-2 text-lg md:text-xl font-bold; }
   .hero__cta   { @apply mt-8 flex flex-wrap items-center justify-center gap-4 md:gap-6; }
 
-  /* ミントボタン（既存流用） */
+  /* ミント系ボタン（既存流用） */
   .btn-mint     { @apply inline-flex items-center justify-center rounded-full px-5 py-3 md:py-3 font-bold text-white; background:#2bd4c3; }
   .btn-mint--lg { @apply w-[180px] md:w-[220px] lg:w-[320px] text-lg md:text-xl lg:text-2xl; }
 }
 
-/* ===== 共通ボタン（Tailwind版 btn/btn-primary 相当） ===== */
+/* ===== Buttons (共通) ===== */
 @layer components {
   .btn {
     @apply inline-flex items-center justify-center font-semibold
@@ -103,15 +99,14 @@
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-cta {
-    @apply w-full max-w-4xl
-           py-10 sm:py-12 px-16 sm:px-20
+    @apply w-full max-w-4xl py-10 sm:py-12 px-16 sm:px-20
            text-3xl sm:text-4xl font-extrabold tracking-wide;
   }
   .btn-primary { @apply text-white bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-emerald-200/70; }
   .btn-danger  { @apply text-white bg-rose-600    hover:bg-rose-700    focus-visible:ring-rose-200/70; }
 }
 
-/* ===== Utilities ===== */
+/* ===== Utilities / 色など ===== */
 @layer utilities {
   .btn-mint       { transition: transform .15s ease, box-shadow .15s ease; box-shadow: 0 10px 30px rgba(43,212,195,.35); }
   .btn-mint:hover { transform: translateY(-1.5px); box-shadow: 0 14px 34px rgba(43,212,195,.45); }
@@ -133,8 +128,9 @@
   .badge-soft { @apply px-3 py-1 rounded-full bg-white/70 backdrop-blur text-gray-800 shadow-sm; }
 }
 
-/* ===== Auth（ログイン等） ===== */
+/* ========================= Auth（ログイン等） ========================= */
 @layer components {
+  /* Devise画面にも cover を適用するための保険クラス */
   .auth-bg { @apply relative min-h-[100svh] bg-center bg-cover bg-no-repeat; background-image: var(--hero-bg, url("/assets/landing/hero.jpg")); }
   .auth-dim { @apply absolute inset-0 bg-black/30; }
   .auth-center { @apply relative min-h-[100svh] flex items-center justify-center p-4 sm:p-6 md:p-10; }
@@ -144,7 +140,7 @@
   .devise-links a { @apply text-blue-600 hover:text-blue-700 underline underline-offset-4; }
 }
 
-/* ===== MyPage：やさしいグラデ背景 ===== */
+/* ========================= MyPage 背景（やさしいグラデ） ========================= */
 @layer components {
   .mypage-bg { position: relative; min-height: 100svh; }
   .mypage-bg::before {
@@ -155,7 +151,7 @@
   }
 }
 
-/* ===== 既存 landing セクション系（互換用） ===== */
+/* ========================= 既存 landing セクション互換 ========================= */
 @layer components {
   .landing-bg {
     @apply bg-center bg-cover bg-no-repeat;
@@ -169,12 +165,94 @@
   .btn-cta-sm      { @apply rounded-full w-[200px] md:w-[220px] px-6 py-4 text-xl md:text-2xl; }
 }
 
-/* フラッシュ直後に少しだけ引き上げたい場合のオプション */
-@layer utilities {
-  .landing-root > .pull-up-after-flash { @apply -mt-4 sm:-mt-6; }
+/* ========================= “謎の空白”ケア ========================= */
+@layer base {
+  main { margin-top: 0 !important; padding-top: 0 !important; }
+  main > :first-child { margin-top: 0 !important; }
 }
 
-/* ===== Fasting Records: 操作アイコンの共通スタイル ===== */
+/* ========================= Landing Hero v2 ========================= */
+@layer components {
+  .landing-hero-v2{
+    position: relative; z-index: 1;
+    max-width: 980px;
+    margin: clamp(24px, 6vh, 48px) auto;
+    padding: 0 clamp(16px, 4vw, 32px);
+    text-align: center;
+    color: #1f2937; /* text-gray-800 */
+  }
+
+  .landing-hero-v2__logo{
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-weight: 800; letter-spacing: .03em;
+    font-size: clamp(28px, 5vw, 44px);
+    color: #ffffff;
+    text-shadow: 0 6px 12px rgba(0,0,0,.35);
+    margin: 0 0 clamp(14px, 2.4vh, 20px);
+  }
+
+  .landing-hero-v2__catch{
+    font-weight: 800; letter-spacing: .02em; line-height: 1.25;
+    margin: 0 auto clamp(18px, 3vh, 24px);
+    font-size: clamp(24px, 4.8vw, 40px);
+    color: #111827; /* text-gray-900 */
+    text-shadow: 0 1px 0 rgba(255,255,255,.75);
+  }
+
+  .landing-hero-v2__points{
+    list-style: none; padding: 0;
+    margin: 0 auto clamp(18px, 3vh, 24px);
+    max-width: 780px; text-align: left;
+    font-size: clamp(16px, 2.5vw, 20px); font-weight: 700;
+  }
+  .landing-hero-v2__points li{
+    display: flex; align-items: flex-start; gap: .5rem;
+    padding: 6px 0;
+  }
+  .landing-hero-v2__points li::before{
+    content: "✅"; flex: 0 0 auto; transform: translateY(1px);
+  }
+
+  .landing-hero-v2__note{
+    margin: clamp(8px, 1.8vh, 12px) auto clamp(18px, 3.2vh, 26px);
+    font-size: clamp(11px, 1.8vw, 13px);
+    color: #4b5563; /* text-gray-600 */
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+  }
+
+  .landing-hero-v2__cta{
+    display: flex; justify-content: center;
+    gap: clamp(16px, 4vw, 28px); flex-wrap: wrap;
+  }
+
+  .hero-btn{
+    border-radius: 9999px;
+    padding: clamp(12px, 2.2vh, 16px) clamp(24px, 6vw, 40px);
+    min-width: clamp(220px, 26vw, 320px);
+    font-size: clamp(18px, 2.8vw, 26px);
+    font-weight: 800; letter-spacing: .04em;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .hero-btn:active{ transform: scale(.99); }
+
+  .hero-btn--signup{
+    color: #fff; background: #2bd4c3; border: 2px solid transparent;
+  }
+  .hero-btn--signup:hover{
+    filter: brightness(1.05); box-shadow: 0 14px 34px rgba(43,212,195,.35);
+  }
+
+  .hero-btn--login{
+    color: #2bb7a9; background: rgba(255,255,255,.7);
+    border: 3px solid #2bb7a9; backdrop-filter: blur(2px);
+  }
+  .hero-btn--login:hover{
+    background: rgba(255,255,255,.9); box-shadow: 0 12px 28px rgba(43,212,195,.18);
+  }
+}
+
+/* ========================= Fasting Records: アイコン等 ========================= */
 @layer components {
   .icon-btn {
     display: inline-flex; align-items: center; justify-content: center;
@@ -183,10 +261,8 @@
     transition: background-color .15s, border-color .15s;
   }
   .icon-btn:hover { background: #f9fafb; }
-
   .icon-btn--danger { border-color: #fca5a5; color: #b91c1c; background: #fff; }
   .icon-btn--danger:hover { background: #fff1f2; }
-
   .icon { width: 16px; height: 16px; display: block; }
 }
 @layer components {
@@ -197,7 +273,7 @@
   }
 }
 
-/* === Fasting Records: badges & comment snippet === */
+/* ========================= Badges / コメント抜粋 ========================= */
 @layer components {
   .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1; }
   .badge--ok   { @apply bg-emerald-100 text-emerald-800 ring-emerald-200; }
@@ -213,117 +289,7 @@
   }
 }
 
-/* =========================================================
-   “謎の空白”ケア（必要に応じて）
-   ========================================================= */
-@layer base {
-  main { margin-top: 0 !important; padding-top: 0 !important; }
-  main > :first-child { margin-top: 0 !important; }
-}
-/* ===== Landing Hero v2 (文言/ボタンの再配置) ===== */
-@layer components {
-  .landing-hero-v2{
-    position: relative;
-    z-index: 1;
-    max-width: 980px;
-    margin: clamp(24px, 6vh, 48px) auto;
-    padding: 0 clamp(16px, 4vw, 32px);
-    text-align: center;
-    color: #1f2937; /* text-gray-800 */
-  }
-
-  .landing-hero-v2__logo{
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    font-weight: 800;
-    letter-spacing: .03em;
-    font-size: clamp(28px, 5vw, 44px);
-    color: #ffffff;
-    text-shadow: 0 6px 12px rgba(0,0,0,.35);
-    margin: 0 0 clamp(14px, 2.4vh, 20px);
-  }
-
-  .landing-hero-v2__catch{
-    font-weight: 800;
-    letter-spacing: .02em;
-    line-height: 1.25;
-    margin: 0 auto clamp(18px, 3vh, 24px);
-    font-size: clamp(24px, 4.8vw, 40px);
-    color: #111827; /* text-gray-900 */
-    text-shadow: 0 1px 0 rgba(255,255,255,.75);
-  }
-
-  .landing-hero-v2__points{
-    list-style: none;
-    padding: 0;
-    margin: 0 auto clamp(18px, 3vh, 24px);
-    max-width: 780px;
-    text-align: left;
-    font-size: clamp(16px, 2.5vw, 20px);
-    font-weight: 700;
-  }
-  .landing-hero-v2__points li{
-    display: flex; align-items: flex-start;
-    gap: .5rem;
-    padding: 6px 0;
-  }
-  .landing-hero-v2__points li::before{
-    content: "✅";
-    flex: 0 0 auto;
-    transform: translateY(1px);
-  }
-
-  .landing-hero-v2__note{
-    margin: clamp(8px, 1.8vh, 12px) auto clamp(18px, 3.2vh, 26px);
-    font-size: clamp(11px, 1.8vw, 13px);
-    color: #4b5563; /* text-gray-600 */
-    text-shadow: 0 1px 0 rgba(255,255,255,.5);
-  }
-
-  .landing-hero-v2__cta{
-    display: flex;
-    justify-content: center;
-    gap: clamp(16px, 4vw, 28px);
-    flex-wrap: wrap;
-  }
-
-  /* 既存の .btn / .btn-cta を活かして上書き */
-  .hero-btn{
-    border-radius: 9999px;
-    padding: clamp(12px, 2.2vh, 16px) clamp(24px, 6vw, 40px);
-    min-width: clamp(220px, 26vw, 320px);
-    font-size: clamp(18px, 2.8vw, 26px);
-    font-weight: 800;
-    letter-spacing: .04em;
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
-    transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease, color .2s ease, border-color .2s ease;
-  }
-  .hero-btn:active{ transform: scale(.99); }
-
-  /* 新規登録（塗り） */
-  .hero-btn--signup{
-    color: #fff;
-    background: #2bd4c3; /* ミント */
-    border: 2px solid transparent;
-  }
-  .hero-btn--signup:hover{
-    filter: brightness(1.05);
-    box-shadow: 0 14px 34px rgba(43,212,195,.35);
-  }
-
-  /* ログイン（アウトライン） */
-  .hero-btn--login{
-    color: #2bb7a9;
-    background: rgba(255,255,255,.7);
-    border: 3px solid #2bb7a9;
-    backdrop-filter: blur(2px);
-  }
-  .hero-btn--login:hover{
-    background: rgba(255,255,255,.9);
-    box-shadow: 0 12px 28px rgba(43,212,195,.18);
-  }
-}
-
-/* ちょっとだけ縦位置余白：モバイルで潰れにくくする */
+/* ========================= 微調整（スクロール位置など） ========================= */
 @layer utilities {
-  .landing-root main, .landing-root .landing-hero-v2 { scroll-margin-top: 12px; }
+  .landing-root > .pull-up-after-flash { @apply -mt-4 sm:-mt-6; }
 }
