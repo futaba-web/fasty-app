@@ -31,6 +31,12 @@ Rails.application.routes.draw do
   resources :fasting_records, only: %i[index show new create edit update destroy] do
     post :start,  on: :collection   # POST /fasting_records/start
     post :finish, on: :member       # POST /fasting_records/:id/finish
+
+    # ▼ コメント専用編集・更新
+    member do
+      get   :edit_comment          # GET   /fasting_records/:id/edit_comment
+      patch :update_comment        # PATCH /fasting_records/:id/update_comment
+    end
   end
 
   # --- 瞑想リンク（MVPは外部リンク一覧のみ） ---
