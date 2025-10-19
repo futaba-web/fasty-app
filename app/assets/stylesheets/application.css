@@ -2,5 +2,6 @@
  *= require tailwind
  *= require landing
  *= require drawer
+ *= require layout
  *= require_self
  */

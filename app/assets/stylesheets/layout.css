@@ -1,0 +1,5 @@
+/* 画面高さいっぱい＋フッター最下部の保険 */
+html, body { height: 100%; }
+body { min-height: 100svh; display: flex; flex-direction: column; }
+main { flex: 1 1 auto; }
+footer { margin-top: auto; }
