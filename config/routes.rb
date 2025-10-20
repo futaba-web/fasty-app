@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   # 同意:  POST /health-notice        -> HealthNoticeController#create
   # 長時間: GET  /health-notice/long  -> HealthNoticeController#long
   resource :health_notice,
-           only: [:show, :create],
+           only: [ :show, :create ],
            controller: "health_notice",
            path: "health-notice" do
     get :long
