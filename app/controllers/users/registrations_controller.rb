@@ -1,3 +1,3 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  layout 'application'
+  layout "application"
 end
