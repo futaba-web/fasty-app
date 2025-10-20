@@ -1,6 +1,12 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  devise_for :users
+  # Devise（users 名前空間のコントローラを使用）
+  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations", passwords: "users/passwords" }
+
+  # 開発時のメール受信箱（/letter_opener）
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
 
   # --- 健康と安全（同意フロー / 単数リソース） ---
   # 画面:  GET  /health-notice        -> HealthNoticeController#show

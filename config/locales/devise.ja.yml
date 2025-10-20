@@ -15,6 +15,9 @@ ja:
       signed_out: "ログアウトしました。"
       new:
         sign_in: "ログイン"
+    mailer:
+      reset_password_instructions:
+        subject: "【Fasty】パスワード再設定のご案内"
 
     registrations:
       signed_up: "アカウントを作成しました。ようこそ！"
@@ -26,7 +29,7 @@ ja:
       send_instructions: "パスワード再設定用のメールを送信しました。"
       updated: "パスワードを更新しました。"
       new:
-        Forgot_your_password?: "パスワードをお忘れですか？"
+        title: "パスワードをお忘れですか？"
         send_me_reset_password_instructions: "再設定メールを送信"
       edit:
         change_your_password: "パスワードの変更"
@@ -53,3 +56,5 @@ ja:
         sign_in: "ログインはこちら"
         sign_up: "アカウントをお持ちでない方はこちら（新規登録）"
         forgot_your_password: "パスワードをお忘れの方はこちら"
+        resend_confirmation: "確認メールを再送する"
+        resend_unlock: "アンロック手順メールを再送する"
