@@ -18,8 +18,11 @@
 /* 全体の最大幅とセンター配置 */
 .devise-wrap{
   max-width: 720px;
-  margin-inline: auto;
-  padding: 24px 20px 40px;
+  margin: 0 auto;
+  padding: 64px 20px 56px;
+  /* 中身を中央寄せ */
+  display: grid;
+  row-gap: 16px;
 }
 
 /* タイトル */
@@ -27,7 +30,7 @@
   font-size: clamp(24px, 3.2vw, 36px);
   font-weight: 700;
   text-align: center;
-  margin: 18px 0 22px;
+  margin: 6px 0 18px;
   color: #111;
 }
 
@@ -38,6 +41,8 @@
   box-shadow: var(--panel-shadow);
   padding: clamp(16px, 3vw, 28px);
   border: 1px solid rgba(0,0,0,.06);
+  width: min(640px, 100%);
+  margin: 0 auto; /* 水平中央 */
 }
 
 /* ラベルと入力 */
@@ -80,8 +85,10 @@
 
 /* 補助リンク */
 .devise-links{
-  display:flex; flex-wrap:wrap; gap:16px;
-  justify-content:center;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   margin: 20px 0 0;
 }
 .devise-links a{ color:#1f4b99; text-decoration: underline; }

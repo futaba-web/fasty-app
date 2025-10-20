@@ -1,28 +1,35 @@
 <div class="devise-wrap">
-  <h1 class="devise-title">ログイン</h1>
+  <h1 class="devise-title"><%= t('devise.sessions.new.sign_in') %></h1>
 
   <div class="devise-card">
     <%= render "devise/shared/error_messages", resource: resource %>
 
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { data: { turbo: false } }) do |f| %>
       <div class="devise-field">
-        <label class="devise-label" for="user_email">メールアドレス</label>
-        <%= f.email_field :email, autofocus: true, class: "devise-input", id: "user_email" %>
+        <%= f.label :email, t('activerecord.attributes.user.email'), class: "devise-label" %>
+        <%= f.email_field :email,
+              class: "devise-input",
+              autofocus: true,
+              autocomplete: "email",
+              inputmode: "email",
+              spellcheck: false %>
       </div>
 
       <div class="devise-field">
-        <label class="devise-label" for="user_password">パスワード</label>
-        <%= f.password_field :password, autocomplete: "current-password", class: "devise-input", id: "user_password" %>
+        <%= f.label :password, t('activerecord.attributes.user.password'), class: "devise-label" %>
+        <%= f.password_field :password,
+              class: "devise-input",
+              autocomplete: "current-password" %>
       </div>
 
       <% if devise_mapping.rememberable? %>
         <div class="devise-check">
           <%= f.check_box :remember_me, id: "remember_me" %>
-          <%= f.label :remember_me, "ログイン状態を保持", for: "remember_me" %>
+          <%= f.label :remember_me, t('activerecord.attributes.user.remember_me'), for: "remember_me" %>
         </div>
       <% end %>
 
-      <%= f.submit "ログイン", class: "devise-submit" %>
+      <%= f.submit t('devise.sessions.new.sign_in'), class: "devise-submit" %>
     <% end %>
 
     <div class="devise-links">
