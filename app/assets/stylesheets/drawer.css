@@ -379,3 +379,57 @@ a.btn-x{
 }
 a.btn-x:hover{ background:#222; opacity:.95; }
 a.btn-x svg{ width:18px; height:18px; }
+/* ===== Buttons (legacy utility) ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  border-radius: .5rem;           /* rounded-md 相当 */
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  color: #fff;
+  background-color: #334155;      /* slate-700 相当（デフォルト） */
+  transition: background-color .2s ease, box-shadow .2s ease, transform .02s ease;
+}
+.btn:hover { background-color: #1f2937; }     /* slate-800 */
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.45); /* focus ring */
+}
+
+/* size */
+.btn-lg {
+  padding: .875rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* full-width on mobile, auto on ≥640px */
+.btn-wrap { width: 100%; }
+@media (min-width: 640px) {
+  .btn-wrap { width: auto; }
+}
+
+/* variants */
+.btn-primary {
+  background-color: #2563eb;                /* blue-600 */
+  border-color: #2563eb;
+}
+.btn-primary:hover { background-color: #1d4ed8; }  /* blue-700 */
+
+.btn-danger {
+  background-color: #dc2626;                /* red-600 */
+  border-color: #dc2626;
+}
+.btn-danger:hover { background-color: #b91c1c; }   /* red-700 */
+
+/* disabled */
+.btn[disabled], .btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
