@@ -7,16 +7,27 @@
     <%= render "users/shared/error_messages", resource: resource %>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { data: { turbo: false } }) do |f| %>
+      <!-- お名前 -->
+      <div class="devise-field">
+        <%= f.label :name, t('activerecord.attributes.user.name'), class: "devise-label" %>
+        <%= f.text_field :name,
+              class: "devise-input",
+              autofocus: true,
+              autocomplete: "name",
+              spellcheck: false %>
+      </div>
+
+      <!-- メールアドレス -->
       <div class="devise-field">
         <%= f.label :email, t('activerecord.attributes.user.email'), class: "devise-label" %>
         <%= f.email_field :email,
               class: "devise-input",
-              autofocus: true,
               autocomplete: "email",
               inputmode: "email",
               spellcheck: false %>
       </div>
 
+      <!-- パスワード -->
       <div class="devise-field">
         <%= f.label :password, t('activerecord.attributes.user.password'), class: "devise-label" %>
         <% if @minimum_password_length.present? %>
@@ -27,6 +38,7 @@
               autocomplete: "new-password" %>
       </div>
 
+      <!-- パスワード（確認） -->
       <div class="devise-field">
         <%= f.label :password_confirmation, t('activerecord.attributes.user.password_confirmation'), class: "devise-label" %>
         <%= f.password_field :password_confirmation,
