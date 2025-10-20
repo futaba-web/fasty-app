@@ -1,24 +1,134 @@
 # config/locales/ja.yml
 ja:
+  ############################################################
+  # 日付・時刻
+  ############################################################
   date:
     day_names: [日, 月, 火, 水, 木, 金, 土]
     abbr_day_names: [日, 月, 火, 水, 木, 金, 土]
+    month_names: [~, 1月, 2月, 3月, 4月, 5月, 6月, 7月, 8月, 9月, 10月, 11月, 12月]
+    abbr_month_names: [~, 1月, 2月, 3月, 4月, 5月, 6月, 7月, 8月, 9月, 10月, 11月, 12月]
     formats:
       default: "%Y/%m/%d"
-      long: "%Y年%-m月%-d日(%a)"   # ← これを追加（好みで書式変更OK）
+      long: "%Y年%-m月%-d日(%a)"
       short: "%-m/%-d(%a)"
   time:
+    am: "午前"
+    pm: "午後"
     formats:
       default: "%Y/%m/%d %H:%M"
       long: "%Y年%-m月%-d日(%a) %H時%M分"
-      jp_short: "%Y/%m/%d(%a) %H時%M分"
+      jp_short: "%Y/%m/%d(%a) %H:%M"
+
+  ############################################################
+  # 共通エラーメッセージ / ActiveModel
+  ############################################################
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      blank: "を入力してください"
+      too_short: "は%{count}文字以上で入力してください"
+      too_long: "は%{count}文字以内で入力してください"
+      wrong_length: "は%{count}文字で入力してください"
+      taken: "はすでに使用されています"
+      confirmation: "が一致しません"
+      accepted: "を受諾してください"
+      not_a_number: "は数値で入力してください"
+      greater_than: "%{count}より大きい値にしてください"
+      greater_than_or_equal_to: "%{count}以上の値にしてください"
+      less_than: "%{count}より小さい値にしてください"
+      less_than_or_equal_to: "%{count}以下の値にしてください"
+      invalid: "は不正な値です"
+      not_saved: "保存に失敗しました（%{count}件のエラー）"
+
+  ############################################################
+  # ActiveRecord（モデル名・属性名・個別メッセージ）
+  ############################################################
+  activerecord:
+    models:
+      user: ユーザー
+      fasting_record: 記録
+    attributes:
+      user:
+        name: お名前
+        email: メールアドレス
+        password: パスワード
+        password_confirmation: パスワード（確認）
+        current_password: 現在のパスワード
+        remember_me: ログイン状態を保持する
+      fasting_record:
+        start_time: 開始
+        end_time: 終了
+        target_hours: 目標時間（h）
+        success: 達成
+        comment: 一言コメント
+    errors:
+      models:
+        user:
+          attributes:
+            name:
+              blank: "を入力してください"
+            email:
+              blank: "を入力してください"
+              taken: "はすでに使用されています"
+            password:
+              blank: "を入力してください"
+              too_short: "は%{count}文字以上で入力してください"
+            password_confirmation:
+              confirmation: "が一致しません"
+        fasting_record:
+          attributes:
+            start_time:
+              blank: "を入力してください"
+            end_time:
+              blank: "を入力してください"
+            target_hours:
+              blank: "を入力してください"
+              not_a_number: "は数値で入力してください"
+
+  ############################################################
+  # Devise（必要最小限＋リンク文言）
+  ############################################################
   devise:
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+    registrations:
+      signed_up: "アカウント登録が完了しました。"
+      updated: "アカウント情報を更新しました。"
+      destroyed: "アカウントを削除しました。"
+      signed_up_but_unconfirmed: "確認メールを送信しました。メール内のリンクをクリックして有効化してください。"
+    passwords:
+      send_instructions: "パスワード再設定用のメールを送信しました。"
+      updated: "パスワードを変更しました。"
+    confirmations:
+      confirmed: "メールアドレスの確認が完了しました。"
+      send_instructions: "確認メールを送信しました。"
+    failure:
+      invalid: "メールアドレスまたはパスワードが正しくありません。"
+      not_found_in_database: "メールアドレスまたはパスワードが正しくありません。"
+      unauthenticated: "続行するにはログインしてください。"
+      unconfirmed: "メールアドレスの確認が必要です。"
+      already_authenticated: "すでにログインしています。"
+    mailer:
+      confirmation_instructions:
+        subject: "【Fasty】メールアドレスの確認"
+      reset_password_instructions:
+        subject: "【Fasty】パスワード再設定のご案内"
+      email_changed:
+        subject: "【Fasty】メールアドレス変更のお知らせ"
+      password_change:
+        subject: "【Fasty】パスワード変更のお知らせ"
     shared:
       links:
         sign_in: "ログインはこちら"
         sign_up: "アカウントをお持ちでない方はこちら（新規登録）"
         forgot_password: "パスワードをお忘れの方はこちら"
-  activerecord:
-    attributes:
-      user:
-        email: "メールアドレス"
+
+  ############################################################
+  # ビュー補助（任意）
+  ############################################################
+  helpers:
+    submit:
+      create: "%{model}を作成"
+      update: "%{model}を更新"
