@@ -1,39 +1,43 @@
-<div class="devise-wrap">
-  <h1 class="devise-title"><%= t('devise.sessions.new.sign_in') %></h1>
+<% content_for :title, "#{t('devise.sessions.new.sign_in')} | Fasty" %>
 
-  <div class="devise-card">
-    <%= render "users/shared/error_messages", resource: resource %>
+<main class="devise-center">  <%# ← 追加：中央寄せ用の外枠 %>
+  <div class="devise-wrap">
+    <h1 class="devise-title"><%= t('devise.sessions.new.sign_in') %></h1>
 
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { data: { turbo: false } }) do |f| %>
-      <div class="devise-field">
-        <%= f.label :email, t('activerecord.attributes.user.email'), class: "devise-label" %>
-        <%= f.email_field :email,
-              class: "devise-input",
-              autofocus: true,
-              autocomplete: "email",
-              inputmode: "email",
-              spellcheck: false %>
-      </div>
+    <div class="devise-card">
+      <%= render "users/shared/error_messages", resource: resource %>
 
-      <div class="devise-field">
-        <%= f.label :password, t('activerecord.attributes.user.password'), class: "devise-label" %>
-        <%= f.password_field :password,
-              class: "devise-input",
-              autocomplete: "current-password" %>
-      </div>
-
-      <% if devise_mapping.rememberable? %>
-        <div class="devise-check">
-          <%= f.check_box :remember_me, id: "remember_me" %>
-          <%= f.label :remember_me, t('activerecord.attributes.user.remember_me'), for: "remember_me" %>
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { data: { turbo: false } }) do |f| %>
+        <div class="devise-field">
+          <%= f.label :email, t('activerecord.attributes.user.email'), class: "devise-label" %>
+          <%= f.email_field :email,
+                class: "devise-input",
+                autofocus: true,
+                autocomplete: "email",
+                inputmode: "email",
+                spellcheck: false %>
         </div>
+
+        <div class="devise-field">
+          <%= f.label :password, t('activerecord.attributes.user.password'), class: "devise-label" %>
+          <%= f.password_field :password,
+                class: "devise-input",
+                autocomplete: "current-password" %>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="devise-check">
+            <%= f.check_box :remember_me, id: "remember_me" %>
+            <%= f.label :remember_me, t('activerecord.attributes.user.remember_me'), for: "remember_me" %>
+          </div>
+        <% end %>
+
+        <%= f.submit t('devise.sessions.new.sign_in'), class: "devise-submit" %>
       <% end %>
 
-      <%= f.submit t('devise.sessions.new.sign_in'), class: "devise-submit" %>
-    <% end %>
-
-    <div class="devise-links">
-      <%= render "devise/shared/links" %>
+      <div class="devise-links">
+        <%= render "devise/shared/links" %>
+      </div>
     </div>
   </div>
-</div>
+</main>

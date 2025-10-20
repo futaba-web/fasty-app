@@ -1,3 +1,3 @@
 class Users::PasswordsController < Devise::PasswordsController
-  # カスタマイズがあればここに
+  layout 'application'
 end

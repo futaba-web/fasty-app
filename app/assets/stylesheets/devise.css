@@ -2,27 +2,31 @@
    Devise pages fallback styles（Tailwindが無くても崩さない）
    対象: sessions/new, registrations/new, passwords/new|edit など
    ========================================================== */
-
-:root{
-  --brand-header: #bdb6b2;        /* ヘッダーと同じ薄グレー */
-  --accent: #1e66f5;              /* ボタン青（Tailwind: blue-600 相当） */
+:root {
+  --brand-header: #bdb6b2;
+  --accent: #1e66f5;
   --accent-press: #1453c8;
-  --panel-bg: rgba(255,255,255,.85);
-  --panel-br: 12px;
-  --panel-shadow: 0 6px 24px rgba(0,0,0,.08);
+  --panel-bg: rgba(255, 255, 255, .78);
+  --panel-br: 16px;
+  --panel-shadow: 0 6px 24px rgba(0, 0, 0, .08);
   --field-br: 10px;
-  --field-bd: 1px solid rgba(0,0,0,.12);
+  --field-bd: 1px solid rgba(0, 0, 0, .12);
   --field-h: 44px;
+}
+
+/* 外側ラッパー：どんな親でも中央寄せにする（ビューで <main class="devise-center"> を使うなら推奨） */
+.devise-center{
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 /* 全体の最大幅とセンター配置 */
 .devise-wrap{
   max-width: 720px;
-  margin: 0 auto;
-  padding: 64px 20px 56px;
-  /* 中身を中央寄せ */
-  display: grid;
-  row-gap: 16px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 24px 20px 40px;
 }
 
 /* タイトル */
@@ -40,9 +44,12 @@
   border-radius: var(--panel-br);
   box-shadow: var(--panel-shadow);
   padding: clamp(16px, 3vw, 28px);
-  border: 1px solid rgba(0,0,0,.06);
+  border: 1px solid rgba(255,255,255,.35);
   width: min(640px, 100%);
   margin: 0 auto; /* 水平中央 */
+  backdrop-filter: saturate(120%) blur(8px);
+  -webkit-backdrop-filter: saturate(120%) blur(8px);
+  transition: box-shadow 0.3s ease, background 0.3s ease;
 }
 
 /* ラベルと入力 */
@@ -82,13 +89,17 @@
 }
 .devise-submit:active{ background: var(--accent-press); }
 .devise-submit:disabled{ opacity:.6; cursor:not-allowed; }
+.devise-submit:hover {
+  background: #1e73ff;
+  transition: background 0.2s ease;
+}
 
-/* 補助リンク */
+
+/* 補助リンク（縦並び・中央寄せ） */
 .devise-links{
-  display:flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
   gap: 12px;
+  justify-content: center;
   margin: 20px 0 0;
 }
 .devise-links a{ color:#1f4b99; text-decoration: underline; }
