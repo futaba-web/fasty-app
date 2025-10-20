@@ -1,0 +1,95 @@
+/* ==========================================================
+   Devise pages fallback styles（Tailwindが無くても崩さない）
+   対象: sessions/new, registrations/new, passwords/new|edit など
+   ========================================================== */
+
+:root{
+  --brand-header: #bdb6b2;        /* ヘッダーと同じ薄グレー */
+  --accent: #1e66f5;              /* ボタン青（Tailwind: blue-600 相当） */
+  --accent-press: #1453c8;
+  --panel-bg: rgba(255,255,255,.85);
+  --panel-br: 12px;
+  --panel-shadow: 0 6px 24px rgba(0,0,0,.08);
+  --field-br: 10px;
+  --field-bd: 1px solid rgba(0,0,0,.12);
+  --field-h: 44px;
+}
+
+/* 全体の最大幅とセンター配置 */
+.devise-wrap{
+  max-width: 720px;
+  margin-inline: auto;
+  padding: 24px 20px 40px;
+}
+
+/* タイトル */
+.devise-title{
+  font-size: clamp(24px, 3.2vw, 36px);
+  font-weight: 700;
+  text-align: center;
+  margin: 18px 0 22px;
+  color: #111;
+}
+
+/* フォームを半透明のカードに */
+.devise-card{
+  background: var(--panel-bg);
+  border-radius: var(--panel-br);
+  box-shadow: var(--panel-shadow);
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+/* ラベルと入力 */
+.devise-field{ margin: 14px 0; }
+.devise-label{
+  display: block;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 6px;
+}
+.devise-input{
+  width: 100%;
+  height: var(--field-h);
+  border: var(--field-bd);
+  border-radius: var(--field-br);
+  padding: 0 14px;
+  background: #fff;
+  outline: none;
+}
+.devise-input:focus{
+  box-shadow: 0 0 0 3px rgba(30,102,245,.15);
+  border-color: rgba(30,102,245,.45);
+}
+
+/* チェックボックス行 */
+.devise-check{
+  display:flex; align-items:center; gap:10px;
+  margin: 8px 0 6px;
+}
+
+/* 送信ボタン */
+.devise-submit{
+  display:block; width:min(360px, 90%); margin: 18px auto 0;
+  height: 48px; border-radius: 12px;
+  background: var(--accent); color:#fff; font-weight:700;
+  border: none; cursor: pointer;
+}
+.devise-submit:active{ background: var(--accent-press); }
+.devise-submit:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* 補助リンク */
+.devise-links{
+  display:flex; flex-wrap:wrap; gap:16px;
+  justify-content:center;
+  margin: 20px 0 0;
+}
+.devise-links a{ color:#1f4b99; text-decoration: underline; }
+
+/* フッターの法務リンク行が白背景でも見えるように */
+footer .footer-legal-thin a{ color:#1f4b99 !important; }
+
+/* スマホ余白最適化 */
+@media (max-width: 480px){
+  .devise-wrap{ padding: 16px 14px 32px; }
+}
