@@ -1,7 +1,14 @@
 # config/routes.rb
 Rails.application.routes.draw do
   # Devise（users 名前空間のコントローラを使用）
-  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations", passwords: "users/passwords" }
+  devise_for :users, controllers: {
+    sessions:      "users/sessions",
+    registrations: "users/registrations",
+    passwords:     "users/passwords"
+  }
+
+  # ✅ 迷いアクセス対策：/users は存在しないためログインへ誘導
+  get "/users", to: redirect("/users/sign_in")
 
   # 開発時のメール受信箱（/letter_opener）
   if Rails.env.development?
@@ -13,7 +20,7 @@ Rails.application.routes.draw do
   # 同意:  POST /health-notice        -> HealthNoticeController#create
   # 長時間: GET  /health-notice/long  -> HealthNoticeController#long
   resource :health_notice,
-           only: [ :show, :create ],
+           only: [:show, :create],
            controller: "health_notice",
            path: "health-notice" do
     get :long
@@ -31,7 +38,7 @@ Rails.application.routes.draw do
   end
 
   # ランディング直アクセス（任意）
-  get "pages/home", to: "pages#home"
+  get "pages/home", to: "pages#home", as: :pages_home
 
   # --- ファスティング記録 ---
   resources :fasting_records, only: %i[index show new create edit update destroy] do
@@ -49,7 +56,7 @@ Rails.application.routes.draw do
   resources :meditations, only: :index
 
   # --- ヘルスチェック / PWA ---
-  get "up" => "rails/health#show", as: :rails_health_check
+  get "up"                => "rails/health#show",       as: :rails_health_check
   get "service-worker.js" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest.json"     => "rails/pwa#manifest",       as: :pwa_manifest
 end
