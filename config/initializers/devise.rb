@@ -11,11 +11,11 @@ Devise.setup do |config|
 
   #== Authentication keys
   # 既定: email を小文字化＆前後空白を除去
-  config.case_insensitive_keys = [:email]
-  config.strip_whitespace_keys = [:email]
+  config.case_insensitive_keys = [ :email ]
+  config.strip_whitespace_keys = [ :email ]
 
   #== Session / Security
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = [ :http_auth ]
   # CSRFトークンを認証時にリセット（既定trueのまま）
   # config.clean_up_csrf_token_on_authentication = true
 
@@ -60,7 +60,7 @@ Devise.setup do |config|
   #== Hotwire / Turbo（Rails 7系推奨設定）
   config.responder.error_status   = :unprocessable_entity
   config.responder.redirect_status = :see_other
-  config.navigational_formats = ["*/*", :html, :turbo_stream]
+  config.navigational_formats = [ "*/*", :html, :turbo_stream ]
 
   #== OmniAuth（必要なら有効化）
   # config.omniauth :github, ENV['GITHUB_ID'], ENV['GITHUB_SECRET'], scope: 'user:email'
