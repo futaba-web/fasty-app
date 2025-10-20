@@ -1,3 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* app/assets/tailwind/application.css (Tailwind v4) */
+@import "tailwindcss";
+
+/* どのファイルのクラスを拾うかを宣言 */
+@source "../../views/**/*.{erb,html,haml,slim}";
+@source "../../javascript/**/*.{js,ts}";
+@source "../stylesheets/**/*.css";
+@source "../../helpers/**/*.rb";
+
+/* 必要ならプラグイン（入れていないなら消す） */
+/* @plugin "@tailwindcss/forms"; */
