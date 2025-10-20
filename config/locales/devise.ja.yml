@@ -15,6 +15,9 @@ ja:
       signed_out: "ログアウトしました。"
       new:
         sign_in: "ログイン"
+    mailer:
+      reset_password_instructions:
+        subject: "【Fasty】パスワード再設定のご案内"
 
     registrations:
       signed_up: "アカウントを作成しました。ようこそ！"
