@@ -1,6 +1,10 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: {
+  sessions:      'users/sessions',
+  registrations: 'users/registrations',
+  passwords:     'users/passwords'
+}
 
   # --- 健康と安全（同意フロー / 単数リソース） ---
   # 画面:  GET  /health-notice        -> HealthNoticeController#show
