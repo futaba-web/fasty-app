@@ -6,7 +6,10 @@
   transform: translateX(-100%);
   transition: transform .2s ease-out;
   z-index: 60 !important;
+  background: var(--header-bg) !important;
 }
+#site-drawer, #site-drawer a { color: #fff !important; }
+
 .menu-open #site-drawer{ transform: translateX(0) !important; }
 
 .menu-overlay{
@@ -94,7 +97,7 @@ footer .footer-legal-thin .legal-wrap{ justify-content: space-between !important
 /* 色の保険：Tailwind の bg-brand-header / text-white がパージされても見えるように */
 header.bg-brand-header,
 footer.bg-brand-header{
-  background-color: #bdb6b2 !important;   /* ブランド薄グレー */
+  background-color: var(--header-bg) !important;
   color: #fff !important;
 }
 

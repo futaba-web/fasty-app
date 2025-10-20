@@ -3,3 +3,8 @@ html, body { height: 100%; }
 body { min-height: 100svh; display: flex; flex-direction: column; }
 main { flex: 1 1 auto; }
 footer { margin-top: auto; }
+
+/* ===== 共通カラー変数 ===== */
+:root{
+  --header-bg: #bdb6b2; /* ヘッダーのブランド薄グレー */
+}
