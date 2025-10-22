@@ -1,21 +1,24 @@
 <%# app/views/shared/_filter_dropdown.html.erb %>
 <%# locals: url:, param:, current:, options:, label:(optional), wrapper_class:(optional), wrapper_style:(optional) %>
 
-<% label ||= "絞り込み" %>
+<%# ▼ label の既定値は「未指定のときだけ」セット。nil を明示されたら非表示にするため。 %>
+<% label = local_assigns.key?(:label) ? label : "絞り込み" %>
 
-<%# wrapper_class は空でもOK。位置は wrapper_style に明示します。 %>
+<%# wrapper_class / style はそのまま透過 %>
 <% wrapper_classes = wrapper_class.presence || "" %>
 <% wrapper_style   = wrapper_style.presence   || "" %>
 
 <div class="<%= wrapper_classes %>" style="<%= wrapper_style %>">
   <%= form_with url: url, method: :get, local: true,
         html: {
-          # ここがポイント：幅が広がらない・横並びを強制
           class: "items-center gap-2 whitespace-nowrap",
           style: "display:inline-flex;width:max-content"
         } do %>
 
-    <label for="<%= param %>" class="text-sm text-gray-700"><%= label %></label>
+    <%# ▼ ラベルは値があるときだけ描画 %>
+    <% if label.present? %>
+      <label for="<%= param %>" class="text-sm text-gray-700"><%= label %></label>
+    <% end %>
 
     <%= select_tag param,
           options_for_select(options, (current || "").to_s),

@@ -3,25 +3,24 @@
 <% raw_cur = params[:status].presence %>
 <% cur     = normalized_status_param(raw_cur) %>
 
-<!-- スティッキーヘッダー（レイアウトの共通コンテナ上に重ねるだけ） -->
-<div class="sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/50">
-  <!-- 絶対配置の基準にするため relative を付与。余白はレイアウト側で付いているのでここでは付けない -->
-  <div class="relative py-2">
-    <!-- 中央寄せタイトル -->
-    <h1 class="text-center text-xl sm:text-2xl font-bold">
-      ファスティング記録一覧
-    </h1>
+<!-- スティッキーヘッダー：背景なし（透明）＋ノッチ安全域 -->
+<div class="sticky top-[env(safe-area-inset-top)] z-50">
+  <div class="grid grid-cols-[1fr,auto,1fr] items-center py-2">
+    <div></div>
 
-    <!-- 右端：絞り込み（absoluteで右固定＆縦中央） -->
-    <div class="absolute right-0 top-1/2 -translate-y-1/2">
+    <!-- 中央のかたまり：タイトル + プルダウン -->
+    <div class="justify-self-center flex items-baseline gap-3 min-w-0">
+      <h1 class="text-lg sm:text-2xl font-bold whitespace-nowrap">ファスティング記録一覧</h1>
       <%= render "shared/filter_dropdown",
             url: fasting_records_path,
             param: :status,
             current: cur,
             options: status_filter_options,
-            label: "絞り込み",
-            wrapper_class: "" %>
+            label: nil,                       # ラベルは表示しない
+            wrapper_class: "inline-block shrink-0" %>
     </div>
+
+    <div></div>
   </div>
 </div>
 
@@ -35,8 +34,8 @@
                   class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
     </div>
   <% else %>
-    <!-- スマホ1列 / md以上2列 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-[minmax(8rem,auto)]">
+    <!-- 各行の高さを固定（モバイル少し低め→sm/ mdで段階UP） -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 auto-rows-[120px] sm:auto-rows-[132px] md:auto-rows-[144px]">
       <%= render partial: "record", collection: @records, as: :record %>
     </div>
 
