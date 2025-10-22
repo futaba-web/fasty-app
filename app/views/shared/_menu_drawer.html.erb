@@ -1,61 +1,60 @@
-<%# app/views/shared/_menu_drawer.html.erb %>
-
 <%# ▼ 左ドロワー（縦長パネル） %>
 <div id="site-drawer"
      data-menu-target="drawer"
      data-action="keydown.esc@window->menu#close"
-     class="fixed inset-y-0 left-0 w-72 md:w-80 max-w-[86vw]
+     class="fixed inset-y-0 left-0
+            /* ← 幅はCSS側の clamp / max-content に任せる */
             -translate-x-full transform
             bg-brand-header text-white shadow-xl
             transition-transform duration-200 ease-out will-change-transform z-[60]"
      role="dialog" aria-modal="true" aria-label="メニュー" tabindex="-1">
 
   <div class="h-14 px-4 md:px-5 flex items-center justify-between border-b border-white/15">
-    <span class="text-base md:text-lg font-semibold tracking-wide">メニュー</span>
+    <span class="text-base md:text-lg font-semibold tracking-wide whitespace-nowrap">メニュー</span>
     <button class="p-2 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60"
             data-action="click->menu#close" aria-label="閉じる">✕</button>
   </div>
 
   <nav class="px-3 md:px-4 py-4 md:py-5">
-    <ul class="space-y-1 text-white">
+    <ul class="grid gap-2 text-white">
       <li>
         <%= button_to destroy_user_session_path,
-              method: :delete, form: { class: "block" },
-              class: "w-full text-left px-3 py-2 rounded hover:bg-white/10 font-medium" do %>
+              method: :delete, form: { class: "inline" },
+              class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 font-medium whitespace-nowrap" do %>
           ログアウト
         <% end %>
       </li>
 
       <li>
         <%= link_to (defined?(health_and_safety_path) ? health_and_safety_path : "#"),
-              class: "block px-3 py-2 rounded hover:bg-white/10" do %>
+              class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           健康と安全
         <% end %>
       </li>
 
       <li>
         <%= link_to (defined?(contact_path) ? contact_path : "#"),
-              class: "block px-3 py-2 rounded hover:bg-white/10" do %>
+              class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           お問い合わせ
         <% end %>
       </li>
 
       <li>
         <%= link_to (defined?(privacy_path) ? privacy_path : "#"),
-              class: "block px-3 py-2 rounded hover:bg-white/10" do %>
+              class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           プライバシーポリシー
         <% end %>
       </li>
 
       <li>
         <%= link_to (defined?(terms_path) ? terms_path : "#"),
-              class: "block px-3 py-2 rounded hover:bg-white/10" do %>
+              class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           利用規約
         <% end %>
       </li>
     </ul>
 
-    <div class="mt-6 px-3 text-xs opacity-80 select-none">
+    <div class="mt-6 px-3 text-xs opacity-80 select-none whitespace-nowrap">
       &copy; <%= Time.current.year %> Fasty
     </div>
   </nav>
