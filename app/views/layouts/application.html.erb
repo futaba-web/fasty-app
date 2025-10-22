@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Fasty" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <!-- 基本: モバイル最適化 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0ea5e9">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# --- CSS: Tailwind + application（@importで自作CSSを束ねる） --- %>
+    <%# --- CSS (Sprockets) : Tailwind -> 各ページCSS --- %>
     <%= stylesheet_link_tag "tailwind", "application", "layout", "drawer", "landing", "devise", "data-turbo-track": "reload" %>
 
-    <%# 画面個別で <head> 追記したい時に使う %>
+    <%# 画面個別で <head> 追記したい場合に使用 %>
     <%= yield :head %>
 
     <%# --- JS (importmap) --- %>
@@ -36,19 +40,29 @@
 
   <body
     data-controller="menu"
-    class="min-h-dvh flex flex-col text-gray-900<%= landing ? ' landing-root' : '' %><%= show_hero ? ' hero-bg' : '' %>"
+    class="min-h-dvh flex flex-col bg-gray-50 text-gray-900<%= landing ? ' landing-root' : '' %><%= show_hero ? ' hero-bg' : '' %>"
     style="<%= show_hero ? "--hero-bg: url('#{bg_url}')" : '' %>">
+
+    <!-- キーボード操作向け: コンテンツへスキップ -->
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] rounded bg-white/90 px-3 py-2 shadow">
+      コンテンツへスキップ
+    </a>
 
     <%= render "shared/header" %>
 
-    <%# ログイン後のみドロワー %>
+    <%# ログイン後のみドロワーを描画 %>
     <%= render("shared/menu_drawer") if user_signed_in? %>
 
-    <main class="grow">
-      <div class="mx-auto max-w-5xl px-4">
+    <main id="main" role="main" class="grow">
+      <!-- 共通フラッシュ（左右余白あり） -->
+      <div class="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
         <%= render "shared/flash" %>
       </div>
-      <%= yield %>
+
+      <!-- ▼ 共通コンテナ: すべてのページ本文はこの中に出る -->
+      <div class="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <%= yield %>
+      </div>
     </main>
 
     <footer class="mt-auto">
