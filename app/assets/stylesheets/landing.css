@@ -73,7 +73,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 72svh;
+    min-height: 74svh;
   }
   @media (min-width:640px){
     body.landing-root .hero{ min-height: 68svh; }
@@ -116,20 +116,45 @@
       0 0 10px rgba(255,255,255,.28);
   }
 
-  /* チェックリスト：太字にせず通常（400） */
+/* ===== Hero bullets（スマホ見栄えアップの最小パッチ） ===== */
+
+/* 1) 自然な改行＆日本語の不自然分割を防ぐ */
+body.landing-root .hero__bullets{
+  /* 既存 font-size/line-height は活かしつつ… */
+  text-wrap: balance;        /* 対応ブラウザでバランスよく改行 */
+  word-break: keep-all;      /* 日本語の不自然改行を抑制 */
+  letter-spacing: .01em;     /* ごく控えめに詰める（視認性は維持） */
+}
+
+/* 2) “✅”をぶら下げインデントにして、2行目以降が揃う */
+body.landing-root .hero__bullets li{
+  text-indent: -1.3em;       /* 先頭アイコン分だけ突出させる */
+  padding-left: 1.3em;       /* 本文を揃える（値は -text-indent と一致） */
+}
+
+/* 3) 超狭幅で少しだけコンパクトに＆行長を制御 */
+@media (max-width: 380px){
   body.landing-root .hero__bullets{
-    margin: .8rem auto 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: .55rem;                 /* 少し広め */
-    font-weight: 400;            /* ← 通常ウェイト */
-    font-size: clamp(1.05rem, 2.1vw, 1.35rem);
-    line-height: 1.7;
-    text-shadow:
-      0 1px 0 rgba(255,255,255,.80),
-      0 0 8px rgba(255,255,255,.22);
+    gap: .45rem;             /* 行間をほんの少し詰める */
+    line-height: 1.6;
+    max-width: 26ch;         /* 文字数ベースで行長を制限して均等に2行化 */
+    margin-inline: auto;     /* 中央寄せ */
   }
+}
+
+/* 4) さらに狭い端末向けの保険（任意） */
+@media (max-width: 350px){
+  body.landing-root .hero__bullets{
+    font-size: clamp(1.00rem, 3.0vw, 1.15rem);  /* 全項目まとめて ほんの少しだけ小さく */
+  }
+}
+
+/* 5) モーション軽減設定に追従（アクセシビリティの保険） */
+@media (prefers-reduced-motion: reduce){
+  body.landing-root .hero__bullets{
+    text-shadow: 0 1px 0 rgba(255,255,255,.75); /* 影をやや控えめに */
+  }
+}
 
   /* 注意書き：控えめ */
   body.landing-root .hero__note{
@@ -234,5 +259,35 @@
         rgba(247,245,242,0.22) 58%,    /* 0.60 → 0.22 */
         rgba(244,241,237,0.18) 100%    /* 0.50 → 0.18 */
       );
+  }
+}
+/* === Hero: min-height を 1箇所に統一（おすすめ：74svh） === */
+/* 既存の 72svh/68svh は削除 or コメントアウトしてOK */
+body.landing-root .hero{
+  min-height: 74svh;
+  padding-block: clamp(16px, 4vh, 40px);
+  /* ノッチ & 固定ヘッダー保険 */
+  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+}
+
+/* 超狭幅で行間を少し詰めて折返し抑制 */
+@media (max-width: 360px){
+  body.landing-root .hero__kicker{ line-height: 1.5; }
+  body.landing-root .hero__bullets{ gap: .4rem; line-height: 1.6; }
+}
+
+/* CTAは常に44px以上（タップ領域の保険） */
+body.landing-root .hero__cta .btn-hero{
+  min-height: 44px;
+}
+
+/* アニメ軽減設定に合わせてモーションを弱める */
+@media (prefers-reduced-motion: reduce){
+  body.landing-root .hero__cta .btn-hero{
+    transition: none;
+  }
+  body.landing-root .hero__cta .btn-hero:hover{
+    transform: none;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
   }
 }
