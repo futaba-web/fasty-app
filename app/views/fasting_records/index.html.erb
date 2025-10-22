@@ -3,34 +3,39 @@
 <% raw_cur = params[:status].presence %>
 <% cur     = normalized_status_param(raw_cur) %>
 
-<!-- スティッキーヘッダー -->
-<div class="sticky top-0 z-50 bg-white/90 backdrop-blur">
-  <!-- ← ここを relative にして、絶対配置の基準にする -->
-  <div class="relative max-w-4xl mx-auto px-4 py-2">
-    <!-- タイトルは中央寄せだけにしてOK（中央に“見える”のが目的） -->
-    <h1 class="text-center text-lg sm:text-xl font-bold">
+<!-- スティッキーヘッダー（レイアウトの共通コンテナ上に重ねるだけ） -->
+<div class="sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/50">
+  <!-- 絶対配置の基準にするため relative を付与。余白はレイアウト側で付いているのでここでは付けない -->
+  <div class="relative py-2">
+    <!-- 中央寄せタイトル -->
+    <h1 class="text-center text-xl sm:text-2xl font-bold">
       ファスティング記録一覧
     </h1>
 
-    <!-- 右端：絞り込み（絶対配置で right 固定＆縦中央） -->
-    <%= render "shared/filter_dropdown",
-          url: fasting_records_path,
-          param: :status,
-          current: cur,
-          options: status_filter_options,
-          label: "絞り込み",
-          wrapper_class: "",
-          wrapper_style: "position:absolute; right:30px; top:50%; transform:translateY(-50%);" %>
+    <!-- 右端：絞り込み（absoluteで右固定＆縦中央） -->
+    <div class="absolute right-0 top-1/2 -translate-y-1/2">
+      <%= render "shared/filter_dropdown",
+            url: fasting_records_path,
+            param: :status,
+            current: cur,
+            options: status_filter_options,
+            label: "絞り込み",
+            wrapper_class: "" %>
+    </div>
   </div>
 </div>
 
-<div class="max-w-4xl mx-auto p-4 space-y-6">
+<!-- 本文ラッパ：余白・縦スペースはここで管理（レイアウトのコンテナ内） -->
+<div class="space-y-6 sm:space-y-8">
   <% if @records.blank? %>
-    <div class="rounded-lg ring-1 ring-gray-200 bg-white/70 p-6 text-center text-gray-600">
+    <div class="rounded-2xl border border-black/10 bg-white p-6 text-center text-black/70">
       まだ記録がありません。<br class="sm:hidden">
-      <%= link_to "マイページからファスティングを開始", mypage_path, class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
+      <%= link_to "マイページからファスティングを開始",
+                  mypage_path,
+                  class: "text-blue-600 hover:text-blue-700 underline font-medium" %>
     </div>
   <% else %>
+    <!-- スマホ1列 / md以上2列 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-[minmax(8rem,auto)]">
       <%= render partial: "record", collection: @records, as: :record %>
     </div>
