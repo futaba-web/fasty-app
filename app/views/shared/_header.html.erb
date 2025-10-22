@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-50 h-16 bg-brand-header text-white shadow-sm">
+<header class="sticky top-[env(safe-area-inset-top)] z-50 h-16 bg-brand-header text-white shadow-sm">
   <div class="mx-auto max-w-[1200px] h-16 px-4 md:px-8 flex items-center gap-3">
 
     <!-- 左：ロゴ -->
@@ -9,21 +9,23 @@
     <% end %>
 
     <% if user_signed_in? %>
-      <!-- ロゴ右：メニュー（トグル） -->
-      <button type="button"
-        class="ml-2 rounded ring-1 ring-white/20 hover:ring-white/40 focus:outline-none focus:ring-2 focus:ring-white/60"
-        style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex:none"
+      <!-- モバイル：メニュートグル（md以上は非表示） -->
+      <button
+        type="button"
+        class="ml-2 md:hidden inline-flex items-center justify-center size-10 rounded-xl ring-1 ring-white/20
+               hover:ring-white/40 focus:outline-none focus:ring-2 focus:ring-white/60"
         data-menu-target="button" data-action="click->menu#toggle"
         aria-controls="site-drawer" aria-expanded="false" aria-label="メニュー">
-        <span aria-hidden="true" style="position:relative;display:block;width:18px;height:14px">
-          <span style="position:absolute;left:0;right:0;top:0;height:2px;background:#fff;border-radius:9999px"></span>
-          <span style="position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:2px;background:#fff;border-radius:9999px"></span>
-          <span style="position:absolute;left:0;right:0;bottom:0;height:2px;background:#fff;border-radius:9999px"></span>
-        </span>
+        <!-- ハンバーガーアイコン（stroke で描画して表示されるように修正） -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             class="w-5 h-5" aria-hidden="true" focusable="false" fill="none">
+          <path d="M3 6h18M3 12h18M3 18h18"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
       </button>
     <% end %>
 
-    <!-- 右：ログイン時は何も出さない。未ログイン時のみ「ログイン」 -->
+    <!-- 右：未ログイン時のみナビ（ログイン） -->
     <nav class="ml-auto flex items-center gap-6">
       <% unless user_signed_in? %>
         <%= nav_link_to "ログイン", new_user_session_path %>
