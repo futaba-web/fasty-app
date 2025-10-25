@@ -15,19 +15,19 @@ module MypagesHelper
   # ステータス文 + 見た目タイプ
   def fasting_hero(user)
     recs = fasting_records_for(user)
-    return ["ファスティングに挑戦しましょう！", :start] if recs.blank?
+    return [ "ファスティングに挑戦しましょう！", :start ] if recs.blank?
 
     if recs.where(end_time: nil).exists?
       days = consecutive_success_days(user)
-      return ["#{days + 1}日連続で、ファスティングに挑戦中です！", :ongoing]
+      return [ "#{days + 1}日連続で、ファスティングに挑戦中です！", :ongoing ]
     end
 
     last = recs.where.not(end_time: nil).maximum(:end_time)&.in_time_zone&.to_date
-    return ["今日は記録済みです。おつかれさま！", :done] if last && last >= Date.current
+    return [ "今日は記録済みです。おつかれさま！", :done ] if last && last >= Date.current
 
     days_ago = last ? (Date.current - last).to_i : nil
     msg = days_ago ? "最後にファスティングの記録をしたのは#{days_ago}日前です" : "ファスティングに挑戦しましょう！"
-    [msg, :gap]
+    [ msg, :gap ]
   end
 
   # 直近の“成功”連続日数（success列 or result='success' を自動判定）
