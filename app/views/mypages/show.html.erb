@@ -1,17 +1,23 @@
 <%# app/views/mypages/show.html.erb %>
 
 <div class="mypage-bg">
-  <!-- 上は広め / 下は最小限（pb-0） / セクション間は少しゆったり -->
-  <div class="relative max-w-3xl mx-auto px-6 pt-6 sm:pt-8 pb-0 space-y-5 sm:space-y-6">
+  <!-- 上余白はコンパクトに（pt-0）。セクション間も少しだけ詰める -->
+  <div class="relative max-w-3xl mx-auto px-6 pt-0 pb-0 space-y-4 sm:space-y-5">
 
-    <!-- ▼ ここで挨拶バーを表示（マイページ限定） -->
-    <%= render "shared/greeting", user: current_user %>
+    <!-- ▼ 挨拶バー：ヘッダー直下から少しだけ間を空ける（mt-5） -->
+    <div class="mt-5 sm:mt-6">
+      <%= render "shared/greeting", user: current_user %>
+    </div>
 
     <% title_text, kind = fasting_hero(current_user) %>
 
-    <!-- ステータスメッセージ：視認性は保ちつつ高さ控えめ -->
-    <div class="<%= hero_class_for(kind) %> !py-3 sm:!py-4" role="region" aria-label="ステータスメッセージ">
-      <h1 class="text-xl sm:text-2xl font-extrabold tracking-wide leading-tight"><%= title_text %></h1>
+    <!-- ステータスメッセージ：位置も上げつつ高さ控えめ -->
+    <div class="flex justify-center">
+      <div class="<%= hero_class_for(kind) %>" role="region" aria-label="ステータスメッセージ">
+        <h1 class="text-base sm:text-lg font-extrabold tracking-wide leading-snug">
+          <%= title_text %>
+        </h1>
+      </div>
     </div>
 
     <div class="text-gray-700">
