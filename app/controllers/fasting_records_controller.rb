@@ -39,7 +39,7 @@ class FastingRecordsController < ApplicationController
   def create
     @record = @scope.new(fasting_record_params)
     if @record.save
-      redirect_to fasting_records_path, notice: "新しい記録を登録しました"
+      redirect_to fasting_records_path, notice: "記録を追加しました"
     else
       render :new, status: :unprocessable_entity
     end
@@ -81,14 +81,14 @@ class FastingRecordsController < ApplicationController
         redirect_to long_health_notice_path(hours: hours) and return
       end
       if params[:agree_long] != "1"
-        redirect_to long_health_notice_path(hours: hours), alert: "同意チェックが必要です。" and return
+        redirect_to long_health_notice_path(hours: hours), alert: "同意が必要です。" and return
       end
     end
 
     record = @scope.new(start_time: Time.current, target_hours: hours, success: nil)
 
     if record.save
-      redirect_to mypage_path, notice: "ファスティングを開始しました"
+      redirect_to mypage_path, notice: "開始しました"
     else
       redirect_to mypage_path, alert: record.errors.full_messages.to_sentence
     end
@@ -97,7 +97,7 @@ class FastingRecordsController < ApplicationController
   # 今すぐ終了（終了時に自動で success を判定）
   def finish
     if @record.end_time.present?
-      redirect_to mypage_path, alert: "この記録はすでに終了しています。" and return
+      redirect_to mypage_path, alert: "この記録は終了済みです。" and return
     end
 
     @record.end_time = Time.current
@@ -105,7 +105,7 @@ class FastingRecordsController < ApplicationController
     @record.save!
 
     redirect_to edit_fasting_record_path(@record),
-                notice: "ファスティングを終了しました。今の気持ちをコメントしましょう"
+                notice: "終了しました。コメントをどうぞ"
   end
 
   # -----------------------------
@@ -117,9 +117,9 @@ class FastingRecordsController < ApplicationController
 
   def update_comment
     if @record.update(comment_params)
-      redirect_to @record, notice: "コメントを更新しました"
+      redirect_to @record, notice: "コメントを保存しました"
     else
-      flash.now[:alert] = "コメントを更新できませんでした"
+      flash.now[:alert] = "コメントを保存できませんでした"
       render :edit_comment, status: :unprocessable_entity
     end
   end
@@ -170,8 +170,8 @@ class FastingRecordsController < ApplicationController
     return "保存しました。" unless record.end_time.present?
 
     case record.success
-    when true  then "保存しました。達成おめでとう！🎉 いい流れ、今日は自分を褒めよう。"
-    when false then "保存しました。おつかれさま！今回は休息デー。明日に向けてリスタート！"
+    when true  then "保存しました。達成おめでとう！ "
+    when false then "保存しました。次は達成できますように！"
     else            "保存しました。"
     end
   end
