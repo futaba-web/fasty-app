@@ -12,21 +12,22 @@ module MypagesHelper
     end
   end
 
-  # ステータス文 + 見た目タイプ
+  # ステータス文 + 見た目タイプ（短文に最適化）
   def fasting_hero(user)
     recs = fasting_records_for(user)
-    return [ "ファスティングに挑戦しましょう！", :start ] if recs.blank?
+
+    return [ "今日から始めよう！", :start ] if recs.blank?
 
     if recs.where(end_time: nil).exists?
       days = consecutive_success_days(user)
-      return [ "#{days + 1}日連続で、ファスティングに挑戦中です！", :ongoing ]
+      return [ "#{days + 1}日連続で挑戦中！", :ongoing ]
     end
 
     last = recs.where.not(end_time: nil).maximum(:end_time)&.in_time_zone&.to_date
-    return [ "今日は記録済みです。おつかれさま！", :done ] if last && last >= Date.current
+    return [ "今日は記録OK。お疲れさま！", :done ] if last && last >= Date.current
 
     days_ago = last ? (Date.current - last).to_i : nil
-    msg = days_ago ? "最後にファスティングの記録をしたのは#{days_ago}日前です" : "ファスティングに挑戦しましょう！"
+    msg = days_ago ? "#{days_ago}日ぶりに再開しよう！" : "今日から始めよう！"
     [ msg, :gap ]
   end
 
@@ -55,20 +56,15 @@ module MypagesHelper
     streak
   end
 
-  # ステータスボックスの色・境界線など
+  # 見た目（クラス）
   def hero_class_for(kind)
     base = "mb-6 inline-block w-fit mx-auto rounded-2xl border p-5 sm:p-6 text-center"
     case kind
-    when :start
-      "#{base} bg-sky-50     border-sky-200     text-sky-900"
-    when :ongoing
-      "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
-    when :gap
-      "#{base} bg-amber-50   border-amber-200   text-amber-900"
-    when :done
-      "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
-    else
-      "#{base} bg-gray-50    border-gray-200    text-gray-900"
+    when :start   then "#{base} bg-sky-50     border-sky-200     text-sky-900"
+    when :ongoing then "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
+    when :gap     then "#{base} bg-amber-50   border-amber-200   text-amber-900"
+    when :done    then "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
+    else               "#{base} bg-gray-50    border-gray-200    text-gray-900"
     end
   end
 end
