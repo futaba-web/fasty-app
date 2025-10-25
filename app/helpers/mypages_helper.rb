@@ -15,7 +15,6 @@ module MypagesHelper
   # ステータス文 + 見た目タイプ
   def fasting_hero(user)
     recs = fasting_records_for(user)
-
     return [ "ファスティングに挑戦しましょう！", :start ] if recs.blank?
 
     if recs.where(end_time: nil).exists?
@@ -56,15 +55,20 @@ module MypagesHelper
     streak
   end
 
-  # 見た目
+  # ステータスボックスの色・境界線など
   def hero_class_for(kind)
-    base = "mb-6 rounded-2xl border p-5 sm:p-6 text-center"
+    base = "mb-6 inline-block w-fit mx-auto rounded-2xl border p-5 sm:p-6 text-center"
     case kind
-    when :start   then "#{base} bg-sky-50     border-sky-200     text-sky-900"
-    when :ongoing then "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
-    when :gap     then "#{base} bg-amber-50   border-amber-200   text-amber-900"
-    when :done    then "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
-    else               "#{base} bg-gray-50    border-gray-200    text-gray-900"
+    when :start
+      "#{base} bg-sky-50     border-sky-200     text-sky-900"
+    when :ongoing
+      "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
+    when :gap
+      "#{base} bg-amber-50   border-amber-200   text-amber-900"
+    when :done
+      "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
+    else
+      "#{base} bg-gray-50    border-gray-200    text-gray-900"
     end
   end
 end
