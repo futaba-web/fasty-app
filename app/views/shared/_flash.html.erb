@@ -1,14 +1,24 @@
 <!-- app/views/shared/_flash.html.erb -->
-<% flash.each do |key, message| %>
-  <% scheme =
-    case key.to_s
-    when "notice", "success" then "bg-emerald-50/90 text-emerald-900 ring-emerald-200/80"
-    when "alert", "error"    then "bg-rose-50/90    text-rose-900    ring-rose-200/80"
-    else                          "bg-white/90       text-gray-900    ring-black/10"
-    end %>
-  <div class="mx-auto max-w-5xl px-4">
-    <div class="mt-2 rounded-xl px-4 py-2 backdrop-blur-md ring-1 shadow-sm <%= scheme %>">
-      <%= message %>
-    </div>
+<% if flash.present? %>
+  <div class="mt-2 sm:mt-3 flex flex-col items-center gap-2 px-3 sm:px-4">
+    <% flash.each do |key, message| %>
+      <% next if message.blank? %>
+
+      <% scheme =
+        case key.to_s
+        when "notice", "success" then "bg-emerald-50/90 text-emerald-900 ring-emerald-200/80"
+        when "alert",  "error"   then "bg-rose-50/90    text-rose-900    ring-rose-200/80"
+        else                        "bg-white/90       text-gray-900    ring-black/10"
+        end %>
+
+      <div
+        class="pointer-events-auto inline-block w-fit max-w-[min(92vw,720px)]
+               rounded-2xl px-4 py-2 sm:px-5 sm:py-3
+               text-sm sm:text-base text-center
+               ring-1 shadow-sm backdrop-blur-md <%= scheme %>"
+        role="status" aria-live="polite">
+        <%= message %>
+      </div>
+    <% end %>
   </div>
 <% end %>
