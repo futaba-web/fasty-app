@@ -26,6 +26,33 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# ================================
+       OGP / Twitter Card（デフォルト + 上書き対応）
+       ================================= %>
+    <% meta = default_meta %>
+    <% page_title       = content_for?(:title)       ? yield(:title)       : meta[:title] %>
+    <% page_description = content_for?(:description) ? yield(:description) : meta[:description] %>
+    <% page_image       = content_for?(:og_image)    ? yield(:og_image)    : meta[:image] %>
+    <% page_url         = content_for?(:og_url)      ? yield(:og_url)      : (request&.original_url || meta[:url]) %>
+    <% page_type        = content_for?(:og_type)     ? yield(:og_type)     : "website" %>
+
+    <!-- Canonical -->
+    <link rel="canonical" href="<%= page_url %>">
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="<%= page_type %>">
+    <meta property="og:site_name"   content="<%= meta[:site_name] %>">
+    <meta property="og:title"       content="<%= page_title %>">
+    <meta property="og:description" content="<%= page_description %>">
+    <meta property="og:url"         content="<%= page_url %>">
+    <meta property="og:image"       content="<%= page_image %>">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="<%= page_title %>">
+    <meta name="twitter:description" content="<%= page_description %>">
+    <meta name="twitter:image"       content="<%= page_image %>">
   </head>
 
   <%# ===== 背景画像の切替ロジック ===== %>
