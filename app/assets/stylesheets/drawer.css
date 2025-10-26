@@ -1,4 +1,24 @@
-/* Drawer / Overlay — 固定＆全高 */
+/* ==================================================================
+   Brand tokens（共通トークン）— ヘッダー/ドロワー/ステータスの単一ソース
+   ================================================================== */
+:root{
+  --header-bg: #BDB4B2; /* ヘッダー/ドロワー/ステータス共通の背景色（必要に応じて調整） */
+  --header-on: #fff;    /* 前景（文字）色 */
+
+  /* mint button */
+  --mint-500: #49d8b7;
+  --mint-600: #2cc6a6;
+  --mint-700: #1da391;
+  --mint-ring: rgba(73, 216, 183, 0.35);
+}
+
+/* どの要素でも同色にできる汎用ユーティリティ */
+.bg-brand-header { background-color: var(--header-bg) !important; }
+.text-brand-on   { color: var(--header-on) !important; }
+
+/* ==================================================================
+   Drawer / Overlay — 固定＆全高
+   ================================================================== */
 #site-drawer{
   position: fixed !important;
   top: 0 !important; bottom: 0 !important; left: 0 !important;
@@ -19,7 +39,6 @@
   transition: transform .2s ease-out;
   z-index: 60 !important;
 }
-
 .menu-open #site-drawer{ transform: translateX(0) !important; }
 
 /* オーバーレイ */
@@ -41,18 +60,19 @@ main { margin-top: 0 !important; padding-top: 0 !important; }
 main > :first-child { margin-top: 0 !important; }
 
 /* ========= オプション（中身のリンクが横幅を広げ過ぎないように） ======== */
-/* ドロワー内のリスト/リンクが 100% 幅で広がるレイアウトなら、max-content に寄せる */
 #site-drawer nav a{ display: inline-flex; inline-size: max-content; }
 #site-drawer nav{ display: grid; gap: 20px; }
 
-/* ==== Logged-out legal footer (ultra thin) ========================= */
+/* ==================================================================
+   Logged-out legal footer (ultra thin)
+   ================================================================== */
 .footer-legal-thin{
   padding-block: .375rem;                               /* 6px */
   min-height: 32px;
   padding-bottom: calc(.375rem + env(safe-area-inset-bottom, 0px));
 }
-@media (min-width: 640px){                              /* sm~ */
-  .footer-legal-thin{ padding-block: .5rem; min-height: 36px; }    /* 8px */
+@media (min-width: 640px){
+  .footer-legal-thin{ padding-block: .5rem; min-height: 36px; }
 }
 
 /* 横並び：左にコピーライト、右端に法務リンク（折り返し禁止） */
@@ -75,7 +95,7 @@ main > :first-child { margin-top: 0 !important; }
 
 /* 右側：法務リンク群（右端へ／インライン／自然な間隔） */
 .footer-legal-thin .legal-links{
-  margin-left: auto;          /* 右端へ押し出す */
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 1.125rem;              /* 18px */
@@ -109,23 +129,17 @@ footer .footer-legal-thin .legal-wrap{ justify-content: space-between !important
 /* ==================================================================
    Header / Footer フォールバック一式（本番で Tailwind が効かなくても崩さない）
    ================================================================== */
-
-/* 色の保険：Tailwind の bg-brand-header / text-white がパージされても見えるように */
 header.bg-brand-header,
 footer.bg-brand-header{
   background-color: var(--header-bg) !important;
   color: #fff !important;
 }
-
-/* ヘッダー内のテキスト/リンク/ボタン等は白を強制（可読性担保） */
 header.bg-brand-header a,
 header.bg-brand-header nav,
 header.bg-brand-header .btn,
 header.bg-brand-header .flex{
   color: #fff !important;
 }
-
-/* ログイン前の法務フッターのリンク色も白で固定（保険） */
 footer.bg-brand-header .footer-legal-thin .legal-links a{
   color: #fff !important;
 }
@@ -133,14 +147,10 @@ footer.bg-brand-header .footer-legal-thin .legal-links a{
 /* ==================================================================
    Header: レイアウトの保険（常に横並び・右寄せ）
    ================================================================== */
-
-/* ヘッダーコンテナ（<header><div>）を横並び＆中央揃えに */
 header.bg-brand-header > div{
-  display: flex !important;             /* 横並びを強制 */
-  align-items: center !important;        /* 縦中央 */
+  display: flex !important;
+  align-items: center !important;
   gap: .75rem;
-
-  /* 高さ/余白（Tailwind の h-16 / px-4, md:px-8 相当の保険） */
   height: 64px;
   min-height: 64px;
   padding-inline: 16px;
@@ -148,24 +158,16 @@ header.bg-brand-header > div{
 @media (min-width: 768px){
   header.bg-brand-header > div{ padding-inline: 32px; }
 }
-
-/* 右側ナビを必ず右端へ＆横並び */
 header.bg-brand-header nav{
-  margin-left: auto !important;          /* 右端へ押し出す */
+  margin-left: auto !important;
   display: flex !important;
   align-items: center !important;
-  gap: 1.25rem;                           /* 20px */
+  gap: 1.25rem;
 }
-
-/* リンクの基本挙動（下線は hover 時だけ） */
 header.bg-brand-header a{ text-decoration: none; }
 header.bg-brand-header a:hover{ text-decoration: underline; }
-
-/* （保険）ヘッダー内のアイテムは縦中央に */
 header.bg-brand-header .btn,
 header.bg-brand-header .flex{ align-items: center; }
-
-/* 既存の“控えめヘッダー”の高さだけ残す（上書き順対策） */
 header.bg-brand-header > div{ padding-block: .375rem; }
 @media (min-width: 640px){
   header.bg-brand-header > div{ padding-block: .5rem; }
@@ -176,25 +178,18 @@ header.bg-brand-header > div{ padding-block: .375rem; }
 
 /* ==================================================================
    Logged-out header (landing only): compact + bold logo
-   ※ 未ログイン時だけ開発環境の見た目に寄せる
    ================================================================== */
-
-/* ランディングのヘッダーを“やや細め”に */
 body.landing-root header.bg-brand-header > div{
-  height: 56px;              /* 3.5rem：細め */
+  height: 56px;
   min-height: 56px;
-  padding-block: .25rem !important;  /* 既存のpadding-blockを上書き */
+  padding-block: .25rem !important;
 }
-
-/* 左のロゴ「Fasty」：太く・少し大きめ */
 body.landing-root header.bg-brand-header a span{
-  font-weight: 800;                                  /* しっかり太く */
-  font-size: clamp(1.25rem, 2.2vw, 1.75rem);         /* 20px〜28px */
+  font-weight: 800;
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
   letter-spacing: .02em;
   color: #fff !important;
 }
-
-/* 右の「ログイン」を右端に・白文字・hoverで下線 */
 body.landing-root header.bg-brand-header nav{
   margin-left: auto !important;
   display: flex !important;
@@ -212,7 +207,9 @@ body.landing-root header.bg-brand-header nav a:hover{
   text-decoration: underline;
 }
 
-/* ==== Bottom App Nav（ログイン後） ===================== */
+/* ==================================================================
+   Bottom App Nav / App Footer（ログイン後）
+   ================================================================== */
 .footer-app__nav{
   display: grid;
   grid-auto-flow: column;
@@ -244,236 +241,142 @@ body.landing-root header.bg-brand-header nav a:hover{
 .footer-app__link:hover svg{ transform: translateY(-1px); color:#000; }
 .footer-app__link.is-active svg{ color:#fff; filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); }
 .footer-app__link.is-active span{ color:#fff; font-weight:700; }
-/* ==== App Footer（ログイン後）: safe-area & タップしやすさ ================= */
 .footer-app{
-  padding-block: .5rem; /* ≒ py-2 */
-  /* iOS 下部安全域を考慮 */
+  padding-block: .5rem;
   padding-bottom: calc(.5rem + env(safe-area-inset-bottom, 0px));
   min-height: 52px;
 }
-
-.pb-safe{
-  /* utility 代替：安全域だけ欲しい所にクラスで適用 */
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0px);
-}
-
-/* フォーカスリング（キーボード操作のアクセシビリティ） */
+.pb-safe{ padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0px); }
 .footer-app__link:focus-visible{
   outline: 2px solid rgba(255,255,255,.9);
   outline-offset: 3px;
   border-radius: 12px;
 }
-
-/* 端末幅が極小の時はアイコン群の間隔をやや詰める */
 @media (max-width: 360px){
   .footer-app__nav{ gap: 1.25rem; }
 }
 
-
-/* ====== 記録詳細ページ ====== */
-
-/* 実測値をここで一元管理（必要なら既存値に合わせて変更） */
+/* ==================================================================
+   記録詳細ページ 共通スタイル
+   ================================================================== */
 :root{
-  --vh-header: 64px;      /* ヘッダー高さ */
-  --vh-tabbar: 6rem;      /* 下タブバー高さ（約96px） */
-  --record-gap: 1.25rem;  /* 各行の上下間隔（Tailwind mt-5 相当） */
+  --vh-header: 64px;
+  --vh-tabbar: 6rem;
+  --record-gap: 1.25rem;
 }
-
-/* ページ全体：ヘッダー / 本文 / シェア の3行グリッド */
 .record-page{
   min-height: calc(100dvh - var(--vh-header) - var(--vh-tabbar));
   display: grid;
   grid-template-rows: auto 1fr auto;
-  row-gap: 1.25rem;                           /* ヘッダーと本文、本文とシェアの間隔 */
+  row-gap: 1.25rem;
   padding: 0 1rem;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
-
-/* 100dvh 非対応ブラウザのゆるいフォールバック */
 @supports not (height: 100dvh){
   .record-page{ min-height: calc(100vh - var(--vh-header) - var(--vh-tabbar)); }
 }
-
-/* ===== ヘッダー：タイトル＋右のアイコン ===== */
 .record-header{
   display: flex;
-  align-items: center;          /* タイトルとアイコンを縦方向に中央揃え */
-  justify-content: center;      /* まとまりを中央へ */
+  align-items: center;
+  justify-content: center;
   gap: .5rem;
   margin-top: 1rem;
 }
-
 .record-title{
-  margin: 0;                    /* ずれの原因をリセット */
+  margin: 0;
   text-align: center;
   font-weight: 700;
   font-size: clamp(1.125rem, 1vw + 1rem, 1.5rem);
   line-height: 1.2;
 }
-
-/* タイトル右のツールバー */
-.record-toolbar{
-  display: inline-flex;
-  gap: .5rem;
-}
-
-/* アイコンボタン（編集・削除） */
+.record-toolbar{ display: inline-flex; gap: .5rem; }
 .icon-btn{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.875rem;              /* 30px */
-  height: 1.875rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.875rem; height: 1.875rem;
   border-radius: .5rem;
-  background: #f3f4f6;          /* gray-100/200 */
-  color: #374151;               /* gray-700 */
+  background: #f3f4f6; color: #374151;
   text-decoration: none;
   transition: background .15s ease, transform .05s ease;
 }
 .icon-btn:hover{ background:#e5e7eb; }
 .icon-btn:active{ transform: translateY(1px); }
+.icon-btn.icon-btn--danger{ background:#fee2e2; }
+.icon-btn.icon-btn--danger:hover{ background:#fecaca; }
 
-/* 危険操作(削除)だけ配色差し替え */
-.icon-btn.icon-btn--danger{ background:#fee2e2; }   /* rose-100 */
-.icon-btn.icon-btn--danger:hover{ background:#fecaca; } /* rose-200 */
-
-/* ====== 記録詳細ページ（詳細ブロックだけ上寄せ + 各項目 mt-5） ====== */
-
-/* 一元管理用の変数（mt-5 相当の行間） */
-:root{
-  --record-gap: 1.25rem;   /* 20px 相当（Tailwind mt-5） */
-}
-
-/* --- 本文：中央に置くレイヤー（x は中央のまま） --- */
-.record-center{
-  display: grid;
-  place-content: center;     /* 縦横ど真ん中に配置（x はこれで中央維持） */
-  min-height: 0;
-}
-
-/* 詳細の束だけ、y 方向に少し上へ（タイトル/シェアは動かさない） */
-.record-body{
-  transform: translateY(-1rem);  /* 12px 上へ。好みで -0.5rem / -1rem 等に */
-  will-change: transform;
-  margin-bottom: .25rem;            /* 近づけすぎ防止の微調整（任意） */
-}
-
-/* 画面広めではほんの少しだけ追加で上へ（任意） */
-@media (min-width: 640px){
-  .record-body{ transform: translateY(-1rem); }  /* 16px */
-}
-
-/* 中身サイズの箱は中央に。テキストは左揃え */
-.record-box{
-  display: block;
-  width: -moz-fit-content;
-  width: fit-content;
-  margin-inline: auto;       /* x 中央 */
-  text-align: left;
-}
-
-/* ▼ 各項目の縦余白（mt-5 相当）。詳細行のみを対象にする */
-.record-body > .record-line + .record-line{
-  margin-top: var(--record-gap);
-}
-
-/* 行レイアウト共通 */
-.record-line{
-  display: flex;
-  align-items: baseline;
-  gap: .75rem;
-}
-
-/* ラベル/値の色など */
-.record-label{ color:#64748b; flex:0 0 auto; }   /* slate-500 */
-.record-value{ color:#111827; }                  /* gray-900 */
-
-/* コメントの吹き出し */
+:root{ --record-gap: 1.25rem; }
+.record-center{ display: grid; place-content: center; min-height: 0; }
+.record-body{ transform: translateY(-1rem); will-change: transform; margin-bottom: .25rem; }
+@media (min-width: 640px){ .record-body{ transform: translateY(-1rem); } }
+.record-box{ display:block; width: -moz-fit-content; width: fit-content; margin-inline: auto; text-align: left; }
+.record-body > .record-line + .record-line{ margin-top: var(--record-gap); }
+.record-line{ display:flex; align-items: baseline; gap: .75rem; }
+.record-label{ color:#64748b; flex:0 0 auto; }
+.record-value{ color:#111827; }
 .record-comment{
-  display: inline-block;
-  border: 1px solid #e5e7eb;                      /* gray-200 */
-  background: #f9fafb;                            /* gray-50 */
-  padding: .5rem .75rem;
-  border-radius: .5rem;
-  color: #111827;
-  white-space: pre-wrap;
-  word-break: break-word;
+  display:inline-block; border:1px solid #e5e7eb; background:#f9fafb;
+  padding:.5rem .75rem; border-radius:.5rem; color:#111827;
+  white-space: pre-wrap; word-break: break-word;
 }
-
-/* --- 下部：結果をシェア（位置はキープ） --- */
-.record-share{
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
-}
-
-/* X ボタン（ピル型） */
+.record-share{ margin-top:2rem; display:flex; justify-content:center; }
 a.btn-x{
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .625rem 1.25rem;
-  border-radius: 9999px;
-  background: #000;
-  color: #fff;
-  font-weight: 500;
-  box-shadow: 0 1px 3px rgb(0 0 0 / .15);
-  text-decoration: none;
-  transition: background .2s ease, opacity .2s ease;
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.625rem 1.25rem; border-radius:9999px; background:#000; color:#fff;
+  font-weight:500; box-shadow:0 1px 3px rgb(0 0 0 / .15);
+  text-decoration:none; transition: background .2s ease, opacity .2s ease;
 }
 a.btn-x:hover{ background:#222; opacity:.95; }
 a.btn-x svg{ width:18px; height:18px; }
-/* ===== Buttons (legacy utility) ===== */
+
+/* ==================================================================
+   Buttons（レガシー共通ユーティリティ）
+   ================================================================== */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: .75rem 1.25rem;
-  border-radius: .5rem;           /* rounded-md 相当 */
-  font-weight: 600;
-  line-height: 1.25;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid transparent;
-  color: #fff;
-  background-color: #334155;      /* slate-700 相当（デフォルト） */
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  padding: .75rem 1.25rem; border-radius: .5rem;
+  font-weight: 600; line-height: 1.25; text-decoration: none; cursor: pointer;
+  border: 1px solid transparent; color: #fff;
+  background-color: #334155; /* slate-700 */
   transition: background-color .2s ease, box-shadow .2s ease, transform .02s ease;
 }
-.btn:hover { background-color: #1f2937; }     /* slate-800 */
+.btn:hover { background-color: #1f2937; } /* slate-800 */
 .btn:active { transform: translateY(1px); }
 .btn:focus-visible {
   outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px rgba(59,130,246,.45); /* focus ring */
+  box-shadow: 0 0 0 3px rgba(59,130,246,.45);
 }
 
 /* size */
-.btn-lg {
-  padding: .875rem 1.5rem;
-  font-size: 1rem;
-}
+.btn-lg { padding: .875rem 1.5rem; font-size: 1rem; }
 
 /* full-width on mobile, auto on ≥640px */
 .btn-wrap { width: 100%; }
-@media (min-width: 640px) {
-  .btn-wrap { width: auto; }
-}
+@media (min-width: 640px) { .btn-wrap { width: auto; } }
 
 /* variants */
 .btn-primary {
-  background-color: #2563eb;                /* blue-600 */
-  border-color: #2563eb;
+  background-color: #2563eb; border-color: #2563eb; /* blue-600 */
 }
 .btn-primary:hover { background-color: #1d4ed8; }  /* blue-700 */
 
 .btn-danger {
-  background-color: #dc2626;                /* red-600 */
-  border-color: #dc2626;
+  background-color: #dc2626; border-color: #dc2626; /* red-600 */
 }
 .btn-danger:hover { background-color: #b91c1c; }   /* red-700 */
 
-/* disabled */
-.btn[disabled], .btn:disabled {
-  opacity: .6;
-  cursor: not-allowed;
+/* mint（「ファスティング開始」ボタン用） */
+.btn-mint{
+  background-color: var(--mint-500);
+  color: #fff;
+  border-radius: 0.75rem;        /* rounded-xl 風 */
+  padding: 0.75rem 1.5rem;       /* btn-lg 相当 */
+  font-weight: 700;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  transition: background-color .15s ease, transform .06s ease, box-shadow .15s ease;
 }
+.btn-mint:hover{ background-color: var(--mint-600); box-shadow: 0 8px 18px rgba(0,0,0,0.12); }
+.btn-mint:active{ background-color: var(--mint-700); transform: translateY(1px); }
+.btn-mint:disabled{ opacity: .6; cursor: not-allowed; }
+.btn-mint:focus-visible{ outline: 3px solid var(--mint-ring); outline-offset: 2px; }
+
+/* disabled */
+.btn[disabled], .btn:disabled { opacity: .6; cursor: not-allowed; }

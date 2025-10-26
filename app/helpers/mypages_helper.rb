@@ -57,14 +57,31 @@ module MypagesHelper
   end
 
   # 見た目（クラス）
-  def hero_class_for(kind)
-    base = "mb-6 inline-block w-fit mx-auto rounded-2xl border p-5 sm:p-6 text-center"
+  # theme: :neutral の場合はヘッダー同色＋白文字で統一し、状態は別ドットで表現
+  def hero_class_for(kind, theme: :neutral)
+    # ワンサイズ大きめ：px-6/py-3.5、影を少し強めに
+    base = "mb-6 inline-flex items-center gap-2 w-fit mx-auto rounded-2xl px-6 py-3.5 text-center shadow-md"
+    return "#{base} bg-brand-header text-white" if theme == :neutral
+    # return "#{base} bg-brand-header text-brand-on" でもOK（共通ユーティリティ使用時）
+
+    # 既存の色分けを残したいとき用（未使用なら削ってOK）
     case kind
-    when :start   then "#{base} bg-sky-50     border-sky-200     text-sky-900"
-    when :ongoing then "#{base} bg-emerald-50 border-emerald-200 text-emerald-900"
-    when :gap     then "#{base} bg-amber-50   border-amber-200   text-amber-900"
-    when :done    then "#{base} bg-indigo-50  border-indigo-200  text-indigo-900"
-    else               "#{base} bg-gray-50    border-gray-200    text-gray-900"
+    when :start   then "#{base} bg-sky-50     border border-sky-200     text-sky-900"
+    when :ongoing then "#{base} bg-emerald-50 border border-emerald-200 text-emerald-900"
+    when :gap     then "#{base} bg-amber-50   border border-amber-200   text-amber-900"
+    when :done    then "#{base} bg-indigo-50  border border-indigo-200  text-indigo-900"
+    else               "#{base} bg-gray-50    border border-gray-200    text-gray-900"
+    end
+  end
+
+  # 状態ドットの色（さりげなく区別）— ドットも少し大きく
+  def status_dot_color(kind)
+    case kind
+    when :start   then "bg-sky-300"
+    when :ongoing then "bg-emerald-300"
+    when :gap     then "bg-amber-300"
+    when :done    then "bg-indigo-300"
+    else               "bg-slate-300"
     end
   end
 end
