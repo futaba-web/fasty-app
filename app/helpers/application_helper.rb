@@ -193,4 +193,14 @@ module ApplicationHelper
     return nil unless record.start_time.present? && record.end_time.present?
     ((record.end_time - record.start_time) / 3600.0).round(1)
   end
+
+  def default_meta
+    {
+      site_name:   "Fasty",
+      title:       "Fasty — ファスティング×瞑想で内側からきれいを育てる",
+      description: "断食と瞑想をやさしく続けられる記録アプリ。開始→終了→一言コメントだけのミニマル体験で、毎日の継続をサポートします。",
+      image:       image_url("ogp/fasty_ogp.png"), # 1200x630
+      url:         root_url
+    }
+  end
 end
