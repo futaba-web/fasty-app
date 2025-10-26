@@ -275,4 +275,27 @@
         rgba(244,241,237,0.18) 100%
       );
   }
+  /* ==== Mint button (優しいミント系) =============================== */
+:root{
+  /* コントラスト確保しつつ柔らかい帯域 */
+  --mint-500: #49d8b7; /* base */
+  --mint-600: #2cc6a6; /* hover */
+  --mint-700: #1da391; /* active */
+  --mint-ring: rgba(73, 216, 183, 0.35);
+}
+
+.btn-mint{
+  background-color: var(--mint-500);
+  color: #fff;
+  border-radius: 0.75rem; /*  rounded-xl 的な */
+  padding: 0.75rem 1.5rem; /* btn-lg に寄せる */
+  font-weight: 700;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  transition: background-color .15s ease, transform .06s ease, box-shadow .15s ease;
+}
+
+.btn-mint:hover{ background-color: var(--mint-600); box-shadow: 0 8px 18px rgba(0,0,0,0.12); }
+.btn-mint:active{ background-color: var(--mint-700); transform: translateY(1px); }
+.btn-mint:disabled{ opacity: .6; cursor: not-allowed; }
+.btn-mint:focus-visible{ outline: 3px solid var(--mint-ring); outline-offset: 2px; }
 }
