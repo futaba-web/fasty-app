@@ -120,32 +120,47 @@ module ApplicationHelper
     content_tag(:span, svg.html_safe, class: classes)
   end
 
-  # X共有用URLを作る
-  def x_share_url(record)
-    parts = []
-    parts << "この日の記録"
-    parts << "開始: #{fmt_md_wday_hm(record.start_time)}" if record.start_time.present?
-    parts << "終了: #{fmt_md_wday_hm(record.end_time)}"   if record.end_time.present?
-    parts << "目標: #{hours_ja(record.target_hours)}"     if record.target_hours.present?
+  #========================
+  # ここからシェア機能
+  #========================
 
-    if record.start_time.present? && record.end_time.present?
-      duration_h  = ((record.end_time - record.start_time) / 3600.0).round(1)
-      hours_label = (duration_h % 1).zero? ? "#{duration_h.to_i}時間" : "#{duration_h}時間"
-      result_txt  =
-        case record.success
-        when true  then "達成"
-        when false then "失敗"
-        else            "-"
-        end
-      parts << "結果: #{hours_label} #{result_txt}"
+  # 達成/未達成で投稿本文を出し分け
+  def x_share_text(record)
+    goal_label = hours_ja(record.target_hours) # 例: "16時間"
+    # 7.8 → "7.8時間"（もっと厳密に「7時間48分」にしたければ human_duration で拡張可）
+    dur_h = calculated_duration_hours(record)
+    result_label =
+      if dur_h
+        (dur_h % 1).zero? ? "#{dur_h.to_i}時間" : "#{dur_h}時間"
+      else
+        "—"
+      end
+
+    tags = "#Fasty #ファスティング #瞑想 #習慣化"
+
+    if record_success?(record)
+      # 🟢 達成時
+      <<~TEXT.squish
+        🌿 ファスティング #{goal_label} 達成✨
+        今日もコツコツ、自分を整える日☺️
+        #{tags}
+      TEXT
+    else
+      # 🔴 未達成時
+      <<~TEXT.squish
+        今日は未達成（#{result_label}）🥲
+        でも失敗も記録の一部。明日また積み重ねよう🍃
+        #{tags}
+      TEXT
     end
+  end
 
-    parts << "コメント: #{record.comment.to_s.strip}" if record.comment.present?
+  # X共有用intent URL（本文＋対象ページURL）
+  def x_share_url(record)
+    text = x_share_text(record)
+    url  = fasting_record_url(record) # OGPでプレビューされる
 
-    text = parts.join(" / ")
-    url  = fasting_record_url(record)
-
-    "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(text)}&url=#{ERB::Util.url_encode(url)}"
+    "https://x.com/intent/tweet?text=#{ERB::Util.url_encode(text)}&url=#{ERB::Util.url_encode(url)}"
   end
 
   def share_to_x_button(record)
@@ -158,5 +173,24 @@ module ApplicationHelper
             data: { turbo: false } do
       safe_join([ svg.html_safe, content_tag(:span, "結果をシェア") ])
     end
+  end
+
+  private
+
+  # 成否を安全に判定（:success / :is_success どちらでも可）
+  def record_success?(record)
+    if record.respond_to?(:success)
+      record.success == true
+    elsif record.respond_to?(:is_success)
+      record.is_success == true
+    else
+      false
+    end
+  end
+
+  # start_time と end_time から小数時間を算出（例: 7.8）。不明なら nil
+  def calculated_duration_hours(record)
+    return nil unless record.start_time.present? && record.end_time.present?
+    ((record.end_time - record.start_time) / 3600.0).round(1)
   end
 end
