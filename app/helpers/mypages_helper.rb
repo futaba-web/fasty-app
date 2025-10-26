@@ -59,8 +59,10 @@ module MypagesHelper
   # 見た目（クラス）
   # theme: :neutral の場合はヘッダー同色＋白文字で統一し、状態は別ドットで表現
   def hero_class_for(kind, theme: :neutral)
-    base = "mb-6 inline-flex items-center gap-2 w-fit mx-auto rounded-2xl px-5 py-3 text-center shadow-sm"
+    # ワンサイズ大きめ：px-6/py-3.5、影を少し強めに
+    base = "mb-6 inline-flex items-center gap-2 w-fit mx-auto rounded-2xl px-6 py-3.5 text-center shadow-md"
     return "#{base} bg-brand-header text-white" if theme == :neutral
+    # return "#{base} bg-brand-header text-brand-on" でもOK（共通ユーティリティ使用時）
 
     # 既存の色分けを残したいとき用（未使用なら削ってOK）
     case kind
@@ -72,7 +74,7 @@ module MypagesHelper
     end
   end
 
-  # 状態ドットの色（さりげなく区別）
+  # 状態ドットの色（さりげなく区別）— ドットも少し大きく
   def status_dot_color(kind)
     case kind
     when :start   then "bg-sky-300"

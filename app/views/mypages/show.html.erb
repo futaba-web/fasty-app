@@ -11,11 +11,10 @@
 
     <% title_text, kind = fasting_hero(current_user) %>
 
-    <!-- ステータスメッセージ：ヘッダー同色＋白文字／状態はドット -->
+    <!-- ステータスメッセージ：ヘッダー同色＋白文字／ドットのみ -->
     <div class="flex justify-center">
       <div class="<%= hero_class_for(kind, theme: :neutral) %>"
            role="region" aria-label="ステータスメッセージ">
-        <span class="sr-only">状態</span>
         <span class="w-2.5 h-2.5 rounded-full <%= status_dot_color(kind) %>"></span>
         <h1 class="text-base sm:text-lg font-extrabold tracking-wide leading-snug">
           <%= title_text %>
