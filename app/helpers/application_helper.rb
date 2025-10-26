@@ -159,7 +159,6 @@ module ApplicationHelper
   def x_share_url(record)
     text = x_share_text(record)
     url  = fasting_record_url(record) # OGPでプレビューされる
-
     "https://x.com/intent/tweet?text=#{ERB::Util.url_encode(text)}&url=#{ERB::Util.url_encode(url)}"
   end
 
@@ -194,13 +193,28 @@ module ApplicationHelper
     ((record.end_time - record.start_time) / 3600.0).round(1)
   end
 
+  #========================
+  # OGP/Twitterカードの既定値
+  #========================
   def default_meta
+    base = request&.base_url || "https://#{ENV.fetch('APP_HOST', 'fasty-web.onrender.com')}"
+    home =
+      if respond_to?(:authenticated_root_url) && defined?(user_signed_in?) && user_signed_in?
+        authenticated_root_url
+      elsif respond_to?(:unauthenticated_root_url)
+        unauthenticated_root_url
+      elsif respond_to?(:root_url)
+        root_url
+      else
+        "#{base}/"
+      end
+
     {
       site_name:   "Fasty",
       title:       "Fasty — ファスティング×瞑想で内側からきれいを育てる",
       description: "断食と瞑想をやさしく続けられる記録アプリ。開始→終了→一言コメントだけのミニマル体験で、毎日の継続をサポートします。",
-      image:       image_url("ogp/fasty_ogp.png"), # 1200x630
-      url:         root_url
+      image:       image_url("ogp/fasty_ogp.png"),
+      url:         home
     }
   end
 end
