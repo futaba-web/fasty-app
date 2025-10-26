@@ -9,14 +9,14 @@
     <% end %>
 
     <% if user_signed_in? %>
-      <!-- モバイル：メニュートグル（md以上は非表示） -->
+      <!-- メニュートグル（モバイル/PC共通で表示） -->
       <button
         type="button"
-        class="ml-2 md:hidden inline-flex items-center justify-center size-10 rounded-xl ring-1 ring-white/20
+        class="ml-2 inline-flex items-center justify-center size-10 rounded-xl ring-1 ring-white/20
                hover:ring-white/40 focus:outline-none focus:ring-2 focus:ring-white/60"
         data-menu-target="button" data-action="click->menu#toggle"
         aria-controls="site-drawer" aria-expanded="false" aria-label="メニュー">
-        <!-- ハンバーガーアイコン（stroke で描画して表示されるように修正） -->
+        <!-- ハンバーガー（stroke描画で確実に見える） -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
              class="w-5 h-5" aria-hidden="true" focusable="false" fill="none">
           <path d="M3 6h18M3 12h18M3 18h18"
