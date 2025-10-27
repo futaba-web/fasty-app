@@ -7,25 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0ea5e9">
+    <meta name="theme-color" content="#16a34a"><!-- manifest と合わせる -->
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# --- CSS (Sprockets) : Tailwind -> 各ページCSS --- %>
+    <!-- CSS (Sprockets/Tailwind) -->
     <%= stylesheet_link_tag "tailwind", "application", "layout", "drawer", "landing", "devise", "data-turbo-track": "reload" %>
 
-    <%# 画面個別で <head> 追記したい場合に使用 %>
+    <!-- 画面個別で <head> 追記したい場合に使用 -->
     <%= yield :head %>
 
-    <%# --- JS (importmap) --- %>
+    <!-- JS (importmap) -->
     <%= javascript_importmap_tags %>
 
-    <%# --- PWA / Icons --- %>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <!-- PWA / Icons -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml"><!-- SVG優先 -->
+    <link rel="icon" href="/icon.png" type="image/png"><!-- フォールバック -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 
     <%# ================================
        OGP / Twitter Card（デフォルト + 上書き対応）
@@ -56,11 +56,11 @@
   </head>
 
   <%# ===== 背景画像の切替ロジック ===== %>
-  <% landing       = (controller_path == "pages" && action_name == "home") %>  <%# 未ログインのトップ %>
-  <% default_bg    = asset_path("landing/hero.jpg") %>                          <%# 未ログイン用 %>
-  <% authed_bg     = asset_path("landing/hero-authed.png") %>                   <%# ログイン後用 %>
-  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>  <%# 個別指定があれば最優先 %>
-  <% auth_page     = (respond_to?(:devise_controller?) && devise_controller?) %><%# Devise 画面 %>
+  <% landing       = (controller_path == "pages" && action_name == "home") %>
+  <% default_bg    = asset_path("landing/hero.jpg") %>
+  <% authed_bg     = asset_path("landing/hero-authed.png") %>
+  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>
+  <% auth_page     = (respond_to?(:devise_controller?) && devise_controller?) %>
 
   <% show_hero = landing || auth_page || user_signed_in? || page_override.present? %>
   <% bg_url    = page_override || (user_signed_in? ? authed_bg : default_bg) %>
@@ -81,7 +81,7 @@
         <%= render "shared/flash" %>
       </div>
 
-      <!-- ▼ 共通コンテナ: すべてのページ本文はこの中に出る -->
+      <!-- ▼ 共通コンテナ -->
       <div class="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <%= yield %>
       </div>
@@ -90,5 +90,14 @@
     <footer class="mt-auto">
       <%= render "shared/footer" %>
     </footer>
+
+    <!-- Service Worker 登録 -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
   </body>
 </html>
