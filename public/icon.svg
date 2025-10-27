@@ -1,3 +1,14 @@
-<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" fill="red"/>
+<!-- public/icon.svg : Leaf + Clock -->
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fasty logo: leaf and fasting clock">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="232" fill="#16a34a"/>
+  <!-- Leaf -->
+  <path d="M331 201c-52 5-98 41-115 89-3 9-12 15-22 15-12 0-22-10-22-22 0-83 75-150 159-150 14 0 27 2 39 5-6 26-19 47-39 63z"
+        fill="#ffffff" opacity=".95"/>
+  <!-- Leaf vein -->
+  <path d="M292 184c-37 20-78 71-90 122" stroke="#ffffff" stroke-opacity=".9" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <!-- Fasting clock -->
+  <circle cx="346" cy="302" r="64" fill="none" stroke="#ffffff" stroke-width="16"/>
+  <path d="M346 302 V258" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <path d="M346 302 h36" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
 </svg>
