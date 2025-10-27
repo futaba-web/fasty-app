@@ -1,5 +1,5 @@
 // public/service-worker.js
-const CACHE_VERSION = 'v5';                 // 更新時は番号を上げる
+const CACHE_VERSION = 'v7';                 // 更新時は番号を上げる
 const CACHE_NAME = `fasty-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
