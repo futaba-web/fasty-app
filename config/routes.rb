@@ -18,7 +18,7 @@ Rails.application.routes.draw do
 
   # --- 健康と安全（同意フロー / 単数リソース） ---
   resource :health_notice,
-           only: [:show, :create],
+           only: [ :show, :create ],
            controller: "health_notice",
            path: "health-notice" do
     get :long
