@@ -17,5 +17,10 @@
       <%= link_to "ログイン", new_user_session_path,
             class: "btn-hero btn-hero--login" %>
     </div>
+
+    <!-- Googleでログイン（下段・中央寄せ） -->
+    <div class="hero__oauth mt-4 flex justify-center">
+      <%= render "shared/google_sign_in" %>
+    </div>
   </div>
 </section>

@@ -15,6 +15,7 @@ ja:
       signed_out: "ログアウトしました。"
       new:
         sign_in: "ログイン"
+
     mailer:
       reset_password_instructions:
         subject: "【Fasty】パスワード再設定のご案内"
@@ -58,3 +59,12 @@ ja:
         forgot_your_password: "パスワードをお忘れの方はこちら"
         resend_confirmation: "確認メールを再送する"
         resend_unlock: "アンロック手順メールを再送する"
+
+    # ▼ 追加：OmniAuth（GoogleなどSNSログイン）のフラッシュ文言
+    omniauth_callbacks:
+      # resource名（user）付き／無しの両方を用意しておくと確実
+      success: "%{kind}でログインしました。"
+      failure: "%{kind}でのログインに失敗しました: %{reason}"
+      user:
+        success: "%{kind}でログインしました。"
+        failure: "%{kind}でのログインに失敗しました: %{reason}"

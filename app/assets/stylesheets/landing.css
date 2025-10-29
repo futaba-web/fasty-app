@@ -12,6 +12,15 @@
     --hero-veil-alpha: .08;
     --hero-veil-w: 1100px;
     --hero-veil-h: 520px;
+
+    /* Mint palette（共通） */
+    --mint-500: #49d8b7; /* base */
+    --mint-600: #2cc6a6; /* hover */
+    --mint-700: #1da391; /* active */
+    --mint-ring: rgba(73, 216, 183, 0.35);
+
+    /* Login outline color（ログイン/Google で共通化） */
+    --login-outline: #2bb7a9;
   }
   @media (min-width: 768px) {
     :root { --hero-blur: 1px; --hero-fog: .02; }
@@ -131,15 +140,15 @@
       0 1px 0 rgba(255,255,255,.80),
       0 0 8px rgba(255,255,255,.22);
 
-    text-wrap: balance;        /* 対応ブラウザでバランスよく改行 */
-    word-break: keep-all;      /* 日本語の不自然改行を抑制 */
-    letter-spacing: .01em;     /* ほんの少しだけ詰める */
+    text-wrap: balance;
+    word-break: keep-all;
+    letter-spacing: .01em;
   }
 
   /* 2) “✅”をぶら下げインデントにして、2行目以降が揃う */
   body.landing-root .hero__bullets li{
-    text-indent: 0;       /* 先頭アイコン分だけ突出 */
-    padding-left: 0;       /* 本文開始位置を揃える（上と対） */
+    text-indent: 0;
+    padding-left: 0;
   }
 
   /* 3) 超狭幅で少しだけコンパクトに＆行長を制御 */
@@ -147,7 +156,7 @@
     body.landing-root .hero__bullets{
       gap: .45rem;
       line-height: 1.6;
-      max-width: 26ch;         /* 文字数ベースで均等に 1〜2 行へ */
+      max-width: 26ch;
       margin-inline: auto;
     }
   }
@@ -191,7 +200,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
-    min-width: auto;           /* 固定幅をやめる */
+    min-width: auto;
     width: auto;
     white-space: nowrap;
     flex: 0 0 auto;
@@ -204,11 +213,11 @@
     line-height: 1;
     text-decoration: none;
 
-    min-height: 44px;          /* タップ領域の保険 */
+    min-height: 44px;
     box-shadow: 0 10px 28px rgba(0,0,0,.08);
     transition: transform .15s ease, box-shadow .15s ease,
                 background-color .15s ease, color .15s ease, border-color .15s ease;
-    max-width: 90vw;           /* 極端に狭い時の保険 */
+    max-width: 90vw;
   }
   body.landing-root .hero__cta .btn-hero:active{
     transform: scale(.99);
@@ -216,7 +225,7 @@
 
   /* 新規登録（塗り） */
   body.landing-root .hero__cta .btn-mint.btn-hero{
-    background: #2bd4c3; color: #fff; border: 2px solid transparent;
+    background: var(--mint-500); color: #fff; border: 2px solid transparent;
     box-shadow: 0 12px 34px rgba(43,212,195,.38);
   }
   body.landing-root .hero__cta .btn-mint.btn-hero:hover{
@@ -226,12 +235,52 @@
 
   /* ログイン（アウトライン） */
   body.landing-root .hero__cta .btn-hero--login{
-    background: #fff; color: #2bb7a9; border: 2px solid #2bb7a9;
+    background: #fff; color: var(--login-outline); border: 2px solid var(--login-outline);
   }
   body.landing-root .hero__cta .btn-hero--login:hover{
     background: #f8fffd;
     box-shadow: 0 12px 28px rgba(43,212,195,.20);
     transform: translateY(-1px);
+  }
+
+  /* === Google でログイン（アウトライン：ログインと同じ見た目） === */
+  body.landing-root .hero__oauth{
+    margin-top: clamp(10px, 2vw, 16px);
+    display: flex;
+    justify-content: center;
+  }
+
+  body.landing-root .hero__oauth .btn-google{
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 9999px;
+    background: #fff;
+    color: var(--login-outline);
+    border: 2px solid var(--login-outline);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: .02em;
+    line-height: 1;
+    box-shadow: 0 12px 28px rgba(43,212,195,.20);
+    transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+  }
+  body.landing-root .hero__oauth .btn-google:hover{
+    background: #f8fffd;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 40px rgba(43,212,195,.24);
+  }
+  body.landing-root .hero__oauth .btn-google:active{
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  body.landing-root .hero__oauth .btn-google .g-icon{
+    width: 20px; height: 20px;
+  }
+  body.landing-root .hero__oauth .btn-google .text{
+    font-size: 16px;
   }
 
   /* アニメ軽減設定に合わせてモーションを弱める */
@@ -240,6 +289,13 @@
       transition: none;
     }
     body.landing-root .hero__cta .btn-hero:hover{
+      transform: none;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+    body.landing-root .hero__oauth .btn-google{
+      transition: none;
+    }
+    body.landing-root .hero__oauth .btn-google:hover{
       transform: none;
       box-shadow: 0 0 0 rgba(0,0,0,0);
     }
@@ -275,27 +331,122 @@
         rgba(244,241,237,0.18) 100%
       );
   }
-  /* ==== Mint button (優しいミント系) =============================== */
-:root{
-  /* コントラスト確保しつつ柔らかい帯域 */
-  --mint-500: #49d8b7; /* base */
-  --mint-600: #2cc6a6; /* hover */
-  --mint-700: #1da391; /* active */
-  --mint-ring: rgba(73, 216, 183, 0.35);
+
+  /* ==== Mint button（汎用） =============================== */
+  .btn-mint{
+    background-color: var(--mint-500);
+    color: #fff;
+    border-radius: 0.75rem; /* rounded-xl 的な */
+    padding: 0.75rem 1.5rem; /* btn-lg に寄せる */
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    transition: background-color .15s ease, transform .06s ease, box-shadow .15s ease;
+  }
+  .btn-mint:hover{ background-color: var(--mint-600); box-shadow: 0 8px 18px rgba(0,0,0,0.12); }
+  .btn-mint:active{ background-color: var(--mint-700); transform: translateY(1px); }
+  .btn-mint:disabled{ opacity: .6; cursor: not-allowed; }
+  .btn-mint:focus-visible{ outline: 3px solid var(--mint-ring); outline-offset: 2px; }
+}
+/* ===== Devise: OAuth button (Google) =================== */
+
+/* デフォは左寄せ */
+.devise-oauth{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  margin-top:10px;
 }
 
-.btn-mint{
-  background-color: var(--mint-500);
-  color: #fff;
-  border-radius: 0.75rem; /*  rounded-xl 的な */
-  padding: 0.75rem 1.5rem; /* btn-lg に寄せる */
-  font-weight: 700;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-  transition: background-color .15s ease, transform .06s ease, box-shadow .15s ease;
+/* 任意で中央寄せにしたい時だけこのクラスを付与 */
+.devise-oauth--center{
+  display:flex;
+  justify-content:center;
 }
 
-.btn-mint:hover{ background-color: var(--mint-600); box-shadow: 0 8px 18px rgba(0,0,0,0.12); }
-.btn-mint:active{ background-color: var(--mint-700); transform: translateY(1px); }
-.btn-mint:disabled{ opacity: .6; cursor: not-allowed; }
-.btn-mint:focus-visible{ outline: 3px solid var(--mint-ring); outline-offset: 2px; }
+/* ---------- ボタン共通 ---------- */
+.oauth-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:.55rem;
+  border-radius:9999px;
+  padding:.68rem 1.1rem;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+  border:2px solid transparent;
+  background:#fff;
+  color:#111;
+  box-shadow:0 10px 24px rgba(0,0,0,.05);
+  transition:
+    transform .12s ease,
+    box-shadow .15s ease,
+    background-color .15s ease,
+    color .15s ease,
+    border-color .15s ease;
+}
+
+/* ---------- ミントのアウトライン（ログインと統一） ---------- */
+.oauth-btn--google{
+  color:#2bb7a9;
+  border-color:#2bb7a9;
+  background:#fff;
+}
+.oauth-btn--google:hover{
+  background:#f8fffd;
+  transform:translateY(-1px);
+  box-shadow:0 12px 28px rgba(43,212,195,.20);
+}
+.oauth-btn--google:active{
+  transform:translateY(0);
+  box-shadow:0 8px 18px rgba(43,212,195,.16);
+}
+.oauth-btn--google:focus-visible{
+  outline:3px solid rgba(73,216,183,.35);
+  outline-offset:2px;
+}
+
+/* ---------- 枠なし（ゴースト）版：外枠を消して軽く見せる ---------- */
+.oauth-btn--google.oauth-btn--borderless{
+  border-color:transparent;
+  background:transparent;
+  color:#2bb7a9;
+  box-shadow:0 6px 16px rgba(0,0,0,.04);
+}
+.oauth-btn--google.oauth-btn--borderless:hover{
+  background:rgba(43,212,195,.06);
+  transform:translateY(-1px);
+  box-shadow:0 10px 22px rgba(43,212,195,.16);
+}
+.oauth-btn--google.oauth-btn--borderless:active{
+  transform:none;
+  box-shadow:0 6px 14px rgba(43,212,195,.12);
+}
+
+/* ---------- アイコン＆ラベル ---------- */
+.oauth-btn__icon{
+  display:inline-flex;
+  width:18px; height:18px; flex:0 0 18px;
+}
+.oauth-btn__label{
+  font-size:15px;
+  font-weight: 500;
+}
+
+/* 無効時 */
+.oauth-btn:disabled{
+  opacity:.6; cursor:not-allowed; transform:none;
+  box-shadow:0 0 0 rgba(0,0,0,0);
+}
+
+/* モーション軽減 */
+@media (prefers-reduced-motion: reduce){
+  .oauth-btn{ transition:none; }
+  .oauth-btn:hover,
+  .oauth-btn:active{ transform:none; box-shadow:0 10px 24px rgba(0,0,0,.05); }
+}
+
+/* スマホでは横幅フィット */
+@media (max-width:420px){
+  .devise-oauth{ padding-inline:0; }
+  .oauth-btn{ width:100%; justify-content:center; }
 }

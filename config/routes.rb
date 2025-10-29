@@ -2,9 +2,10 @@
 Rails.application.routes.draw do
   # Devise（users 名前空間のコントローラを使用）
   devise_for :users, controllers: {
-    sessions:      "users/sessions",
-    registrations: "users/registrations",
-    passwords:     "users/passwords"
+    sessions:           "users/sessions",
+    registrations:      "users/registrations",
+    passwords:          "users/passwords",
+    omniauth_callbacks: "users/omniauth_callbacks" # Google などのコールバック
   }
 
   # ✅ 迷いアクセス対策：/users は存在しないためログインへ誘導
@@ -16,11 +17,8 @@ Rails.application.routes.draw do
   end
 
   # --- 健康と安全（同意フロー / 単数リソース） ---
-  # 画面:  GET  /health-notice        -> HealthNoticeController#show
-  # 同意:  POST /health-notice        -> HealthNoticeController#create
-  # 長時間: GET  /health-notice/long  -> HealthNoticeController#long
   resource :health_notice,
-           only: [ :show, :create ],
+           only: [:show, :create],
            controller: "health_notice",
            path: "health-notice" do
     get :long
@@ -42,13 +40,12 @@ Rails.application.routes.draw do
 
   # --- ファスティング記録 ---
   resources :fasting_records, only: %i[index show new create edit update destroy] do
-    post :start,  on: :collection   # POST /fasting_records/start
-    post :finish, on: :member       # POST /fasting_records/:id/finish
+    post :start,  on: :collection
+    post :finish, on: :member
 
-    # ▼ コメント専用編集・更新
     member do
-      get   :edit_comment          # GET   /fasting_records/:id/edit_comment
-      patch :update_comment        # PATCH /fasting_records/:id/update_comment
+      get   :edit_comment
+      patch :update_comment
     end
   end
 
@@ -56,7 +53,7 @@ Rails.application.routes.draw do
   resources :meditations, only: :index
 
   # --- ヘルスチェック / PWA ---
-  get "up"                => "rails/health#show",       as: :rails_health_check
-  get "service-worker.js" => "rails/pwa#service_worker", as: :pwa_service_worker
-  get "manifest.json"     => "rails/pwa#manifest",       as: :pwa_manifest
+  get "up",                to: "rails/health#show",        as: :rails_health_check
+  get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest.json",     to: "rails/pwa#manifest",       as: :pwa_manifest
 end
