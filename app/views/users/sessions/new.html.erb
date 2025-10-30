@@ -1,4 +1,4 @@
-<%# app/views/devise/sessions/new.html.erb %>
+<%# app/views/users/sessions/new.html.erb %>
 <% content_for :title, "#{t('devise.sessions.new.sign_in')} | Fasty" %>
 
 <main class="devise-center">
@@ -50,10 +50,8 @@
       <div class="devise-oauth">
         <%= button_to user_google_oauth2_omniauth_authorize_path,
                       method: :post,
-                      data: { turbo: false },
-                      form: { class: "inline" },
-                      class: "oauth-btn oauth-btn--google oauth-btn--borderless",
-                      form: { class: "inline" } do %>
+                      form: { class: "inline", data: { turbo: false } },
+                      class: "oauth-btn oauth-btn--google oauth-btn--borderless" do %>
           <span class="oauth-btn__icon" aria-hidden="true"></span>
             <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
               <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C34 32.9 29.5 36 24 36 16.8 36 11 30.2 11 23s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l5.7-5.7C34.2 4.9 29.4 3 24 3 12.3 3 3 12.3 3 24s9.3 21 21 21c10.8 0 20-7.8 20-21 0-1.3-.1-2.2-.4-3.5z"/>
