@@ -1,7 +1,7 @@
 <%# Google OAuth ボタン（Turbo 介入を避けるため turbo=false） %>
 <%= button_to user_google_oauth2_omniauth_authorize_path,
               method: :post,
-              form: { data: { turbo: false } },
+              form: { class: "inline", data: { turbo: false } },
               class: "btn-google" do %>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="g-icon" aria-hidden="true">
     <path fill="#FFC107" d="M43.611 20.083h-1.611V20H24v8h11.303C33.994 31.91 29.49 35 24 35c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.844 1.164 7.949 3.061l5.657-5.657C34.869 5.053 29.706 3 24 3 12.955 3 4 11.955 4 23s8.955 20 20 20 20-8.955 20-20c0-1.342-.138-2.651-.389-3.917z"/>
