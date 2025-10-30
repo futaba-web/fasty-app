@@ -10,11 +10,11 @@ Devise.setup do |config|
   require "devise/orm/active_record"
 
   # == Authentication keys
-  config.case_insensitive_keys  = [:email]
-  config.strip_whitespace_keys  = [:email]
+  config.case_insensitive_keys  = [ :email ]
+  config.strip_whitespace_keys  = [ :email ]
 
   # == Session / Security
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = [ :http_auth ]
   # config.clean_up_csrf_token_on_authentication = true
 
   # == Password hashing
@@ -56,7 +56,7 @@ Devise.setup do |config|
   # == Hotwire / Turbo
   config.responder.error_status    = :unprocessable_entity
   config.responder.redirect_status = :see_other
-  config.navigational_formats      = ["*/*", :html, :turbo_stream]
+  config.navigational_formats      = [ "*/*", :html, :turbo_stream ]
 
   # == OmniAuth（Google）
   #
