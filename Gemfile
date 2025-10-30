@@ -46,7 +46,7 @@ group :development, :test do
   gem "dotenv-rails"
 
   # テスト
-  gem "rspec-rails", "~> 6.1"   # 使っていなければ削除OK
+  gem "rspec-rails", "~> 8.0"   # 使っていなければ削除OK
 
   # デバッグ & セキュリティ & Lint
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
