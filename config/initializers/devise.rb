@@ -42,16 +42,15 @@ Devise.setup do |config|
   config.navigational_formats      = [ "*/*", :html, :turbo_stream ]
 
   # ====================== OmniAuth（Google） ======================
-  # Google Cloud Console の「承認済みのリダイレクトURI」には
+  # Google Cloud Console の「承認済みのリダイレクトURI」には完全一致で以下を登録すること：
   #   - http://localhost:3000/users/auth/google_oauth2/callback（開発）
   #   - https://fasty-web.onrender.com/users/auth/google_oauth2/callback（本番）
-  # を完全一致で登録すること。
   #
-  # 無条件でプロバイダを登録（ENVが空だと実認可は失敗するが、未登録404を防ぐ）
+  # ENV が空でもルート未定義404を避けるために無条件登録（実行時はENV必須）
   config.omniauth :google_oauth2,
                   ENV["GOOGLE_CLIENT_ID"],
                   ENV["GOOGLE_CLIENT_SECRET"],
-                  scope:       "email,profile",
+                  scope:       "openid email profile",
                   prompt:      "select_account",
                   access_type: "offline",
                   client_options: {
@@ -60,14 +59,18 @@ Devise.setup do |config|
                   }
 
   # 逆プロキシ(Render/Cloudflare)配下でも正しいコールバックURLを組み立てる
+  require "omniauth"
   OmniAuth.config.full_host = lambda do |env|
     scheme = (env["HTTP_X_FORWARDED_PROTO"] || env["rack.url_scheme"])
     host   = (env["HTTP_X_FORWARDED_HOST"]  || env["HTTP_HOST"])
     "#{scheme}://#{host}"
   end
 
-  # OmniAuth v2：リクエストはPOSTのみ許可（GETは警告＆拒否）
-  OmniAuth.config.allowed_request_methods = [ :post ]
+  # OmniAuth v2 既定は POST のみ。SW の navigation preload や直叩き GET を許容して安定化
+  OmniAuth.config.allowed_request_methods = %i[post get]
+  OmniAuth.config.silence_get_warning     = true
+
+  # ログは Rails.logger に
   OmniAuth.config.logger = Rails.logger
   # ==============================================================
 end
