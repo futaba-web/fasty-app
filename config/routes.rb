@@ -1,6 +1,7 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  # Devise（users 名前空間のコントローラを使用）
+  # ===================== Devise =====================
+  # users 名前空間のコントローラを使用
   devise_for :users, controllers: {
     sessions:           "users/sessions",
     registrations:      "users/registrations",
@@ -8,24 +9,26 @@ Rails.application.routes.draw do
     omniauth_callbacks: "users/omniauth_callbacks" # Google などのコールバック
   }
 
-  # ✅ 迷いアクセス対策：/users は存在しないためログインへ誘導
+  # 迷いアクセス対策：/users は存在しないためログインへ誘導
   get "/users", to: redirect("/users/sign_in")
 
-  # 開発時のメール受信箱（/letter_opener）
+  # ===================== 開発用 =====================
   if Rails.env.development?
+    # 開発時のメール受信箱（/letter_opener）
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
-  # --- 健康と安全（同意フロー / 単数リソース） ---
+  # ===================== 単数系：同意フロー =====================
   resource :health_notice,
-           only: [ :show, :create ],
+           only: %i[show create],
            controller: "health_notice",
            path: "health-notice" do
     get :long
   end
 
-  # --- マイページ（ログイン後の着地点） ---
-  resource :mypage, only: :show  # /mypage -> MypagesController#show
+  # ===================== マイページ =====================
+  # /mypage -> MypagesController#show
+  resource :mypage, only: :show
 
   # ログイン状態でトップ切り替え
   authenticated :user do
@@ -38,7 +41,7 @@ Rails.application.routes.draw do
   # ランディング直アクセス（任意）
   get "pages/home", to: "pages#home", as: :pages_home
 
-  # --- ファスティング記録 ---
+  # ===================== ファスティング記録 =====================
   resources :fasting_records, only: %i[index show new create edit update destroy] do
     post :start,  on: :collection
     post :finish, on: :member
@@ -49,11 +52,17 @@ Rails.application.routes.draw do
     end
   end
 
-  # --- 瞑想リンク（MVPは外部リンク一覧のみ） ---
+  # ===================== 瞑想リンク（MVP） =====================
   resources :meditations, only: :index
 
-  # --- ヘルスチェック / PWA ---
-  get "up",                to: "rails/health#show",        as: :rails_health_check
-  get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
-  get "manifest.json",     to: "rails/pwa#manifest",       as: :pwa_manifest
+  # ===================== ヘルスチェック =====================
+  get "up", to: "rails/health#show", as: :rails_health_check
+
+  # ===================== PWA関連 =====================
+  # NOTE:
+  #  - 現在は public/service-worker.js を直接配信する構成。
+  #  - 下記の rails/pwa ルートを有効にすると SW が差し替わるためコメントアウト。
+  #
+  # get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
+  # get "manifest.json",     to: "rails/pwa#manifest",       as: :pwa_manifest
 end
