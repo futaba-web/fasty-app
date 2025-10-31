@@ -8,11 +8,11 @@ Devise.setup do |config|
   require "devise/orm/active_record"
 
   # Auth keys
-  config.case_insensitive_keys = [:email]
-  config.strip_whitespace_keys = [:email]
+  config.case_insensitive_keys = [ :email ]
+  config.strip_whitespace_keys = [ :email ]
 
   # Session / Security
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = [ :http_auth ]
 
   # Password hashing
   config.stretches = Rails.env.test? ? 1 : 12
@@ -39,7 +39,7 @@ Devise.setup do |config|
   # Hotwire / Turbo
   config.responder.error_status    = :unprocessable_entity
   config.responder.redirect_status = :see_other
-  config.navigational_formats      = ["*/*", :html, :turbo_stream]
+  config.navigational_formats      = [ "*/*", :html, :turbo_stream ]
 
   # ===================== OmniAuth（Google） =====================
   # GCP 側の「承認済みのリダイレクトURI」に *完全一致* で下記を登録しておくこと
