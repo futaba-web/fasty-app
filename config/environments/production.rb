@@ -29,7 +29,7 @@ Rails.application.configure do
   # APP_HOST はフルURL想定（例: https://fasty-web.onrender.com）
   app_origin = ENV.fetch("APP_HOST", "https://fasty-web.onrender.com")
   u = URI(app_origin)
-  host_only = [u.host, (u.port && ![80, 443].include?(u.port)) ? u.port : nil].compact.join(":")
+  host_only = [ u.host, (u.port && ![ 80, 443 ].include?(u.port)) ? u.port : nil ].compact.join(":")
 
   # url_for / *_url
   Rails.application.routes.default_url_options[:host]     = host_only
@@ -54,7 +54,7 @@ Rails.application.configure do
   config.logger = ActiveSupport::Logger.new(STDOUT)
     .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
     .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
-  config.log_tags  = [:request_id]
+  config.log_tags  = [ :request_id ]
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Mailer
@@ -69,7 +69,7 @@ Rails.application.configure do
 
   # DB
   config.active_record.dump_schema_after_migration = false
-  config.active_record.attributes_for_inspect = [:id]
+  config.active_record.attributes_for_inspect = [ :id ]
 
   # Host protection (必要なら有効化)
   # config.hosts = [host_only, /.*\.onrender\.com/]
