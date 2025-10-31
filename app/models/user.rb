@@ -3,13 +3,16 @@ class User < ApplicationRecord
   # Devise
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [ :google_oauth2 ]
+         :omniauthable, omniauth_providers: [:google_oauth2]
 
   # Associations
   has_many :fasting_records, dependent: :destroy
 
   # Validations
   validates :name, presence: true, uniqueness: true, length: { maximum: 30 }
+
+  # 正規化
+  before_validation :downcase_email
 
   # ===== Health Notice (既存ロジック) =====
   def accepted_health_notice?
@@ -27,38 +30,63 @@ class User < ApplicationRecord
   end
 
   # ===== OmniAuth (Google) =====
-  # OmniAuth の auth ハッシュからユーザーを取得/作成/紐付け
-  #
   # 優先順位:
-  # 1) provider + uid が一致するユーザー
-  # 2) email が一致する既存ユーザーに provider / uid を付与
-  # 3) 見つからなければ新規作成（name が無ければメールローカル部を代入）
-  #
+  # 1) provider+uid が一致
+  # 2) email が一致 → 連携情報を付与
+  # 3) 新規作成（name 重複はサフィックスで回避）
   def self.from_omniauth(auth)
-    # ① すでに連携済みならそのまま返す
-    if (user = find_by(provider: auth.provider, uid: auth.uid))
+    provider = auth.provider
+    uid      = auth.uid
+    info     = auth.info || OpenStruct.new
+    email    = info.email&.downcase
+
+    # 1) すでに連携済み
+    if (user = find_by(provider:, uid:))
       return user
     end
 
-    # ② 同じメールの既存ユーザーがいれば紐付け
-    email = auth.info&.email
-    if email && (user = find_by(email: email))
-      user.update(provider: auth.provider, uid: auth.uid)
+    # 2) email が同じ既存ユーザーを連携
+    if email && (user = find_by(email:))
+      user.update!(provider:, uid:)
       return user
     end
 
-    # ③ 新規作成
-    name = auth.info&.name.presence ||
-           auth.info&.first_name&.presence ||
-           auth.info&.last_name&.presence ||
-           (email ? email.split("@").first : "user_#{SecureRandom.hex(4)}")
+    # 3) 新規作成
+    base_name =
+      info.name.presence ||
+      [info.first_name, info.last_name].compact.join.presence ||
+      (email ? email.split("@").first : nil) ||
+      "user"
+
+    safe_name = unique_name_for(base_name)
 
     create!(
       email:    email || "changeme+#{SecureRandom.hex(6)}@example.com",
-      name:     name,
+      name:     safe_name,
       password: Devise.friendly_token[0, 20],
-      provider: auth.provider,
-      uid:      auth.uid
+      provider: provider,
+      uid:      uid
     )
+  end
+  class << self
+    alias_method :from_google, :from_omniauth
+  end
+
+  private
+
+  def self.unique_name_for(base)
+    name = base.to_s.gsub(/\s+/, "")
+    return name unless exists?(name:)
+
+    # 被りを避けるために連番/ランダムを付与
+    1.upto(50) do |i|
+      candidate = "#{name}_#{i}"
+      return candidate unless exists?(name: candidate)
+    end
+    "#{name}_#{SecureRandom.hex(3)}"
+  end
+
+  def downcase_email
+    self.email = email.to_s.downcase.presence
   end
 end
