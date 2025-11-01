@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  # /users/auth/google_oauth2/callback
   def google_oauth2
     state = params[:state].to_s
     code  = params[:code].to_s
     state_key = "oauth:google:state:#{state}:ok"
     code_key  = "oauth:google:code:#{code}:ok"
 
-    # ---- duplicate guard (cache-based idempotency) -------------------
-    if Rails.cache.read(state_key) || Rails.cache.read(code_key)
-      Rails.logger.info("[OmniAuth] duplicate callback (cache hit), skipping state=#{state}")
-      return redirect_to(after_sign_in_path_for(current_user || :user))
+    # すでにOK印がある＝重複到達。ユーザーIDが取れれば sign_in して通す
+    if (uid = (Rails.cache.read(state_key) || Rails.cache.read(code_key)))
+      Rails.logger.info("[OmniAuth] duplicate callback (cache hit), signin user_id=#{uid}")
+      user = User.find_by(id: uid)
+      sign_in(user) if user && !user_signed_in?
+      return redirect_to(after_sign_in_path_for(current_user || user || :user))
     end
-    # ------------------------------------------------------------------
 
     auth = request.env["omniauth.auth"]
     if auth&.info&.email.blank?
@@ -35,9 +35,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
 
     if @user.persisted?
-      # 成功を“印”としてキャッシュ（短期）に保存 → 後続の重複を成功扱いでスキップさせる
-      Rails.cache.write(state_key, true, expires_in: 2.minutes)
-      Rails.cache.write(code_key,  true, expires_in: 2.minutes)
+      # 成功印として user_id を保存（2分で失効）
+      Rails.cache.write(state_key, @user.id, expires_in: 2.minutes)
+      Rails.cache.write(code_key,  @user.id, expires_in: 2.minutes)
 
       set_flash_message!(:notice, :success, kind: "Google")
       sign_in_and_redirect @user, event: :authentication
@@ -49,17 +49,18 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
   end
 
-  # /users/auth/failure
   def failure
     state = params[:state].to_s
     code  = params[:code].to_s
     state_key = "oauth:google:state:#{state}:ok"
     code_key  = "oauth:google:code:#{code}:ok"
 
-    # 1回目が成功済み（=印が残っている）なら、二重コールバックの失敗を成功扱いで通す
-    if user_signed_in? || Rails.cache.read(state_key) || Rails.cache.read(code_key)
-      Rails.logger.info("[OmniAuth][failure] treated as success (dup callback). state=#{state}")
-      return redirect_to(after_sign_in_path_for(current_user || :user))
+    # 1回目成功済みなら user_id を取り出して sign_in して通す
+    if user_signed_in? || (uid = (Rails.cache.read(state_key) || Rails.cache.read(code_key)))
+      user = current_user || User.find_by(id: uid)
+      Rails.logger.info("[OmniAuth][failure] treated as success; sign_in user_id=#{user&.id}")
+      sign_in(user) if user && !user_signed_in?
+      return redirect_to(after_sign_in_path_for(user || current_user || :user))
     end
 
     err      = request.env["omniauth.error"]
