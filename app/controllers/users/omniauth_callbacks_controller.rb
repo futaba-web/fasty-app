@@ -3,15 +3,24 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # /users/auth/google_oauth2/callback
   def google_oauth2
+    # ---- duplicate guard (idempotency) -------------------------------
+    st = params[:state].to_s
+    if session[:handled_oauth_state] == st
+      Rails.logger.info("[OmniAuth] duplicate callback detected (state=#{st}), skipping")
+      return redirect_to(after_sign_in_path_for(current_user || :user))
+    end
+    session[:handled_oauth_state] = st
+    # ------------------------------------------------------------------
+
     auth = request.env["omniauth.auth"]
-    unless auth
-      Rails.logger.error("[OmniAuth] auth hash is nil")
-      set_flash_message!(:alert, :failure, kind: "Google", reason: "認証情報を取得できませんでした")
+    if auth&.info&.email.blank?
+      Rails.logger.error("[OmniAuth] email missing in auth.info")
+      set_flash_message!(:alert, :failure, kind: "Google", reason: "メールアドレスの取得に失敗しました")
       return redirect_to new_user_session_path
     end
 
     begin
-      @user = User.from_google(auth) # user.rbでalias済み（from_omniauthでもOK）
+      @user = User.from_google(auth) # 既存の取込メソッド名に合わせて
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("[OmniAuth] save failed: #{e.record.errors.full_messages.join(', ')}")
       set_flash_message!(:alert, :failure, kind: "Google", reason: "ユーザーを作成・更新できませんでした")
@@ -35,10 +44,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   # /users/auth/failure
   def failure
+    # 1回目が成功済みで、二重コールバックの2回目が失敗しただけなら成功扱いで通す
+    if user_signed_in?
+      Rails.logger.info("[OmniAuth][failure] user already signed in; treat as success")
+      return redirect_to(after_sign_in_path_for(current_user))
+    end
+
     err      = request.env["omniauth.error"]
     strategy = request.env["omniauth.error.strategy"]&.name
     type     = request.env["omniauth.error.type"]
-    # Googleからは message/error/error_description 等が来ることがある
     reason   = params[:error_description] || params[:error_reason] || params[:error] || params[:message]
 
     Rails.logger.error <<~LOG
@@ -56,6 +70,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   protected
+
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || mypage_path
+  end
 
   def after_omniauth_failure_path_for(_scope)
     new_user_session_path
