@@ -1,5 +1,20 @@
 # frozen_string_literal: true
 
+# NOTE: 逆プロキシ環境でも正しいホスト/スキームを解決
+require "omniauth"
+OmniAuth.config.full_host = lambda do |env|
+  if ENV["APP_HOST"].present?
+    ENV["APP_HOST"]
+  else
+    scheme = env["HTTP_X_FORWARDED_PROTO"] || env["rack.url_scheme"] || "https"
+    host   = env["HTTP_X_FORWARDED_HOST"]  || env["HTTP_HOST"]
+    "#{scheme}://#{host}"
+  end
+end
+OmniAuth.config.allowed_request_methods = %i[post get]
+OmniAuth.config.silence_get_warning     = true
+OmniAuth.config.logger                  = Rails.logger
+
 Devise.setup do |config|
   # == Mailer
   config.mailer_sender = ENV.fetch("DEFAULT_MAIL_FROM", "no-reply@example.com")
@@ -8,11 +23,11 @@ Devise.setup do |config|
   require "devise/orm/active_record"
 
   # == Authentication keys
-  config.case_insensitive_keys   = [ :email ]
-  config.strip_whitespace_keys   = [ :email ]
+  config.case_insensitive_keys   = [:email]
+  config.strip_whitespace_keys   = [:email]
 
   # == Session / Security
-  config.skip_session_storage    = [ :http_auth ]
+  config.skip_session_storage    = [:http_auth]
 
   # == Password hashing
   config.stretches               = Rails.env.test? ? 1 : 12
@@ -39,76 +54,53 @@ Devise.setup do |config|
   # == Hotwire / Turbo
   config.responder.error_status    = :unprocessable_entity
   config.responder.redirect_status = :see_other
-  config.navigational_formats      = [ "*/*", :html, :turbo_stream ]
+  config.navigational_formats      = ["*/*", :html, :turbo_stream]
 
   # ======================== OmniAuth（Google） ========================
-  # GCP の「承認済みのリダイレクトURI」は完全一致で登録：
+  # GCP: 承認済みのリダイレクトURIは完全一致で登録しておくこと
   # - http://localhost:3000/users/auth/google_oauth2/callback
-  # - https://<本番ドメイン>/users/auth/google_oauth2/callback
+  # - https://<本番ホスト>/users/auth/google_oauth2/callback
   require "omniauth-google-oauth2"
 
-  google_id     = ENV["GOOGLE_CLIENT_ID"]
-  google_secret = ENV["GOOGLE_CLIENT_SECRET"]
+  google_id     = ENV.fetch("GOOGLE_CLIENT_ID")
+  google_secret = ENV.fetch("GOOGLE_CLIENT_SECRET")
 
   config.omniauth(
     :google_oauth2,
     google_id,
     google_secret,
-    scope:        "openid email profile",
-    access_type:  "offline",
-    client_options: {
-      authorize_url: "https://accounts.google.com/o/oauth2/v2/auth",
-      token_url:     "https://oauth2.googleapis.com/token"
-    },
-    # ★毎リクエストで最終上書き（prompt=none を無効化・redirect_uri を固定）
-    setup: lambda { |env|
-      s = env["omniauth.strategy"]
+    {
+      scope:        "openid email profile",
+      access_type:  "offline",
+      prompt:       "select_account consent", # ← none は使わない
+      client_options: {
+        authorize_url: "https://accounts.google.com/o/oauth2/v2/auth",
+        token_url:     "https://oauth2.googleapis.com/token"
+      },
+      # リクエストごとに base_url から callback を動的設定
+      setup: lambda { |env|
+        request = Rack::Request.new(env)
+        callback = "#{request.base_url}/users/auth/google_oauth2/callback"
 
-      app_host =
-        if ENV["APP_HOST"].present?
-          ENV["APP_HOST"]
-        else
-          scheme = env["HTTP_X_FORWARDED_PROTO"] || env["rack.url_scheme"] || "https"
-          host   = env["HTTP_X_FORWARDED_HOST"]  || env["HTTP_HOST"]
-          "#{scheme}://#{host}"
-        end
+        strategy = env["omniauth.strategy"]
 
-      redirect_uri = "#{app_host}/users/auth/google_oauth2/callback"
+        # token 交換・認可の両方に確実に反映
+        strategy.options[:redirect_uri] = callback
 
-      # options にも、実際にURLへ載る authorize_params にも両方セット
-      s.options[:redirect_uri] = redirect_uri
-      s.options[:scope]        = "openid email profile"
-      s.options[:access_type]  = "offline"
+        strategy.options[:client_options]      ||= {}
+        strategy.options[:client_options][:redirect_uri] = callback
 
-      s.options.authorize_params["prompt"]       = "select_account"
-      s.options.authorize_params["redirect_uri"] = redirect_uri
-      s.options.authorize_params["scope"]        = "openid email profile"
-      s.options.authorize_params["access_type"]  = "offline"
+        strategy.options[:authorize_params]    ||= {}
+        strategy.options[:authorize_params][:redirect_uri] = callback
+        strategy.options[:authorize_params][:scope]        = "openid email profile"
+        strategy.options[:authorize_params][:access_type]  = "offline"
+        strategy.options[:authorize_params][:prompt]       = "select_account consent"
 
-      # 外部から混入した prompt を破棄（保険）
-      env["rack.request.query_hash"]&.delete("prompt")
-      env["rack.request.form_hash"]&.delete("prompt")
+        # 保険: 外部からの prompt=none を除去
+        env["rack.request.query_hash"]&.delete("prompt")
+        env["rack.request.form_hash"]&.delete("prompt")
+      }
     }
   )
   # ===================================================================
 end
-
-# ===== OmniAuth 共通設定（逆プロキシ下のホスト解決を安定化） =====
-require "omniauth"
-
-OmniAuth.config.full_host = lambda do |env|
-  if ENV["APP_HOST"].present?
-    ENV["APP_HOST"]
-  else
-    scheme = env["HTTP_X_FORWARDED_PROTO"] || env["rack.url_scheme"] || "https"
-    host   = env["HTTP_X_FORWARDED_HOST"]  || env["HTTP_HOST"]
-    "#{scheme}://#{host}"
-  end
-end
-
-# OmniAuth v2: GET も許容（直リンク対策）
-OmniAuth.config.allowed_request_methods = %i[post get]
-OmniAuth.config.silence_get_warning     = true
-
-# ログ
-OmniAuth.config.logger = Rails.logger
