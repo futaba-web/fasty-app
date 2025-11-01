@@ -79,22 +79,24 @@ Devise.setup do |config|
       },
       # リクエストごとに base_url から callback を動的設定
       setup: lambda { |env|
-        request = Rack::Request.new(env)
+        request  = Rack::Request.new(env)
         callback = "#{request.base_url}/users/auth/google_oauth2/callback"
-
         strategy = env["omniauth.strategy"]
 
         # token 交換・認可の両方に確実に反映
         strategy.options[:redirect_uri] = callback
 
-        strategy.options[:client_options]      ||= {}
+        strategy.options[:client_options]               ||= {}
         strategy.options[:client_options][:redirect_uri] = callback
 
-        strategy.options[:authorize_params]    ||= {}
+        strategy.options[:authorize_params]             ||= {}
         strategy.options[:authorize_params][:redirect_uri] = callback
         strategy.options[:authorize_params][:scope]        = "openid email profile"
         strategy.options[:authorize_params][:access_type]  = "offline"
         strategy.options[:authorize_params][:prompt]       = "select_account consent"
+
+        # 実際に使われる値を一度ログへ（デバッグ用）
+        Rails.logger.info("[OAuth Setup] callback=#{callback} full_host=#{OmniAuth.config.full_host.call(env)}")
 
         # 保険: 外部からの prompt=none を除去
         env["rack.request.query_hash"]&.delete("prompt")
