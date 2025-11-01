@@ -3,13 +3,16 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # /users/auth/google_oauth2/callback
   def google_oauth2
-    # ---- duplicate guard (idempotency) -------------------------------
-    st = params[:state].to_s
-    if session[:handled_oauth_state] == st
-      Rails.logger.info("[OmniAuth] duplicate callback detected (state=#{st}), skipping")
+    state = params[:state].to_s
+    code  = params[:code].to_s
+    state_key = "oauth:google:state:#{state}:ok"
+    code_key  = "oauth:google:code:#{code}:ok"
+
+    # ---- duplicate guard (cache-based idempotency) -------------------
+    if Rails.cache.read(state_key) || Rails.cache.read(code_key)
+      Rails.logger.info("[OmniAuth] duplicate callback (cache hit), skipping state=#{state}")
       return redirect_to(after_sign_in_path_for(current_user || :user))
     end
-    session[:handled_oauth_state] = st
     # ------------------------------------------------------------------
 
     auth = request.env["omniauth.auth"]
@@ -20,7 +23,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
 
     begin
-      @user = User.from_google(auth) # 既存の取込メソッド名に合わせて
+      @user = User.from_google(auth)
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("[OmniAuth] save failed: #{e.record.errors.full_messages.join(', ')}")
       set_flash_message!(:alert, :failure, kind: "Google", reason: "ユーザーを作成・更新できませんでした")
@@ -32,6 +35,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
 
     if @user.persisted?
+      # 成功を“印”としてキャッシュ（短期）に保存 → 後続の重複を成功扱いでスキップさせる
+      Rails.cache.write(state_key, true, expires_in: 2.minutes)
+      Rails.cache.write(code_key,  true, expires_in: 2.minutes)
+
       set_flash_message!(:notice, :success, kind: "Google")
       sign_in_and_redirect @user, event: :authentication
     else
@@ -44,10 +51,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   # /users/auth/failure
   def failure
-    # 1回目が成功済みで、二重コールバックの2回目が失敗しただけなら成功扱いで通す
-    if user_signed_in?
-      Rails.logger.info("[OmniAuth][failure] user already signed in; treat as success")
-      return redirect_to(after_sign_in_path_for(current_user))
+    state = params[:state].to_s
+    code  = params[:code].to_s
+    state_key = "oauth:google:state:#{state}:ok"
+    code_key  = "oauth:google:code:#{code}:ok"
+
+    # 1回目が成功済み（=印が残っている）なら、二重コールバックの失敗を成功扱いで通す
+    if user_signed_in? || Rails.cache.read(state_key) || Rails.cache.read(code_key)
+      Rails.logger.info("[OmniAuth][failure] treated as success (dup callback). state=#{state}")
+      return redirect_to(after_sign_in_path_for(current_user || :user))
     end
 
     err      = request.env["omniauth.error"]
