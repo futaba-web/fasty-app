@@ -2,8 +2,10 @@
 
 # NOTE: 逆プロキシ環境でも正しいホスト/スキームを解決
 require "omniauth"
+
 OmniAuth.config.full_host = lambda do |env|
-  if ENV["APP_HOST"].present?
+  # 本番のみ APP_HOST を優先（ローカルでの redirect_uri 不一致を避ける）
+  if Rails.env.production? && ENV["APP_HOST"].present?
     ENV["APP_HOST"]
   else
     scheme = env["HTTP_X_FORWARDED_PROTO"] || env["rack.url_scheme"] || "https"
@@ -11,7 +13,9 @@ OmniAuth.config.full_host = lambda do |env|
     "#{scheme}://#{host}"
   end
 end
-OmniAuth.config.allowed_request_methods = %i[post get]
+
+# 開始エンドポイントは POST のみに限定（リンクプレビュー等の誤発火を抑止）
+OmniAuth.config.allowed_request_methods = %i[post]
 OmniAuth.config.silence_get_warning     = true
 OmniAuth.config.logger                  = Rails.logger
 
@@ -23,33 +27,33 @@ Devise.setup do |config|
   require "devise/orm/active_record"
 
   # == Authentication keys
-  config.case_insensitive_keys   = [ :email ]
-  config.strip_whitespace_keys   = [ :email ]
+  config.case_insensitive_keys = [ :email ]
+  config.strip_whitespace_keys = [ :email ]
 
   # == Session / Security
-  config.skip_session_storage    = [ :http_auth ]
+  config.skip_session_storage = [ :http_auth ]
 
   # == Password hashing
-  config.stretches               = Rails.env.test? ? 1 : 12
+  config.stretches = Rails.env.test? ? 1 : 12
 
   # == Confirmable
-  config.reconfirmable           = true
+  config.reconfirmable = true
 
   # == Rememberable
   config.expire_all_remember_me_on_sign_out = true
 
   # == Validatable
-  config.password_length         = 6..128
-  config.email_regexp            = /\A[^@\s]+@[^@\s]+\z/
+  config.password_length = 6..128
+  config.email_regexp    = /\A[^@\s]+@[^@\s]+\z/
 
   # == Recoverable
-  config.reset_password_within   = 6.hours
+  config.reset_password_within = 6.hours
 
   # == Scoped views
-  config.scoped_views            = true
+  config.scoped_views = true
 
   # == Sign out
-  config.sign_out_via            = :delete
+  config.sign_out_via = :delete
 
   # == Hotwire / Turbo
   config.responder.error_status    = :unprocessable_entity
@@ -70,9 +74,9 @@ Devise.setup do |config|
     google_id,
     google_secret,
     {
-      scope:        "openid email profile",
-      access_type:  "offline",
-      prompt:       "select_account consent", # ← none は使わない
+      scope:       "openid email profile",
+      access_type: "offline",
+      prompt:      "select_account consent", # ← none は使わない
       client_options: {
         authorize_url: "https://accounts.google.com/o/oauth2/v2/auth",
         token_url:     "https://oauth2.googleapis.com/token"
@@ -86,16 +90,16 @@ Devise.setup do |config|
         # token 交換・認可の両方に確実に反映
         strategy.options[:redirect_uri] = callback
 
-        strategy.options[:client_options]               ||= {}
-        strategy.options[:client_options][:redirect_uri] = callback
+        strategy.options[:client_options]                ||= {}
+        strategy.options[:client_options][:redirect_uri]  = callback
 
-        strategy.options[:authorize_params]             ||= {}
+        strategy.options[:authorize_params]              ||= {}
         strategy.options[:authorize_params][:redirect_uri] = callback
         strategy.options[:authorize_params][:scope]        = "openid email profile"
         strategy.options[:authorize_params][:access_type]  = "offline"
         strategy.options[:authorize_params][:prompt]       = "select_account consent"
 
-        # 実際に使われる値を一度ログへ（デバッグ用）
+        # デバッグ用ログ（実運用で不要ならコメントアウトOK）
         Rails.logger.info("[OAuth Setup] callback=#{callback} full_host=#{OmniAuth.config.full_host.call(env)}")
 
         # 保険: 外部からの prompt=none を除去
