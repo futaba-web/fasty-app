@@ -52,8 +52,17 @@ Rails.application.routes.draw do
     end
   end
 
-  # ===================== 瞑想リンク（MVP） =====================
+  # ===================== 瞑想（MVP + 週次サマリー/ログ） =====================
   resources :meditations, only: :index
+  resources :meditation_logs, only: :create          # 「瞑想を始める」押下時に記録
+  resource  :meditation_summary, only: :show         # 今週の回数/合計分など
+
+  # ===================== 法務／お問い合わせ =====================
+  scope :legal do
+    get "terms",   to: "legal#terms"
+    get "privacy", to: "legal#privacy"
+  end
+  resource :contact, only: %i[new create]
 
   # ===================== ヘルスチェック =====================
   get "up", to: "rails/health#show", as: :rails_health_check
