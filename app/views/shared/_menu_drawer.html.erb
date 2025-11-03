@@ -2,9 +2,7 @@
 <div id="site-drawer"
      data-menu-target="drawer"
      data-action="keydown.esc@window->menu#close"
-     class="fixed inset-y-0 left-0
-            /* ← 幅はCSS側の clamp / max-content に任せる */
-            -translate-x-full transform
+     class="fixed inset-y-0 left-0 -translate-x-full transform
             bg-brand-header text-white shadow-xl
             transition-transform duration-200 ease-out will-change-transform z-[60]"
      role="dialog" aria-modal="true" aria-label="メニュー" tabindex="-1">
@@ -26,28 +24,28 @@
       </li>
 
       <li>
-        <%= link_to (defined?(health_and_safety_path) ? health_and_safety_path : "#"),
+        <%= link_to health_notice_path,
               class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           健康と安全
         <% end %>
       </li>
 
       <li>
-        <%= link_to (defined?(contact_path) ? contact_path : "#"),
+        <%= link_to new_contact_path,
               class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           お問い合わせ
         <% end %>
       </li>
 
       <li>
-        <%= link_to (defined?(privacy_path) ? privacy_path : "#"),
+        <%= link_to privacy_path,
               class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           プライバシーポリシー
         <% end %>
       </li>
 
       <li>
-        <%= link_to (defined?(terms_path) ? terms_path : "#"),
+        <%= link_to terms_path,
               class: "inline-flex items-center px-3 py-2 rounded hover:bg-white/10 whitespace-nowrap" do %>
           利用規約
         <% end %>
