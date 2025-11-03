@@ -27,7 +27,6 @@ Rails.application.routes.draw do
   end
 
   # ===================== マイページ =====================
-  # /mypage -> MypagesController#show
   resource :mypage, only: :show
 
   # ログイン状態でトップ切り替え
@@ -62,16 +61,20 @@ Rails.application.routes.draw do
     get "terms",   to: "legal#terms"
     get "privacy", to: "legal#privacy"
   end
-  resource :contact, only: %i[new create]
+  resource :contact, only: %i[new create]            # /contact/new, POST /contact
 
   # ===================== ヘルスチェック =====================
   get "up", to: "rails/health#show", as: :rails_health_check
 
-  # ===================== PWA関連 =====================
-  # NOTE:
-  #  - 現在は public/service-worker.js を直接配信する構成。
-  #  - 下記の rails/pwa ルートを有効にすると SW が差し替わるためコメントアウト。
-  #
+  # ===================== 静的リクエスト対策 =====================
+  # RSS/Atom を提供しないため、古いクローラ向けのURLには 410 Gone を返す
+  get "/feeds/all.atom.xml", to: proc { [ 410, { "Content-Type" => "text/plain" }, [ "" ] ] }
+
+  # favicon は public/ に配置しているため通常は不要。
+  # もし今後 public/favicon.ico を置かない運用にするなら下記のリダイレクトを有効化。
+  # get "/favicon.ico", to: redirect("/favicon.png")
+
+  # ===================== PWA関連（現在は public 直配信） =====================
   # get "service-worker.js", to: "rails/pwa#service_worker", as: :pwa_service_worker
   # get "manifest.json",     to: "rails/pwa#manifest",       as: :pwa_manifest
 end
