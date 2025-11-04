@@ -3,6 +3,9 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # /users/auth/google_oauth2/callback
   def google_oauth2
+    # すでにログイン済みなら、コールバック処理を全スキップして即リダイレクト
+    return redirect_to(after_sign_in_path_for(current_user)) if user_signed_in?
+
     state = params[:state].to_s
     code  = params[:code].to_s
 
@@ -31,7 +34,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
 
     begin
-      @user = User.from_google(auth) # ※ User.from_google は既存の実装を利用
+      @user = User.from_google(auth) # ※ 既存実装を利用（同一メールは同一Userにリンク）
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error("[OmniAuth] save failed: #{e.record.errors.full_messages.join(', ')}")
       set_flash_message!(:alert, :failure, kind: "Google", reason: "ユーザーを作成・更新できませんでした")
@@ -59,17 +62,20 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   # /users/auth/failure
   def failure
+    # 既にログインしていれば即抜け（重複到達のノイズ削減）
+    return redirect_to(after_sign_in_path_for(current_user)) if user_signed_in?
+
     state = params[:state].to_s
     code  = params[:code].to_s
     state_key = state.present? ? "oauth:google:state:#{state}:ok" : nil
     code_key  = code.present?  ? "oauth:google:code:#{code}:ok"   : nil
 
     # 1回目成功済みなら user_id を取り出して sign_in して通す
-    if user_signed_in? || (uid = read_dup_uid(state_key, code_key))
-      user = current_user || User.find_by(id: uid)
+    if (uid = read_dup_uid(state_key, code_key))
+      user = User.find_by(id: uid)
       Rails.logger.info("[OmniAuth][failure->success] dup ignored; user_id=#{user&.id} state_tail=#{state.last(6)}")
       sign_in(user) if user && !user_signed_in?
-      return redirect_to(after_sign_in_path_for(user || current_user || :user))
+      return redirect_to(after_sign_in_path_for(user || :user))
     end
 
     err      = request.env["omniauth.error"]
@@ -87,8 +93,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         state_tail=#{state.last(6)}
     LOG
 
-    msg = reason.presence || (type && type.to_s.humanize) || "Googleログインがキャンセルされました。"
-    set_flash_message!(:alert, :failure, kind: "Google", reason: msg)
+    user_msg =
+      case type.to_s
+      when "access_denied"        then "Googleログインがキャンセルされました。"
+      when "invalid_credentials",
+           "invalid_grant"        then "もう一度お試しください。"
+      else                             "ログインに失敗しました。しばらくしてから再度お試しください。"
+      end
+
+    set_flash_message!(:alert, :failure, kind: "Google", reason: (user_msg || "もう一度お試しください。"))
     redirect_to new_user_session_path
   end
 
