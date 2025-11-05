@@ -18,7 +18,7 @@ module FastingRecordsHelper
     t.strftime("%Y/%m/%d(#{WDAY_JA[t.wday]})")
   end
 
-  # === 絞り込みUI用（パーシャルから参照） ===
+  # === 絞り込みUI用 ===
   def status_filter_options
     [
       [ "すべて",      "" ],
@@ -37,7 +37,7 @@ module FastingRecordsHelper
     end
   end
 
-  # バッジ（達成/未達成/進行中）— 既存クラス維持
+  # バッジ（達成/未達成/進行中）
   def status_badge(record)
     key =
       if record.respond_to?(:status_key)
@@ -48,15 +48,15 @@ module FastingRecordsHelper
 
     case key
     when :achieved
-      content_tag(:span, "達成",    class: "badge badge--ok")
+      content_tag(:span, "達成",   class: "badge badge--ok")
     when :unachieved
-      content_tag(:span, "未達成",  class: "badge badge--ng")
+      content_tag(:span, "未達成", class: "badge badge--ng")
     else
-      content_tag(:span, "進行中",  class: "badge badge--info")
+      content_tag(:span, "進行中", class: "badge badge--info")
     end
   end
 
-  # コメントの抜粋（2行想定。CSS で line-clamp）
+  # コメント抜粋（任意）
   def comment_snippet(record, length: 60)
     text = record.respond_to?(:comment_text) ? record.comment_text.to_s.strip : ""
     return "".html_safe if text.blank?
@@ -70,35 +70,49 @@ module FastingRecordsHelper
     end
   end
 
-  # 素のテキストだけ（任意）
   def snippet_plain_text(record, length: 60)
     text = record.respond_to?(:comment_text) ? record.comment_text.to_s.strip : ""
     truncate(text, length: length)
   end
 
-  # 終了が開始より前/未設定なら "-" を返す、安全版
-  def fmt_duration(from, to)
-    return "-" if from.blank? || to.blank?
-    sec = (to - from).to_i
-    return "-" if sec.negative?
+  # ===== カレンダー用 =====
 
-    h, rem = sec.divmod(3600)
-    m, _   = rem.divmod(60)
-    "#{h}時間#{m}分"
+  # モバイルだけ「正方形」にするための外側ラッパー（aタグ）用クラス
+  # - mobile: pb-[100%] で正方形ボックス化（position: relative 前提）
+  # - >=sm: 通常フロー
+  def day_cell_outer_classes(_day)
+    "relative block pb-[100%] sm:pb-0"
   end
 
-  # 進行中の経過時間用（to が nil のときは現在時刻で計算）
-  def fmt_elapsed(from, to = nil)
-    return "-" if from.blank?
-    fmt_duration(from, to || Time.current)
-  end
+  # 内側（実表示）用クラス
+  # - >=sm では従来通りの高さを確保
+  # - ホバー/フォーカスの視認性、今日の薄いリング
+  def day_cell_classes(day, target_month)
+    is_today = (day == Time.zone.today)
 
-  # =========================
-  # カレンダー用ヘルパ
-  # =========================
+    base = [
+      # 内側はモバイルで absolute 展開して正方形にフィット
+      "absolute inset-0",
+      "rounded-xl flex flex-col gap-2 p-2 cursor-pointer",
+      # ベース
+      "bg-white ring-1 ring-stone-200 shadow-sm",
+      # 変化
+      "transition-colors transition-transform duration-150",
+      "hover:bg-sky-50 hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
+      "focus-visible:outline-none focus-visible:bg-sky-50",
+      "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
+      "active:bg-sky-100 active:shadow",
+      "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none",
+      # デスクトップでは最低高を確保
+      "sm:static sm:min-h-[96px]"
+    ]
+    base << "ring-sky-200" if is_today
+
+    klass = base.join(" ")
+    day.month == target_month ? "#{klass} text-stone-800" : "#{klass} text-stone-400"
+  end
 
   # 状態 → 記号・色（Tailwind semantic）
-  # success=green / ongoing=amber / fail=rose
   def fasting_badge_for(record)
     return if record.nil?
 
@@ -111,44 +125,12 @@ module FastingRecordsHelper
     end
   end
 
-  # 汎用：Tailwindバッジ
+  # 汎用バッジ
   def tailwind_badge(text, color_classes)
     content_tag(:span, text,
       class: "inline-flex items-center justify-center text-[12px] px-2 py-0.5 rounded-lg ring-1 #{color_classes}")
   end
-  alias badge tailwind_badge  # 互換目的
-
-  # 日セルのスタイル（モバイル最適化）
-  # - モバイルは高さ/余白を圧縮（情報量を減らして視認性UP）
-  # - 当月外は“文字色だけ”薄く（opacityは使わない）
-  # - ホバー/フォーカスで背景とリングをスカイ系に
-  # - 今日: 常時うっすらスカイのリング
-  def day_cell_classes(day, target_month)
-    is_today = (day == Time.zone.today)
-
-    base = [
-      # サイズ：モバイルはコンパクト、上位はゆったり
-      "min-h-[60px] sm:min-h-[72px] md:min-h-[92px]",
-      # 余白：モバイルは詰める
-      "p-1.5 sm:p-2",
-      # レイアウト：上下2段ベースで隙間を詰める
-      "rounded-xl md:rounded-2xl flex flex-col justify-between gap-1 sm:gap-2 cursor-pointer",
-      # ベース（可読性重視）
-      "bg-white/95 ring-1 ring-stone-200 shadow-sm",
-      # 変化（ホバー/フォーカス）
-      "transition hover:bg-white focus-visible:outline-none",
-      "hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
-      "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
-      # タップ時のフィードバック
-      "active:bg-sky-50 active:shadow",
-      # わずかなリフト
-      "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none"
-    ]
-    base << "ring-sky-200" if is_today
-
-    klass = base.join(" ")
-    day.month == target_month ? "#{klass} text-stone-800" : "#{klass} text-stone-400"
-  end
+  alias badge tailwind_badge
 
   private
 
