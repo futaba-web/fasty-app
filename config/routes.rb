@@ -42,10 +42,13 @@ Rails.application.routes.draw do
 
   # ===================== ファスティング記録 =====================
   resources :fasting_records, only: %i[index show new create edit update destroy] do
-    post :start,  on: :collection
-    post :finish, on: :member
+    collection do
+      get  :calendar     # 月カレンダー表示 /fasting_records/calendar
+      post :start        # 記録開始
+    end
 
     member do
+      post  :finish
       get   :edit_comment
       patch :update_comment
     end
@@ -68,7 +71,7 @@ Rails.application.routes.draw do
 
   # ===================== 静的リクエスト対策 =====================
   # RSS/Atom を提供しないため、古いクローラ向けのURLには 410 Gone を返す
-  get "/feeds/all.atom.xml", to: proc { [ 410, { "Content-Type" => "text/plain" }, [ "" ] ] }
+  get "/feeds/all.atom.xml", to: proc { [410, { "Content-Type" => "text/plain" }, [""]] }
 
   # favicon は public/ に配置しているため通常は不要。
   # もし今後 public/favicon.ico を置かない運用にするなら下記のリダイレクトを有効化。
