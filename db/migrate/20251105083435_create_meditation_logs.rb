@@ -9,7 +9,7 @@ class CreateMeditationLogs < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    add_index :meditation_logs, [:user_id, :started_at]
-    add_index :meditation_logs, [:user_id, :created_at]
+    add_index :meditation_logs, [ :user_id, :started_at ]
+    add_index :meditation_logs, [ :user_id, :created_at ]
   end
 end
