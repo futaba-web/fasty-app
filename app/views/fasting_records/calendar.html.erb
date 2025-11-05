@@ -2,9 +2,10 @@
 <% content_for :title, "断食カレンダー" %>
 
 <div class="mx-auto max-w-5xl p-4 pb-28 md:pb-32">
-  <!-- 透過を弱めて読みやすさ重視（白80% + blur + 薄い枠 + 影） -->
+  <!-- 読みやすさ重視：白80% + 強めのblur + 薄い枠 + 影 -->
   <div class="rounded-3xl bg-white/80 backdrop-blur-xl ring-1 ring-stone-300/60 shadow-xl p-4 sm:p-5">
 
+    <!-- 見出し + 月移動 -->
     <div class="flex items-center justify-between gap-2 flex-wrap">
       <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-stone-900">
         断食カレンダー
@@ -12,30 +13,34 @@
       </h1>
       <div class="flex items-center gap-2 flex-wrap text-xs sm:text-sm">
         <%= link_to "前月",
-                    calendar_fasting_records_path(year: @prev_year, month: @prev_month),
-                    class: "px-3 py-1.5 rounded-xl ring-1 ring-stone-300 bg-white/70 hover:bg-white/90" %>
+          calendar_fasting_records_path(year: @prev_year, month: @prev_month),
+          class: "px-3 py-1.5 rounded-xl ring-1 ring-stone-300 bg-white/70 hover:bg-white/90" %>
         <%= link_to "今月",
-                    calendar_fasting_records_path(year: @today.year, month: @today.month),
-                    class: "px-3 py-1.5 rounded-xl ring-1 ring-sky-200 bg-white/70 hover:bg-white/90" %>
+          calendar_fasting_records_path(year: @today.year, month: @today.month),
+          class: "px-3 py-1.5 rounded-xl ring-1 ring-sky-200 bg-white/70 hover:bg-white/90" %>
         <%= link_to "翌月",
-                    calendar_fasting_records_path(year: @next_year, month: @next_month),
-                    class: "px-3 py-1.5 rounded-xl ring-1 ring-stone-300 bg-white/70 hover:bg-white/90" %>
+          calendar_fasting_records_path(year: @next_year, month: @next_month),
+          class: "px-3 py-1.5 rounded-xl ring-1 ring-stone-300 bg-white/70 hover:bg-white/90" %>
       </div>
     </div>
 
+    <!-- 曜日ヘッダ -->
     <div class="mt-4 grid grid-cols-7 gap-2 text-[10px] sm:text-[12px] md:text-sm">
       <% %w[月 火 水 木 金 土 日].each do |w| %>
         <div class="px-2 py-1 text-center font-medium text-stone-700"><%= w %></div>
       <% end %>
     </div>
 
+    <!-- カレンダー本体 -->
     <div class="mt-1 grid grid-cols-7 gap-2">
       <% day = @calendar_start %>
       <% while day <= @calendar_end %>
         <% record = @records_by_date[day] %>
         <%= link_to fasting_records_path(date: day),
-                    class: day_cell_classes(day, @month),
-                    "aria-label": "#{day.strftime('%Y/%m/%d')} の記録一覧へ" do %>
+          class: day_cell_classes(day, @month),
+          "aria-label": "#{day.strftime('%Y/%m/%d')} の記録一覧へ" do %>
+
+          <!-- 日付 + 本日バッジ -->
           <div class="flex items-center justify-between">
             <div class="text-sm font-medium <%= day == @today ? 'text-sky-700' : 'text-stone-900' %>">
               <%= day.day %>
@@ -47,6 +52,7 @@
             <% end %>
           </div>
 
+          <!-- 記録の要約 -->
           <% if record %>
             <div class="mt-1"><%= fasting_badge_for(record) %></div>
             <div class="mt-1 text-[11px] text-stone-700 leading-tight">
@@ -66,6 +72,7 @@
       <% end %>
     </div>
 
+    <!-- 凡例 -->
     <div class="mt-6 flex flex-wrap items-center gap-3 text-[12px] text-stone-800">
       <span class="inline-flex items-center gap-1">
         <span class="inline-block w-5"><%= tailwind_badge("◯", "bg-green-100 text-green-700 ring-green-200") %></span> 成功
@@ -77,6 +84,5 @@
         <span class="inline-block w-5"><%= tailwind_badge("×", "bg-rose-100 text-rose-700 ring-rose-200") %></span> 未達
       </span>
     </div>
-
   </div>
 </div>
