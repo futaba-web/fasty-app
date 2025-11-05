@@ -1,5 +1,8 @@
 # app/controllers/fasting_records_controller.rb
 class FastingRecordsController < ApplicationController
+  # 本番でヘルパが読み込まれず NoMethodError になるケースを防ぐため、明示的にinclude
+  helper FastingRecordsHelper
+
   before_action :authenticate_user!
   before_action :set_scope
   before_action :set_record, only: %i[
@@ -224,6 +227,7 @@ class FastingRecordsController < ApplicationController
   def status_weight(record)
     return 2 if record.success == true
     return 1 if record.end_time.nil?
+
     0
   end
 

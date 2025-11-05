@@ -21,11 +21,9 @@
   </div>
 
   <!-- カード本体（全体がリンク） -->
-  <%# p-4→p-3、overflow-hidden を追加してコンパクト化 %>
   <%= link_to fasting_record_path(record),
         class: "block h-full min-h-32 rounded-xl ring-1 ring-gray-200 bg-white/95 p-3 sm:p-4 shadow-sm hover:shadow-md transition focus:outline-none focus:ring-2 focus:ring-emerald-400 flex flex-col overflow-hidden",
         "aria-label": "#{list_date(record.date_for_list)} / 所要時間 #{record.duration_text}" do %>
-    <%# space-y-2→space-y-1.5 で縦間隔を微縮 %>
     <div class="space-y-1.5 flex-1">
       <!-- 日付 -->
       <div class="flex items-center gap-2 text-sm text-gray-800 font-semibold">
