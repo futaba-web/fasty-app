@@ -31,33 +31,33 @@
       <% day = @calendar_start %>
       <% while day <= @calendar_end %>
         <% record = @records_by_date[day] %>
+
         <%= link_to fasting_records_path(date: day),
-                    class: day_cell_classes(day, @month),
+                    class: day_cell_outer_classes(day),
                     "aria-label": "#{day.strftime('%Y/%m/%d')} の記録一覧へ" do %>
 
-          <%# 日付部分：モバイル=色付き丸チップ / デスクトップ=従来表示 %>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-1">
-              <%= mobile_colored_day_number(day, record, today: (day == @today)) %>
-              <%= desktop_day_number(day, today: (day == @today)) %>
+          <div class="<%= day_cell_classes(day, @month) %>">
+            <div class="flex items-start justify-between">
+              <%# 本日: モバイルは色だけ、PCはバッジも表示 %>
+              <div class="text-sm font-medium <%= day == @today ? 'text-sky-700' : 'text-stone-900' %>">
+                <%= day.day %>
+              </div>
+              <% if day == @today %>
+                <span class="hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded bg-sky-100 text-sky-700 ring-1 ring-sky-200">
+                  <%= t("calendar.today") %>
+                </span>
+              <% end %>
             </div>
 
-            <%# 「本日」ラベルはsm以上のみ %>
-            <% if day == @today %>
-              <span class="hidden sm:inline text-[10px] px-2 py-0.5 rounded bg-sky-100 text-sky-700 ring-1 ring-sky-200">
-                <%= t("calendar.today", default: "本日") %>
-              </span>
+            <% if record %>
+              <%# 状態バッジのみ表示（時間等は出さない） %>
+              <div class="mt-1"><%= fasting_badge_for(record) %></div>
+            <% else %>
+              <%# モバイルは文言非表示、>=sm だけ “記録なし” を出す %>
+              <div class="mt-2 text-[11px] text-stone-500 hidden sm:block">記録なし</div>
             <% end %>
           </div>
 
-          <%# 状態テキストや結果はモバイルでは非表示、PCのみバッジ表示。結果時刻は常に出さない %>
-          <div class="mt-1 hidden sm:block">
-            <% if record %>
-              <%= fasting_badge_for(record) %>
-            <% else %>
-              <div class="text-[11px] text-stone-500">記録なし</div>
-            <% end %>
-          </div>
         <% end %>
         <% day += 1.day %>
       <% end %>

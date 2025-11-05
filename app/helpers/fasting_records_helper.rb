@@ -18,7 +18,7 @@ module FastingRecordsHelper
     t.strftime("%Y/%m/%d(#{WDAY_JA[t.wday]})")
   end
 
-  # === 絞り込みUI用
+  # === 絞り込みUI用 ===
   def status_filter_options
     [
       [ "すべて",      "" ],
@@ -31,15 +31,88 @@ module FastingRecordsHelper
   # 旧パラメータ(success/failure)との互換
   def normalized_status_param(raw)
     case raw.to_s
-    when "success" then "achieved"
-    when "failure" then "unachieved"
+    when "success"   then "achieved"
+    when "failure"   then "unachieved"
     else raw
     end
   end
 
-  # ========== バッジ（PC用） ==========
+  # バッジ（達成/未達成/進行中）
+  def status_badge(record)
+    key =
+      if record.respond_to?(:status_key)
+        record.status_key
+      elsif record.respond_to?(:status)
+        (record.status rescue nil)&.to_sym
+      end
+
+    case key
+    when :achieved
+      content_tag(:span, "達成",   class: "badge badge--ok")
+    when :unachieved
+      content_tag(:span, "未達成", class: "badge badge--ng")
+    else
+      content_tag(:span, "進行中", class: "badge badge--info")
+    end
+  end
+
+  # コメント抜粋（任意）
+  def comment_snippet(record, length: 60)
+    text = record.respond_to?(:comment_text) ? record.comment_text.to_s.strip : ""
+    return "".html_safe if text.blank?
+
+    content_tag(:div, class: "record-comment", title: text) do
+      safe_join([
+        content_tag(:span, "💬", aria: { hidden: true }),
+        content_tag(:span, " "),
+        content_tag(:span, truncate(text, length: length))
+      ])
+    end
+  end
+
+  def snippet_plain_text(record, length: 60)
+    text = record.respond_to?(:comment_text) ? record.comment_text.to_s.strip : ""
+    truncate(text, length: length)
+  end
+
+  # ===== カレンダー用 =====
+
+  # モバイルだけ「正方形」にするための外側ラッパー（aタグ）用クラス
+  # - mobile: pb-[100%] で正方形ボックス化（position: relative 前提）
+  # - >=sm: 通常フロー
+  def day_cell_outer_classes(_day)
+    "relative block pb-[100%] sm:pb-0"
+  end
+
+  # 内側（実表示）用クラス
+  # - >=sm では従来通りの高さを確保
+  # - ホバー/フォーカスの視認性、今日の薄いリング
+  def day_cell_classes(day, target_month)
+    is_today = (day == Time.zone.today)
+
+    base = [
+      # 内側はモバイルで absolute 展開して正方形にフィット
+      "absolute inset-0",
+      "rounded-xl flex flex-col gap-2 p-2 cursor-pointer",
+      # ベース
+      "bg-white ring-1 ring-stone-200 shadow-sm",
+      # 変化
+      "transition-colors transition-transform duration-150",
+      "hover:bg-sky-50 hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
+      "focus-visible:outline-none focus-visible:bg-sky-50",
+      "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
+      "active:bg-sky-100 active:shadow",
+      "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none",
+      # デスクトップでは最低高を確保
+      "sm:static sm:min-h-[96px]"
+    ]
+    base << "ring-sky-200" if is_today
+
+    klass = base.join(" ")
+    day.month == target_month ? "#{klass} text-stone-800" : "#{klass} text-stone-400"
+  end
+
   # 状態 → 記号・色（Tailwind semantic）
-  # success=green / ongoing=amber / fail=rose
   def fasting_badge_for(record)
     return if record.nil?
 
@@ -52,64 +125,12 @@ module FastingRecordsHelper
     end
   end
 
-  # 汎用：Tailwindバッジ
+  # 汎用バッジ
   def tailwind_badge(text, color_classes)
     content_tag(:span, text,
       class: "inline-flex items-center justify-center text-[12px] px-2 py-0.5 rounded-lg ring-1 #{color_classes}")
   end
   alias badge tailwind_badge
-
-  # ========== モバイル用：日付数字の“丸チップ”を色分け ==========
-  # recordの状態に応じて日付数字をカラーリング（sm未満のみ表示）
-  # - 成功: 緑 / 途中: 黄 / 未達: 赤 / 記録なし: デフォルト
-  def mobile_colored_day_number(day, record, today:)
-    base = "inline-flex sm:hidden items-center justify-center w-7 h-7 rounded-full text-[13px] font-medium"
-    classes =
-      if record.present?
-        if record.success == true
-          "bg-green-500/90 text-white"
-        elsif record.end_time.nil?
-          "bg-amber-500/90 text-white"
-        else
-          "bg-rose-500/90 text-white"
-        end
-      else
-        "bg-transparent text-stone-900"
-      end
-
-    # 今日の強調（枠線）※色は状態そのまま、枠だけ淡いスカイ
-    classes += " ring-2 ring-sky-300" if today
-
-    content_tag(:span, day.day, class: "#{base} #{classes}")
-  end
-
-  # PC用の日付（sm以上で表示）
-  def desktop_day_number(day, today:)
-    color = today ? "text-sky-700" : "text-stone-900"
-    content_tag(:span, day.day, class: "hidden sm:inline text-sm font-medium #{color}")
-  end
-
-  # 日セル（共通）
-  # 当月外は“文字色だけ”薄く（opacityは使わない）
-  def day_cell_classes(day, target_month)
-    is_today = (day == Time.zone.today)
-    base = [
-      # モバイルは正方形を意識して高さ控えめ / sm以降はゆとり
-      "min-h-[58px] sm:min-h-[76px] md:min-h-[96px]",
-      "p-2 rounded-xl flex flex-col gap-2 cursor-pointer",
-      "bg-white ring-1 ring-stone-200 shadow-sm",
-      "transition-colors transition-transform duration-150",
-      "hover:bg-sky-50 hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
-      "focus-visible:outline-none focus-visible:bg-sky-50",
-      "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
-      "active:bg-sky-100 active:shadow",
-      "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none"
-    ]
-    base << "ring-sky-200" if is_today
-
-    klass = base.join(" ")
-    day.month == target_month ? "#{klass} text-stone-800" : "#{klass} text-stone-400"
-  end
 
   private
 
