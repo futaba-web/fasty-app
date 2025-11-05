@@ -6,7 +6,8 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
   # Associations
-  has_many :fasting_records, dependent: :destroy
+  has_many :fasting_records,   dependent: :destroy
+  has_many :meditation_logs,   dependent: :destroy
 
   # Validations
   validates :name, presence: true, uniqueness: true, length: { maximum: 30 }
