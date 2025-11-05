@@ -42,10 +42,13 @@ Rails.application.routes.draw do
 
   # ===================== ファスティング記録 =====================
   resources :fasting_records, only: %i[index show new create edit update destroy] do
-    post :start,  on: :collection
-    post :finish, on: :member
+    collection do
+      get  :calendar     # 月カレンダー表示 /fasting_records/calendar
+      post :start        # 記録開始
+    end
 
     member do
+      post  :finish
       get   :edit_comment
       patch :update_comment
     end

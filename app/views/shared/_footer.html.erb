@@ -15,6 +15,25 @@
           <span>記録一覧</span>
         <% end %>
 
+        <!-- カレンダー -->
+        <%= link_to (respond_to?(:calendar_fasting_records_path) ? calendar_fasting_records_path : "#"),
+          class: "footer-app__link #{(respond_to?(:calendar_fasting_records_path) && current_page?(calendar_fasting_records_path)) ? 'is-active' : ''}",
+          aria: { label: "カレンダー", current: ((respond_to?(:calendar_fasting_records_path) && current_page?(calendar_fasting_records_path)) ? 'page' : nil) } do %>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <rect x="3" y="4" width="18" height="16" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M3 9h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M8 2v4M16 2v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <!-- 小さな日付ドット（視覚的な“月表示”の雰囲気） -->
+            <circle cx="8"  cy="13.5" r="1" fill="currentColor"/>
+            <circle cx="12" cy="13.5" r="1" fill="currentColor"/>
+            <circle cx="16" cy="13.5" r="1" fill="currentColor"/>
+            <circle cx="8"  cy="17.5" r="1" fill="currentColor"/>
+            <circle cx="12" cy="17.5" r="1" fill="currentColor"/>
+            <circle cx="16" cy="17.5" r="1" fill="currentColor"/>
+          </svg>
+          <span>カレンダー</span>
+        <% end %>
+
         <!-- 瞑想 -->
         <%= link_to (respond_to?(:meditations_path) ? meditations_path : "#"),
           class: "footer-app__link #{(respond_to?(:meditations_path) && current_page?(meditations_path)) ? 'is-active' : ''}",

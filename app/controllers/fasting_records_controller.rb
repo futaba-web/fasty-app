@@ -11,6 +11,13 @@ class FastingRecordsController < ApplicationController
   def index
     scope = @scope.order(Arel.sql("COALESCE(end_time, start_time) DESC"))
 
+    # 日付指定（/fasting_records?date=2025-11-05）
+    if params[:date].present?
+      date = parse_date(params[:date])
+      scope = scope.where(start_time: date.beginning_of_day..date.end_of_day) if date
+    end
+
+    # 状態フィルタ
     case normalize_status(params[:status])
     when "achieved"
       scope = scope.respond_to?(:achieved)   ? scope.achieved   : scope.where(success: true).where.not(end_time: nil)
@@ -50,7 +57,7 @@ class FastingRecordsController < ApplicationController
   def update
     attrs = fasting_record_params.to_h
 
-    # 終了済みは基本ロック
+    # 終了済みは基本ロック（明示的許可がない限り変更不可）
     if @record.end_time.present?
       attrs.delete("start_time")   if params[:allow_change_start_time].blank?
       attrs.delete("end_time")     if params[:allow_change_end_time].blank?
@@ -106,6 +113,43 @@ class FastingRecordsController < ApplicationController
 
     redirect_to edit_fasting_record_path(@record),
                 notice: "終了しました。コメントをどうぞ"
+  end
+
+  # -----------------------------
+  # カレンダー（月表示）
+  # -----------------------------
+  # GET /fasting_records/calendar?year=YYYY&month=MM
+  def calendar
+    @year  = (params[:year]  || Time.zone.today.year).to_i
+    @month = (params[:month] || Time.zone.today.month).to_i
+
+    first_of_month = Date.new(@year, @month, 1)
+    last_of_month  = first_of_month.end_of_month
+
+    # 表示は常に 6 週、週の開始は月曜
+    @calendar_start = first_of_month.beginning_of_week(:monday)
+    @calendar_end   = last_of_month.end_of_week(:monday)
+
+    month_range = @calendar_start.beginning_of_day..@calendar_end.end_of_day
+
+    # N+1 回避：月範囲を1クエリで取得、必要カラムのみ
+    records = @scope
+              .where(start_time: month_range)
+              .select(:id, :start_time, :end_time, :success, :target_hours)
+              .to_a
+
+    # 日単位に “代表” レコードを選ぶ（◯ > △ > × の優先度）
+    @records_by_date = records
+                       .group_by { |r| r.start_time.to_date }
+                       .transform_values { |list| list.max_by { |r| status_weight(r) } }
+
+    # ナビゲーション用
+    prev = first_of_month.prev_month
+    nxt  = first_of_month.next_month
+    @prev_year, @prev_month = prev.year, prev.month
+    @next_year, @next_month = nxt.year,  nxt.month
+
+    @today = Time.zone.today
   end
 
   # -----------------------------
@@ -174,5 +218,19 @@ class FastingRecordsController < ApplicationController
     when false then "保存しました。次は達成できますように！"
     else            "保存しました。"
     end
+  end
+
+  # カレンダーロジック用：状態の重みづけ（◯>△>×）
+  def status_weight(record)
+    return 2 if record.success == true
+    return 1 if record.end_time.nil?
+    0
+  end
+
+  # 安全な日付パース
+  def parse_date(str)
+    Date.parse(str)
+  rescue ArgumentError, TypeError
+    nil
   end
 end
