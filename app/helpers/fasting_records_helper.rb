@@ -116,28 +116,31 @@ module FastingRecordsHelper
     content_tag(:span, text,
       class: "inline-flex items-center justify-center text-[12px] px-2 py-0.5 rounded-lg ring-1 #{color_classes}")
   end
-  alias badge tailwind_badge  # 互換目的（任意）
+  alias badge tailwind_badge  # 互換目的
 
-  # 日セルのスタイル
+  # 日セルのスタイル（モバイル最適化）
+  # - モバイルは高さ/余白を圧縮（情報量を減らして視認性UP）
   # - 当月外は“文字色だけ”薄く（opacityは使わない）
-  # - XS/SM/MDで高さ調整
-  # - ホバー/フォーカスでセル背景を空色に変化させ、リングもスカイ系に変更
+  # - ホバー/フォーカスで背景とリングをスカイ系に
   # - 今日: 常時うっすらスカイのリング
   def day_cell_classes(day, target_month)
     is_today = (day == Time.zone.today)
 
     base = [
-      "min-h-[68px] sm:min-h-[80px] md:min-h-[96px]",
-      "p-2 rounded-xl flex flex-col gap-2 cursor-pointer",
-      # ベース（可読性重視の白）
-      "bg-white ring-1 ring-stone-200 shadow-sm",
-      # 色が“はっきり”変わるホバー/フォーカス
-      "transition-colors transition-transform duration-150",
-      "hover:bg-sky-50 hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
-      "focus-visible:outline-none focus-visible:bg-sky-50",
+      # サイズ：モバイルはコンパクト、上位はゆったり
+      "min-h-[60px] sm:min-h-[72px] md:min-h-[92px]",
+      # 余白：モバイルは詰める
+      "p-1.5 sm:p-2",
+      # レイアウト：上下2段ベースで隙間を詰める
+      "rounded-xl md:rounded-2xl flex flex-col justify-between gap-1 sm:gap-2 cursor-pointer",
+      # ベース（可読性重視）
+      "bg-white/95 ring-1 ring-stone-200 shadow-sm",
+      # 変化（ホバー/フォーカス）
+      "transition hover:bg-white focus-visible:outline-none",
+      "hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
       "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
-      # モバイルのタップ時フィードバック
-      "active:bg-sky-100 active:shadow",
+      # タップ時のフィードバック
+      "active:bg-sky-50 active:shadow",
       # わずかなリフト
       "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none"
     ]
