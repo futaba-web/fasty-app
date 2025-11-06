@@ -21,10 +21,10 @@ module FastingRecordsHelper
   # === 絞り込みUI用 ===
   def status_filter_options
     [
-      [ "すべて",      "" ],
-      [ "目標達成",    "achieved" ],
-      [ "未達成",      "unachieved" ],
-      [ "進行中",      "in_progress" ]
+      ["すべて",      ""],
+      ["目標達成",    "achieved"],
+      ["未達成",      "unachieved"],
+      ["進行中",      "in_progress"]
     ]
   end
 
@@ -112,30 +112,21 @@ module FastingRecordsHelper
     day.month == target_month ? "#{klass} text-stone-800" : "#{klass} text-stone-400"
   end
 
-  # モバイル専用：日付数字に色チップ（丸）を付けるためのクラス
-  # - 成功=緑 / 途中=黄 / 未達=赤 / 本日=淡いスカイ
-  # - sm 以上ではプレーン数字へ視覚的リセット
-  def day_number_chip_classes(record, day, today)
-    base = "inline-flex items-center justify-center w-8 h-8 rounded-full text-[14px] font-semibold ring-1"
-    color =
-      if day == today
-        "bg-sky-50 text-sky-700 ring-sky-200"
-      elsif record.nil?
-        "bg-white text-stone-900 ring-stone-200"
-      elsif record.success == true
-        "bg-green-100 text-green-700 ring-green-200"
-      elsif record.end_time.nil?
-        "bg-amber-100 text-amber-700 ring-amber-200"
-      else
-        "bg-rose-100 text-rose-700 ring-rose-200"
-      end
+  # モバイル幅でセル背景色を状態別に変える（PC幅では白背景に戻す）
+  # - 達成=淡い緑 / 途中=淡い黄 / 未達=淡い赤
+  def mobile_color_classes(record)
+    return "" unless record
 
-    responsive_reset = "sm:bg-transparent sm:text-inherit sm:ring-0 sm:w-auto sm:h-auto sm:rounded-none sm:font-medium"
-
-    "#{base} #{color} #{responsive_reset}"
+    if record.success == true
+      "bg-green-50 ring-green-200 sm:bg-white sm:ring-stone-200"
+    elsif record.end_time.nil?
+      "bg-amber-50 ring-amber-200 sm:bg-white sm:ring-stone-200"
+    else
+      "bg-rose-50 ring-rose-200 sm:bg-white sm:ring-stone-200"
+    end
   end
 
-  # 旧来の◯/△/×バッジ（PC用の凡例で使用可）
+  # 旧来の◯/△/×バッジ（PCの凡例やPCセル内表示で使用）
   def fasting_badge_for(record)
     return if record.nil?
 

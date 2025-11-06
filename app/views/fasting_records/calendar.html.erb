@@ -39,10 +39,13 @@
                     class: day_cell_outer_classes(day),
                     "aria-label": "#{day.strftime('%Y/%m/%d')} の記録一覧へ" do %>
 
-          <div class="<%= day_cell_classes(day, @month) %>">
-            <!-- 上段：日付（モバイルは色チップで状態表示） / 本日バッジ(PCのみ) -->
+          <%# セル本体：モバイルは状態に応じて背景色を付与 / PCは白に戻す %>
+          <div class="<%= [day_cell_classes(day, @month), mobile_color_classes(record)].join(' ') %>">
+            <!-- 上段：日付（素の数字） / 本日バッジ(PCのみ) -->
             <div class="flex items-start justify-between">
-              <span class="<%= day_number_chip_classes(record, day, @today) %>"><%= day.day %></span>
+              <span class="text-sm font-semibold <%= day == @today ? 'text-sky-700' : 'text-stone-900' %>">
+                <%= day.day %>
+              </span>
               <% if day == @today %>
                 <span class="hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded bg-sky-100 text-sky-700 ring-1 ring-sky-200">
                   <%= t("calendar.today") %>
