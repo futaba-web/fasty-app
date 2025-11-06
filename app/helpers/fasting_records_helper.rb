@@ -21,10 +21,10 @@ module FastingRecordsHelper
   # === 絞り込みUI用 ===
   def status_filter_options
     [
-      ["すべて",      ""],
-      ["目標達成",    "achieved"],
-      ["未達成",      "unachieved"],
-      ["進行中",      "in_progress"]
+      [ "すべて",      "" ],
+      [ "目標達成",    "achieved" ],
+      [ "未達成",      "unachieved" ],
+      [ "進行中",      "in_progress" ]
     ]
   end
 
