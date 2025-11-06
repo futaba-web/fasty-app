@@ -3,6 +3,7 @@
 
 <div class="mx-auto max-w-5xl p-4 pb-28 md:pb-32">
   <div class="rounded-3xl bg-white/80 backdrop-blur-xl ring-1 ring-stone-300/60 shadow-xl p-4 sm:p-5">
+    <!-- 見出し & 月移動 -->
     <div class="flex items-center justify-between gap-2 flex-wrap">
       <h1 class="text-lg sm:text-xl md:text-2xl font-semibold text-stone-900">
         断食カレンダー
@@ -21,12 +22,14 @@
       </div>
     </div>
 
+    <!-- 曜日 -->
     <div class="mt-4 grid grid-cols-7 gap-2 text-[10px] sm:text-[12px] md:text-sm">
       <% %w[月 火 水 木 金 土 日].each do |w| %>
         <div class="px-2 py-1 text-center font-medium text-stone-700"><%= w %></div>
       <% end %>
     </div>
 
+    <!-- カレンダー本体 -->
     <div class="mt-1 grid grid-cols-7 gap-2">
       <% day = @calendar_start %>
       <% while day <= @calendar_end %>
@@ -37,11 +40,9 @@
                     "aria-label": "#{day.strftime('%Y/%m/%d')} の記録一覧へ" do %>
 
           <div class="<%= day_cell_classes(day, @month) %>">
+            <!-- 上段：日付（モバイルは色チップで状態表示） / 本日バッジ(PCのみ) -->
             <div class="flex items-start justify-between">
-              <%# 本日: モバイルは色だけ、PCはバッジも表示 %>
-              <div class="text-sm font-medium <%= day == @today ? 'text-sky-700' : 'text-stone-900' %>">
-                <%= day.day %>
-              </div>
+              <span class="<%= day_number_chip_classes(record, day, @today) %>"><%= day.day %></span>
               <% if day == @today %>
                 <span class="hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded bg-sky-100 text-sky-700 ring-1 ring-sky-200">
                   <%= t("calendar.today") %>
@@ -49,11 +50,10 @@
               <% end %>
             </div>
 
+            <!-- 下段：PCのみバッジ表示 / モバイルは非表示（情報量削減） -->
             <% if record %>
-              <%# 状態バッジのみ表示（時間等は出さない） %>
-              <div class="mt-1"><%= fasting_badge_for(record) %></div>
+              <div class="mt-1 hidden sm:block"><%= fasting_badge_for(record) %></div>
             <% else %>
-              <%# モバイルは文言非表示、>=sm だけ “記録なし” を出す %>
               <div class="mt-2 text-[11px] text-stone-500 hidden sm:block">記録なし</div>
             <% end %>
           </div>
@@ -63,6 +63,7 @@
       <% end %>
     </div>
 
+    <!-- 凡例（PC向け表示想定） -->
     <div class="mt-6 flex flex-wrap items-center gap-3 text-[12px] text-stone-800">
       <span class="inline-flex items-center gap-1">
         <span class="inline-block w-5"><%= tailwind_badge("◯", "bg-green-100 text-green-700 ring-green-200") %></span> 成功
