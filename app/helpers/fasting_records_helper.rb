@@ -31,8 +31,8 @@ module FastingRecordsHelper
   # 旧パラメータ(success/failure)との互換
   def normalized_status_param(raw)
     case raw.to_s
-    when "success"   then "achieved"
-    when "failure"   then "unachieved"
+    when "success" then "achieved"
+    when "failure" then "unachieved"
     else raw
     end
   end
@@ -47,12 +47,9 @@ module FastingRecordsHelper
       end
 
     case key
-    when :achieved
-      content_tag(:span, "達成",   class: "badge badge--ok")
-    when :unachieved
-      content_tag(:span, "未達成", class: "badge badge--ng")
-    else
-      content_tag(:span, "進行中", class: "badge badge--info")
+    when :achieved   then content_tag(:span, "達成",   class: "badge badge--ok")
+    when :unachieved then content_tag(:span, "未達成", class: "badge badge--ng")
+    else                  content_tag(:span, "進行中", class: "badge badge--info")
     end
   end
 
@@ -77,33 +74,25 @@ module FastingRecordsHelper
 
   # ===== カレンダー用 =====
 
-  # モバイルだけ「正方形」にするための外側ラッパー（aタグ）用クラス
-  # - mobile: pb-[100%] で正方形ボックス化（position: relative 前提）
-  # - >=sm: 通常フロー
+  # 外側ラッパー（aタグ）: モバイルは正方形レイアウト
   def day_cell_outer_classes(_day)
     "relative block pb-[100%] sm:pb-0"
   end
 
-  # 内側（実表示）用クラス
-  # - >=sm では従来通りの高さを確保
-  # - ホバー/フォーカスの視認性、今日の薄いリング
+  # 内側（実表示）: base スタイル + todayリング
   def day_cell_classes(day, target_month)
     is_today = (day == Time.zone.today)
 
     base = [
-      # 内側はモバイルで absolute 展開して正方形にフィット
       "absolute inset-0",
       "rounded-xl flex flex-col gap-2 p-2 cursor-pointer",
-      # ベース
       "bg-white ring-1 ring-stone-200 shadow-sm",
-      # 変化
       "transition-colors transition-transform duration-150",
       "hover:bg-sky-50 hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
       "focus-visible:outline-none focus-visible:bg-sky-50",
       "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
       "active:bg-sky-100 active:shadow",
       "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none",
-      # デスクトップでは最低高を確保
       "sm:static sm:min-h-[96px]"
     ]
     base << "ring-sky-200" if is_today
@@ -112,8 +101,9 @@ module FastingRecordsHelper
     day.month == target_month ? "#{klass} text-stone-800" : "#{klass} text-stone-400"
   end
 
-  # モバイル幅でセル背景色を状態別に変える（PC幅では白背景に戻す）
-  # - 達成=淡い緑 / 途中=淡い黄 / 未達=淡い赤
+  # モバイル幅でセル背景色を状態別に変える（PC幅では白に戻す）
+  # 達成=bg-green-50 / 途中=bg-amber-50 / 未達=bg-rose-50
+  # 併せて ring 色も薄く寄せる（PCでは stone に戻す）
   def mobile_color_classes(record)
     return "" unless record
 
@@ -126,7 +116,7 @@ module FastingRecordsHelper
     end
   end
 
-  # 旧来の◯/△/×バッジ（PCの凡例やPCセル内表示で使用）
+  # 旧来の◯/△/×バッジ（凡例やPCセル内表示）
   def fasting_badge_for(record)
     return if record.nil?
 

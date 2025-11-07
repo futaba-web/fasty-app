@@ -1,20 +1,22 @@
-<%# Tailwind safelist（hidden）: 本番ビルドでパージされないように強制含有 %>
-<div class="hidden">
-  <!-- 背景色（セル用） -->
-  <span class="bg-green-100"></span>
-  <span class="bg-amber-100"></span>
-  <span class="bg-rose-100"></span>
-  <span class="bg-sky-50"></span>
+<%# app/views/shared/_tw_safelist.html.erb %>
+<template hidden>
+  <!-- 背景色（モバイルのセル背景） -->
+  <span class="bg-green-50"></span>
+  <span class="bg-amber-50"></span>
+  <span class="bg-rose-50"></span>
+  <span class="bg-white"></span>
 
-  <!-- 文字色（todayやPC表示で使用） -->
-  <span class="text-green-700"></span>
-  <span class="text-amber-700"></span>
-  <span class="text-rose-700"></span>
+  <!-- 文字色（todayや凡例など） -->
   <span class="text-sky-700"></span>
+  <span class="text-stone-900"></span>
+  <span class="text-stone-500"></span>
 
-  <!-- 枠線色（ring-*） -->
+  <!-- 枠線（ring） -->
   <span class="ring-1 ring-green-200"></span>
   <span class="ring-1 ring-amber-200"></span>
   <span class="ring-1 ring-rose-200"></span>
-  <span class="ring-1 ring-sky-200"></span>
-</div>
+  <span class="ring-1 ring-stone-200"></span>
+
+  <!-- レスポンシブ指定を拾わせる（sm:系はクラス文字列ごと必要） -->
+  <div class="sm:bg-white sm:ring-stone-200"></div>
+</template>

@@ -53,7 +53,7 @@
               <% end %>
             </div>
 
-            <!-- 下段：PCのみバッジ表示 / モバイルは非表示（情報量削減） -->
+            <!-- 下段：PCのみバッジ表示 / モバイルは非表示 -->
             <% if record %>
               <div class="mt-1 hidden sm:block"><%= fasting_badge_for(record) %></div>
             <% else %>
@@ -66,7 +66,7 @@
       <% end %>
     </div>
 
-    <!-- 凡例（PC向け表示想定） -->
+    <!-- 凡例（PC向け） -->
     <div class="mt-6 flex flex-wrap items-center gap-3 text-[12px] text-stone-800">
       <span class="inline-flex items-center gap-1">
         <span class="inline-block w-5"><%= tailwind_badge("◯", "bg-green-100 text-green-700 ring-green-200") %></span> 成功
