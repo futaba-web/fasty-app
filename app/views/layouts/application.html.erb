@@ -91,6 +91,9 @@
       <%= render "shared/footer" %>
     </footer>
 
+    <%# Tailwind の safelist（hidden）: 本番ビルドのパージ回避用 %>
+    <%= render "shared/tw_safelist" %>
+
     <!-- Service Worker 登録 -->
     <script>
       if ('serviceWorker' in navigator) {
