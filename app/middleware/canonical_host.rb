@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "uri"
+
 class CanonicalHost
   def initialize(app); @app = app; end
 
