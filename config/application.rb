@@ -19,6 +19,8 @@ require "action_cable/engine"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require "uri" # CanonicalHost 内から URI を使うため
+
 module FastyApp
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -28,15 +30,19 @@ module FastyApp
     config.autoload_lib(ignore: %w[assets tasks])
 
     # === Middleware autoload/eager load =====================================
-    # app/middleware 以下を確実に読み込む（本番での eager load 対応）
+    # 自作ミドルウェアのディレクトリを確実に読み込む
     middleware_path = Rails.root.join("app/middleware")
     config.autoload_paths   << middleware_path
     config.eager_load_paths << middleware_path
+    # ========================================================================
 
-    # www へ正規化するミドルウェア（CanonicalHost）をアプリ入口で実行
-    # 定数解決前でも安全に読み込めるよう"文字列"で登録
-    # Rack::Runtime より前に差し込んで、できるだけ早く 301 を返す
-    config.middleware.insert_before Rack::Runtime, "CanonicalHost"
+    # === Canonical Host（www統一など）========================================
+    # 本番のみ、PRIMARY_HOST が設定されている場合に有効化
+    if Rails.env.production? && ENV["PRIMARY_HOST"].present?
+      # Rack::Runtime より前に差し込み、できるだけ早く 301 を返す
+      # ここは **定数** を渡すこと（文字列だと NoMethodError になります）
+      config.middleware.insert_before Rack::Runtime, CanonicalHost
+    end
     # ========================================================================
 
     # Configuration for the application, engines, and railties goes here.
