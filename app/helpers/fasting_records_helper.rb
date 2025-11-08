@@ -86,13 +86,16 @@ module FastingRecordsHelper
     base = [
       "absolute inset-0",
       "rounded-xl flex flex-col gap-2 p-2 cursor-pointer",
+      # ベース
       "bg-white ring-1 ring-stone-200 shadow-sm",
+      # 変化
       "transition-colors transition-transform duration-150",
       "hover:bg-sky-50 hover:ring-sky-300 hover:shadow-md hover:shadow-sky-100/60",
       "focus-visible:outline-none focus-visible:bg-sky-50",
       "focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:shadow-lg",
       "active:bg-sky-100 active:shadow",
       "hover:-translate-y-[1px] active:scale-[0.99] motion-reduce:transform-none",
+      # デスクトップでは最低高を確保
       "sm:static sm:min-h-[96px]"
     ]
     base << "ring-sky-200" if is_today
@@ -102,17 +105,17 @@ module FastingRecordsHelper
   end
 
   # モバイル幅でセル背景色を状態別に変える（PC幅では白に戻す）
-  # 達成=bg-green-50 / 途中=bg-amber-50 / 未達=bg-rose-50
-  # 併せて ring 色も薄く寄せる（PCでは stone に戻す）
+  # 達成=!bg-green-50 / 途中=!bg-amber-50 / 未達=!bg-rose-50
+  # ! を付けて bg-white を確実に上書き。PC幅では stone に戻す。
   def mobile_color_classes(record)
     return "" unless record
 
     if record.success == true
-      "bg-green-50 ring-green-200 sm:bg-white sm:ring-stone-200"
+      "!bg-green-50 !ring-green-200 sm:bg-white sm:ring-stone-200"
     elsif record.end_time.nil?
-      "bg-amber-50 ring-amber-200 sm:bg-white sm:ring-stone-200"
+      "!bg-amber-50 !ring-amber-200 sm:bg-white sm:ring-stone-200"
     else
-      "bg-rose-50 ring-rose-200 sm:bg-white sm:ring-stone-200"
+      "!bg-rose-50 !ring-rose-200 sm:bg-white sm:ring-stone-200"
     end
   end
 
