@@ -1,3 +1,4 @@
+# config/application.rb
 require_relative "boot"
 
 require "rails"
@@ -23,10 +24,20 @@ module FastyApp
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 
-    # Please, add to the `ignore` list any other `lib` subdirectories that do
-    # not contain `.rb` files, or that should not be reloaded or eager loaded.
-    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    # app/lib などのうち .rb 以外をautoload対象から外す
     config.autoload_lib(ignore: %w[assets tasks])
+
+    # === Middleware autoload/eager load =====================================
+    # app/middleware 以下を確実に読み込む（本番での eager load 対応）
+    middleware_path = Rails.root.join("app/middleware")
+    config.autoload_paths   << middleware_path
+    config.eager_load_paths << middleware_path
+
+    # www へ正規化するミドルウェア（CanonicalHost）をアプリ入口で実行
+    # 定数解決前でも安全に読み込めるよう"文字列"で登録
+    # Rack::Runtime より前に差し込んで、できるだけ早く 301 を返す
+    config.middleware.insert_before Rack::Runtime, "CanonicalHost"
+    # ========================================================================
 
     # Configuration for the application, engines, and railties goes here.
     #

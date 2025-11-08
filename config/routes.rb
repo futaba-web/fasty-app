@@ -67,7 +67,9 @@ Rails.application.routes.draw do
   resource :contact, only: %i[new create]            # /contact/new, POST /contact
 
   # ===================== ヘルスチェック =====================
-  get "up", to: "rails/health#show", as: :rails_health_check
+  # 監視・疎通確認用（SSLリダイレクト除外対象）。/up は Rails 標準ヘルス。
+  get  "/health", to: proc { [ 200, { "Content-Type" => "text/plain" }, [ "ok" ] ] }
+  get  "/up",     to: "rails/health#show", as: :rails_health_check
 
   # ===================== 静的リクエスト対策 =====================
   # RSS/Atom を提供しないため、古いクローラ向けのURLには 410 Gone を返す
