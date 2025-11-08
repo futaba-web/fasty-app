@@ -34,8 +34,9 @@ module FastyApp
     config.eager_load_paths << middleware_path
 
     # www へ正規化するミドルウェア（CanonicalHost）をアプリ入口で実行
+    # 定数解決前でも安全に読み込めるよう"文字列"で登録
     # Rack::Runtime より前に差し込んで、できるだけ早く 301 を返す
-    config.middleware.insert_before Rack::Runtime, CanonicalHost
+    config.middleware.insert_before Rack::Runtime, "CanonicalHost"
     # ========================================================================
 
     # Configuration for the application, engines, and railties goes here.
