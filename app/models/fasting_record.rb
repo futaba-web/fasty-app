@@ -1,14 +1,16 @@
 # app/models/fasting_record.rb
 class FastingRecord < ApplicationRecord
+  include Uidable
+
   belongs_to :user, optional: true
 
-  TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
+  TARGET_HOURS_CHOICES = [12, 14, 16, 18, 20, 22, 24].freeze
   GRACE_SECONDS = 30 # 判定の猶予（必要に応じて 0〜60 で調整）
 
   scope :running,    -> { where(end_time: nil) }
   scope :finished,   -> { where.not(end_time: nil) }
   scope :achieved,   -> { finished.where(success: true) }
-  scope :unachieved, -> { finished.where(success: [ false, nil ]) }
+  scope :unachieved, -> { finished.where(success: [false, nil]) }
 
   # 同一ユーザーで「進行中（end_time: nil）」が複数できないように。
   # ※ このレコード自身が進行中のときだけ検証する（終了済みのコメント更新で弾かれないように）
@@ -16,7 +18,7 @@ class FastingRecord < ApplicationRecord
             uniqueness: { conditions: -> { where(end_time: nil) } },
             if: :running?
 
-  validates :start_time, presence: true
+  validates :start_time,   presence: true
   validates :target_hours, presence: true, inclusion: { in: TARGET_HOURS_CHOICES }
   validate  :end_after_start
   # end_time の必須化は「手動更新時」に限定（自動終了フローでは未入力保存も許すため）
@@ -26,7 +28,7 @@ class FastingRecord < ApplicationRecord
   before_validation :auto_set_success,
                     if: -> { start_time.present? && end_time.present? && target_hours.present? }
 
-  # ====== 一覧/表示用ユーティリティ ======
+  # ====== 一覧/表示用ユーティリリティ ======
 
   # 進行中か？
   def running?
@@ -78,9 +80,9 @@ class FastingRecord < ApplicationRecord
 
   def elapsed_hm
     s = elapsed_seconds
-    return [ 0, 0 ] unless s
+    return [0, 0] unless s
     mins = s / 60
-    [ mins / 60, mins % 60 ]
+    [mins / 60, mins % 60]
   end
 
   # 自動判定（猶予付き）
