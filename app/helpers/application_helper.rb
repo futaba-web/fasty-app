@@ -121,6 +121,19 @@ module ApplicationHelper
   end
 
   #========================
+  # 共通ページコンテナ（レスポンシブ統一）
+  #========================
+  # 使い方:
+  # <%= page_container do %>
+  #   ...ページ内容...
+  # <% end %>
+  def page_container(classes: "", &block)
+    base = "mx-auto max-w-screen-md sm:max-w-2xl lg:max-w-4xl " \
+           "px-4 sm:px-6 md:px-8 pt-6 md:pt-8 pb-24 md:pb-28"
+    content_tag(:div, capture(&block), class: "#{base} #{classes}".strip)
+  end
+
+  #========================
   # ここからシェア機能
   #========================
 
