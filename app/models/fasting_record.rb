@@ -1,5 +1,7 @@
 # app/models/fasting_record.rb
 class FastingRecord < ApplicationRecord
+  include Uidable
+
   belongs_to :user, optional: true
 
   TARGET_HOURS_CHOICES = [ 12, 14, 16, 18, 20, 22, 24 ].freeze
@@ -16,7 +18,7 @@ class FastingRecord < ApplicationRecord
             uniqueness: { conditions: -> { where(end_time: nil) } },
             if: :running?
 
-  validates :start_time, presence: true
+  validates :start_time,   presence: true
   validates :target_hours, presence: true, inclusion: { in: TARGET_HOURS_CHOICES }
   validate  :end_after_start
   # end_time の必須化は「手動更新時」に限定（自動終了フローでは未入力保存も許すため）
@@ -26,7 +28,7 @@ class FastingRecord < ApplicationRecord
   before_validation :auto_set_success,
                     if: -> { start_time.present? && end_time.present? && target_hours.present? }
 
-  # ====== 一覧/表示用ユーティリティ ======
+  # ====== 一覧/表示用ユーティリリティ ======
 
   # 進行中か？
   def running?

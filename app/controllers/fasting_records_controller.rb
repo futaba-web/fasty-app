@@ -179,8 +179,19 @@ class FastingRecordsController < ApplicationController
     @scope = current_user.fasting_records
   end
 
+  # ✅ UIDベースの取得（数値IDは新URLへ301リダイレクト）
   def set_record
-    @record = @scope.find(params[:id])
+    raw = params[:id].to_s
+
+    # 旧: 数値IDで来た場合は、ユーザースコープ内で探して新URLへ恒久リダイレクト
+    if raw.match?(/\A\d+\z/)
+      record = @scope.find(raw) # 他人のレコードは404（スコープ外）
+      return redirect_to fasting_record_path(record), status: :moved_permanently
+    end
+
+    # 新: 32桁hexのUIDをBINARY(16)に戻して、ユーザースコープ内で取得
+    raise ActiveRecord::RecordNotFound unless raw.match?(/\A\h{32}\z/)
+    @record = @scope.find_by!(uid: [ raw ].pack("H*"))
   end
 
   # create/update 共通 Strong Params
