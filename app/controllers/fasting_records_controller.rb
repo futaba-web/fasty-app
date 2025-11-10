@@ -191,7 +191,7 @@ class FastingRecordsController < ApplicationController
 
     # 新: 32桁hexのUIDをBINARY(16)に戻して、ユーザースコープ内で取得
     raise ActiveRecord::RecordNotFound unless raw.match?(/\A\h{32}\z/)
-    @record = @scope.find_by!(uid: [raw].pack("H*"))
+    @record = @scope.find_by!(uid: [ raw ].pack("H*"))
   end
 
   # create/update 共通 Strong Params

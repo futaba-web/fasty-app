@@ -23,7 +23,7 @@ module Uidable
     # URL の 32桁hex → BINARY(16) に変換して検索
     def find_by_uid_param!(hex)
       raise ActiveRecord::RecordNotFound unless hex&.match?(/\A\h{32}\z/)
-      find_by!(uid: [hex].pack("H*"))
+      find_by!(uid: [ hex ].pack("H*"))
     end
   end
 end
