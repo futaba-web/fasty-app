@@ -13,6 +13,10 @@
     --hero-veil-w: 1100px;
     --hero-veil-h: 520px;
 
+    /* 背景の焦点（被写体の置き位置） */
+    --hero-focal-x: 50%;
+    --hero-focal-y: 45%;
+
     /* Mint palette（共通） */
     --mint-500: #49d8b7; /* base */
     --mint-600: #2cc6a6; /* hover */
@@ -22,6 +26,7 @@
     /* Login outline color（ログイン/Google 共通） */
     --login-outline: #2bb7a9;
   }
+
   @media (min-width: 768px) {
     :root { --hero-blur: 1px; --hero-fog: .02; }
   }
@@ -33,12 +38,30 @@
     position: fixed; inset: 0;
     z-index: -3;
     pointer-events: none;
+
+    /* デフォルト画像。ページ側で --hero-bg / --hero-bg-mobile を上書き可能 */
     background-image: var(--hero-bg, url("/assets/landing/hero.jpg"));
     background-size: cover;
-    background-position: center;
+    background-position: var(--hero-focal-x) var(--hero-focal-y);
     background-repeat: no-repeat;
+
+    /* PCではごく僅かに拡大して縁の切れを防止 */
     transform: scale(1.04);
     filter: contrast(1.03) brightness(1.02) saturate(0.96);
+  }
+
+  /* モバイル最適化：拡大オフ & 焦点/ベールを微調整 */
+  @media (max-width: 640px) {
+    :root {
+      --hero-veil-w: 900px;
+      --hero-veil-h: 440px;
+      --hero-focal-y: 40%;
+    }
+    body.landing-root::before,
+    body.hero-bg::before {
+      background-image: var(--hero-bg-mobile, var(--hero-bg, url("/assets/landing/hero.jpg")));
+      transform: scale(1);
+    }
   }
 
   /* 透ける薄膜＋ぼかし（画像の一つ前） */
@@ -76,7 +99,7 @@
 /* =============== Landing Hero（トップの中身） =============== */
 @layer components {
   /* ヒーロー全体（基本） */
-  body.landing-root .hero{
+  body.landing-root .hero {
     position: relative;
     display: flex;
     align-items: center;          /* 中央寄せ（デフォルト） */
@@ -85,7 +108,6 @@
     padding-block: clamp(16px, 4vh, 40px);
     padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
   }
-
   /* --- Modifiers -------------------------------------------------- */
 
   /* 余白と縦サイズをややコンパクトに */
