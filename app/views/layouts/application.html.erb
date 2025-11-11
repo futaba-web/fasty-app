@@ -15,7 +15,7 @@
     <!-- CSS (Sprockets/Tailwind) -->
     <%= stylesheet_link_tag "tailwind", "application", "layout", "drawer", "landing", "devise", "data-turbo-track": "reload" %>
 
-    <!-- 画面個別で <head> 追記したい場合に使用 -->
+    <!-- 画面個別で <head> 追記 -->
     <%= yield :head %>
 
     <!-- JS (importmap) -->
@@ -23,12 +23,12 @@
 
     <!-- PWA / Icons -->
     <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml"><!-- SVG優先 -->
-    <link rel="icon" href="/icon.png" type="image/png"><!-- フォールバック -->
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="/icon.png" type="image/png">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 
     <%# ================================
-       OGP / Twitter Card（デフォルト + 上書き対応）
+       OGP / Twitter Card（デフォルト + 上書き）
        ================================= %>
     <% meta = default_meta %>
     <% page_title       = content_for?(:title)       ? yield(:title)       : meta[:title] %>
@@ -81,8 +81,8 @@
         <%= render "shared/flash" %>
       </div>
 
-      <!-- ▼ 共通コンテナ -->
-      <div class="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <!-- ▼ 共通コンテナ（ランディング等はフルブリード可） -->
+      <div class="app-container mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 py-6 sm:py-8 <%= 'is-full-bleed' if content_for?(:full_bleed) %>">
         <%= yield %>
       </div>
     </main>
