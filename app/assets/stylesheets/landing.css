@@ -19,7 +19,7 @@
     --mint-700: #1da391; /* active */
     --mint-ring: rgba(73, 216, 183, 0.35);
 
-    /* Login outline color（ログイン/Google で共通化） */
+    /* Login outline color（ログイン/Google 共通） */
     --login-outline: #2bb7a9;
   }
   @media (min-width: 768px) {
@@ -75,19 +75,36 @@
 
 /* =============== Landing Hero（トップの中身） =============== */
 @layer components {
-  /* ヒーロー全体（min-height は 1 箇所に統一） */
+  /* ヒーロー全体（基本） */
   body.landing-root .hero{
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: center;          /* 中央寄せ（デフォルト） */
     justify-content: center;
     min-height: 74svh;
     padding-block: clamp(16px, 4vh, 40px);
-    /* ノッチ & 固定ヘッダー保険 */
     padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
   }
 
-  /* コンテンツ内側 */
+  /* --- Modifiers -------------------------------------------------- */
+
+  /* 余白と縦サイズをややコンパクトに */
+  body.landing-root .hero.hero--compact{
+    min-height: 68svh;
+    padding-block: clamp(12px, 3vh, 28px);
+  }
+
+  /* タイトル上寄せ：ヒーローの縦位置を上に、見出しを早めに表示 */
+  body.landing-root .hero.hero--title-top{
+    align-items: flex-start;                     /* 上寄せ */
+    justify-content: center;
+    padding-top: clamp(20px, 7vh, 56px);        /* 上の余白（≒ mt-5〜mt-16） */
+  }
+  body.landing-root .hero.hero--title-top .hero__title{
+    margin-top: 0;                               /* 余計な空き防止 */
+  }
+
+  /* コンテンツ内側（縦フレックス＋可変ギャップ） */
   body.landing-root .hero__inner{
     position: relative;
     z-index: 1;
@@ -95,8 +112,16 @@
     max-width: 980px;
     margin-inline: auto;
     padding-inline: clamp(16px, 4vw, 32px);
-    text-align: center;
     color: #111;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* 全体の縦リズムを画面幅で可変化 */
+    --stack-gap: clamp(10px, 2.2vw, 20px);
+    gap: var(--stack-gap);
+    text-align: center;
   }
 
   /* タイトル（Fasty は太字・白・影） */
@@ -110,12 +135,12 @@
       0 0 1px rgba(255,255,255,.35);
     filter: drop-shadow(0 8px 14px rgba(0,0,0,.35));
     user-select: none;
-    margin: 0 0 1rem;
+    margin: 0 0 clamp(8px, 1.8vw, 14px);  /* ロゴ下の余白も可変 */
   }
 
-  /* キャッチコピー：太字・読みやすい影 */
+  /* キャッチコピー：余白を少し詰める＆読みやすい影 */
   body.landing-root .hero__kicker{
-    margin-top: .75rem;
+    margin-top: 0;
     font-weight: 800;
     line-height: 1.6;
     font-size: clamp(1.15rem, 2.6vw, 1.6rem);
@@ -124,69 +149,19 @@
       0 0 10px rgba(255,255,255,.28);
   }
 
-  /* ===== Hero bullets（スマホ見栄えアップ） ===== */
-
-  /* 1) 自然な改行＆日本語の不自然分割を防ぐ */
-  body.landing-root .hero__bullets{
-    margin: .8rem auto 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: .55rem;
-    font-weight: 400;
-    font-size: clamp(1.05rem, 2.1vw, 1.35rem);
-    line-height: 1.7;
-    text-shadow:
-      0 1px 0 rgba(255,255,255,.80),
-      0 0 8px rgba(255,255,255,.22);
-
-    text-wrap: balance;
-    word-break: keep-all;
-    letter-spacing: .01em;
-  }
-
-  /* 2) “✅”をぶら下げインデントにして、2行目以降が揃う */
-  body.landing-root .hero__bullets li{
-    text-indent: 0;
-    padding-left: 0;
-  }
-
-  /* 3) 超狭幅で少しだけコンパクトに＆行長を制御 */
-  @media (max-width: 380px){
-    body.landing-root .hero__bullets{
-      gap: .45rem;
-      line-height: 1.6;
-      max-width: 26ch;
-      margin-inline: auto;
-    }
-  }
-
-  /* 4) さらに狭い端末向けの保険（任意） */
-  @media (max-width: 350px){
-    body.landing-root .hero__bullets{
-      font-size: clamp(1.00rem, 3.0vw, 1.15rem);
-    }
-  }
-
-  /* 5) モーション軽減設定に追従（影だけ少し控えめ） */
-  @media (prefers-reduced-motion: reduce){
-    body.landing-root .hero__bullets{
-      text-shadow: 0 1px 0 rgba(255,255,255,.75);
-    }
-  }
-
-  /* 注意書き：控えめ */
-  body.landing-root .hero__note{
-    margin-top: .75rem;
-    font-size: clamp(12px, 1.3vw, 13px);
-    line-height: 1.6;
-    opacity: .95;
-    text-shadow: 0 1px 0 rgba(255,255,255,.75), 0 0 6px rgba(255,255,255,.18);
+  /* ===== CTAとGoogleを“ひとまとめ”にして下寄せ ===== */
+  body.landing-root .hero__actions{
+    margin-top: auto;                           /* 空きを吸って下に着地 */
+    padding-bottom: clamp(16px, 6vh, 56px);     /* 画面高に応じて自然な下余白 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(10px, 2vw, 16px);
   }
 
   /* CTA（2ボタン） */
   body.landing-root .hero__cta{
-    margin-top: clamp(18px, 2.8vw, 26px);
+    margin-top: clamp(12px, 2.6vw, 22px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -194,7 +169,7 @@
     flex-wrap: wrap;
   }
 
-  /* 2ボタン共通：内容幅にフィット（min-width 撤廃） */
+  /* 2ボタン共通：内容幅にフィット */
   body.landing-root .hero__cta .btn-hero{
     display: inline-flex;
     align-items: center;
@@ -219,9 +194,7 @@
                 background-color .15s ease, color .15s ease, border-color .15s ease;
     max-width: 90vw;
   }
-  body.landing-root .hero__cta .btn-hero:active{
-    transform: scale(.99);
-  }
+  body.landing-root .hero__cta .btn-hero:active{ transform: scale(.99); }
 
   /* 新規登録（塗り） */
   body.landing-root .hero__cta .btn-mint.btn-hero{
@@ -249,7 +222,6 @@
     display: flex;
     justify-content: center;
   }
-
   body.landing-root .hero__oauth .btn-google{
     appearance: none;
     display: inline-flex;
@@ -276,68 +248,63 @@
     transform: translateY(0);
     box-shadow: none;
   }
-  body.landing-root .hero__oauth .btn-google .g-icon{
-    width: 20px; height: 20px;
-  }
-  body.landing-root .hero__oauth .btn-google .text{
-    font-size: 16px;
-  }
+  body.landing-root .hero__oauth .btn-google .g-icon{ width: 20px; height: 20px; }
+  body.landing-root .hero__oauth .btn-google .text{ font-size: 16px; }
 
-  /* アニメ軽減設定に合わせてモーションを弱める */
+  /* アニメ軽減設定 */
   @media (prefers-reduced-motion: reduce){
-    body.landing-root .hero__cta .btn-hero{
-      transition: none;
-    }
-    body.landing-root .hero__cta .btn-hero:hover{
-      transform: none;
-      box-shadow: 0 0 0 rgba(0,0,0,0);
-    }
-    body.landing-root .hero__oauth .btn-google{
-      transition: none;
-    }
-    body.landing-root .hero__oauth .btn-google:hover{
-      transform: none;
-      box-shadow: 0 0 0 rgba(0,0,0,0);
-    }
+    body.landing-root .hero__cta .btn-hero,
+    body.landing-root .hero__oauth .btn-google{ transition: none; }
+    body.landing-root .hero__cta .btn-hero:hover{ transform: none; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    body.landing-root .hero__oauth .btn-google:hover{ transform: none; box-shadow: 0 0 0 rgba(0,0,0,0); }
   }
 }
-
 /* ====== MyPage：やさしいグラデ背景（下地を生かす半透明オーバーレイ） ====== */
 @layer components {
-  .mypage-bg {
+  /* 背景の土台（高さは強制しない） */
+  .mypage-bg{
     position: relative;
-    min-height: 100svh;
     background: transparent; /* ← body::before の画像を生かす */
   }
 
-  .mypage-bg::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;              /* body::after(-2) より手前に出ない */
-    pointer-events: none;
+  /* “常に下まで満たしたい”画面だけこれを追加で付ける */
+  .mypage-bg--full{ min-height: 100svh; }
 
-    /* α を弱めて下の画像を生かす */
+  /* 今回のマイページは自然に詰めたいのでこちらを付ける */
+  .mypage-bg--compact{
+    /* 高さは強制しない。フッターと喧嘩しないよう下だけ少し余白 */
+    padding-bottom: clamp(16px, 6vh, 40px);
+  }
+
+  /* 背景のやさしいベール */
+  .mypage-bg::before{
+    content:"";
+    position: fixed; inset: 0;
+    z-index: -1;                /* body::after(-2) より手前に出ない */
+    pointer-events: none;
     background:
-      radial-gradient(
-        1100px 520px at 50% 0%,
+      radial-gradient(1100px 520px at 50% 0%,
         rgba(59,130,246,0.04) 0%,
-        rgba(59,130,246,0.00) 62%
-      ),
-      linear-gradient(
-        180deg,
+        rgba(59,130,246,0.00) 62%),
+      linear-gradient(180deg,
         rgba(250,250,250,0.40) 0%,
         rgba(247,245,242,0.22) 58%,
-        rgba(244,241,237,0.18) 100%
-      );
+        rgba(244,241,237,0.18) 100%);
+  }
+
+  /* 中身の“縦リズム”を一元管理（画面幅で可変） */
+  .mypage-stack{
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2.2vw, 18px);
   }
 
   /* ==== Mint button（汎用） =============================== */
   .btn-mint{
     background-color: var(--mint-500);
     color: #fff;
-    border-radius: 0.75rem; /* rounded-xl 的な */
-    padding: 0.75rem 1.5rem; /* btn-lg に寄せる */
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
     font-weight: 700;
     box-shadow: 0 6px 14px rgba(0,0,0,0.08);
     transition: background-color .15s ease, transform .06s ease, box-shadow .15s ease;
@@ -347,6 +314,7 @@
   .btn-mint:disabled{ opacity: .6; cursor: not-allowed; }
   .btn-mint:focus-visible{ outline: 3px solid var(--mint-ring); outline-offset: 2px; }
 }
+
 /* ===== Devise: OAuth button (Google) =================== */
 
 /* デフォは左寄せ */
@@ -405,7 +373,7 @@
   outline-offset:2px;
 }
 
-/* ---------- 枠なし（ゴースト）版：外枠を消して軽く見せる ---------- */
+/* ---------- 枠なし（ゴースト）版 ---------- */
 .oauth-btn--google.oauth-btn--borderless{
   border-color:transparent;
   background:transparent;
@@ -423,14 +391,8 @@
 }
 
 /* ---------- アイコン＆ラベル ---------- */
-.oauth-btn__icon{
-  display:inline-flex;
-  width:18px; height:18px; flex:0 0 18px;
-}
-.oauth-btn__label{
-  font-size:15px;
-  font-weight: 500;
-}
+.oauth-btn__icon{ display:inline-flex; width:18px; height:18px; flex:0 0 18px; }
+.oauth-btn__label{ font-size:15px; font-weight: 500; }
 
 /* 無効時 */
 .oauth-btn:disabled{
@@ -449,4 +411,11 @@
 @media (max-width:420px){
   .devise-oauth{ padding-inline:0; }
   .oauth-btn{ width:100%; justify-content:center; }
+}
+
+/* 極小幅の保険（ヒーロー関連があれば維持） */
+@media (max-width:380px){
+  body.landing-root .hero__inner{ --stack-gap: 12px; }
+  body.landing-root .hero__cta{ margin-top: 16px; }
+  body.landing-root .hero__actions{ padding-bottom: 20px; }
 }

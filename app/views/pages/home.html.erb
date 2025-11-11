@@ -1,26 +1,30 @@
-<section class="hero">
+<!-- app/views/pages/home.html.erb -->
+
+<%# レイアウトの共通コンテナをフルブリードにするフラグ %>
+<% content_for :full_bleed, true %>
+
+<section class="hero hero--compact hero--title-top hero--fluid-stack">
   <div class="hero__inner">
+    <!-- タイトル -->
     <h1 class="hero__title">Fasty</h1>
-    <p class="hero__kicker">ファスティング × 瞑想で<br>内側からきれいを育てる。</p>
 
-    <ul class="hero__bullets">
-      <li>✅ 空腹時間をつくって、からだをリセット</li>
-      <li>✅ 5分からの瞑想で、心も整う</li>
-      <li>✅ 最短12時間からの目標で無理なく継続</li>
-    </ul>
+    <!-- キッカー（PCでも改行） -->
+    <p class="hero__kicker">
+      ファスティング × 瞑想で<br>
+      内側からきれいを育てる。
+    </p>
 
-    <p class="hero__note">※体感には個人差があります。本アプリは医療サービスではありません。</p>
+    <!-- ↓ CTA群をひとまとめ（下寄せ・スタック調整の対象） -->
+    <div class="hero__actions">
+      <div class="hero__cta">
+        <%= link_to "新規登録", new_user_registration_path, class: "btn-hero btn-mint" %>
+        <%= link_to "ログイン", new_user_session_path, class: "btn-hero btn-hero--login" %>
+      </div>
 
-    <div class="hero__cta">
-      <%= link_to "新規登録", new_user_registration_path,
-            class: "btn-hero btn-mint" %>
-      <%= link_to "ログイン", new_user_session_path,
-            class: "btn-hero btn-hero--login" %>
+      <div class="hero__oauth">
+        <%= render "shared/google_sign_in" %>
+      </div>
     </div>
-
-    <!-- Googleでログイン（下段・中央寄せ） -->
-    <div class="hero__oauth mt-4 flex justify-center">
-      <%= render "shared/google_sign_in" %>
-    </div>
+    <!-- ↑ まとめ終わり -->
   </div>
 </section>
