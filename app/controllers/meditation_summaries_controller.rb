@@ -20,7 +20,7 @@ class MeditationSummariesController < ApplicationController
     @avg_minutes   = @count.positive? ? (@total_minutes.to_f / @count).round(1) : 0.0
 
     # 日別合計（グラフ/表用）
-    buckets = (from.to_date..to.to_date).map { |d| [d, 0] }.to_h
+    buckets = (from.to_date..to.to_date).map { |d| [ d, 0 ] }.to_h
     logs.each do |l|
       d = (started_time_of(l) || l.try(:created_at) || Time.zone.now).to_date
       buckets[d] += duration_minutes_of(l)
