@@ -1,7 +1,85 @@
-<!-- app/views/meditation_summaries/show.html.erb -->
-<div class="mx-auto max-w-4xl p-4">
-  <h1 class="text-xl font-semibold">瞑想の履歴</h1>
-  <p class="mt-2 text-stone-600 text-sm">
-    ここに週/月ごとの統計や履歴を表示します（後続Issueで実装）。
-  </p>
+<div class="mx-auto max-w-5xl p-4 md:p-6">
+  <div class="flex items-center justify-between gap-3">
+    <h1 class="text-2xl md:text-3xl font-semibold">瞑想の履歴</h1>
+
+    <!-- 週 / 月 タブ -->
+    <nav class="inline-flex rounded-2xl overflow-hidden ring-1 ring-stone-200" aria-label="期間切替">
+      <%= link_to "週", meditation_summary_path(p: nil),
+            class: "px-3 md:px-4 py-1.5 md:py-2 text-sm md:text-[15px] #{(@period==:week) ? 'bg-white' : 'bg-stone-100'}" %>
+      <%= link_to "月", meditation_summary_path(p: :month),
+            class: "px-3 md:px-4 py-1.5 md:py-2 text-sm md:text-[15px] #{(@period==:month) ? 'bg-white' : 'bg-stone-100'}" %>
+    </nav>
+  </div>
+
+  <!-- 統計カード -->
+  <section class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+    <div class="rounded-xl bg-white/95 p-4 md:p-5 ring-1 ring-stone-200">
+      <div class="text-xs md:text-[13px] text-stone-500">合計（分）</div>
+      <div class="text-2xl md:text-3xl font-semibold mt-1"><%= @total_minutes %></div>
+    </div>
+    <div class="rounded-xl bg-white/95 p-4 md:p-5 ring-1 ring-stone-200">
+      <div class="text-xs md:text-[13px] text-stone-500">平均（分/回）</div>
+      <div class="text-2xl md:text-3xl font-semibold mt-1"><%= @avg_minutes %></div>
+    </div>
+    <div class="rounded-xl bg-white/95 p-4 md:p-5 ring-1 ring-stone-200">
+      <div class="text-xs md:text-[13px] text-stone-500">回数</div>
+      <div class="text-2xl md:text-3xl font-semibold mt-1"><%= @count %></div>
+    </div>
+  </section>
+
+  <!-- 日別の推移（グラフ） -->
+  <section class="mt-6 rounded-2xl bg-white/60 p-4 ring-1 ring-stone-200">
+    <h2 class="text-sm text-stone-600">日別の推移（グラフ）</h2>
+    <% labels = (@daily_minutes || {}).keys.map { |d| d.strftime("%m/%d") } %>
+    <% values = (@daily_minutes || {}).values %>
+    <div class="mt-2 h-56 md:h-64">
+      <canvas
+        data-controller="chart-daily"
+        data-chart-daily-labels-value="<%= labels.to_json %>"
+        data-chart-daily-data-value="<%= values.to_json %>"
+        data-chart-daily-type-value="<%= (@period == :week) ? 'bar' : 'line' %>">
+      </canvas>
+    </div>
+  </section>
+
+  <!-- 日別の推移（簡易表 / スマホは横スクロール） -->
+  <section class="mt-6 rounded-2xl bg-white/60 p-4 ring-1 ring-stone-200">
+    <h2 class="text-sm text-stone-600">日別の推移（簡易表）</h2>
+    <div class="mt-2 overflow-x-auto overscroll-x-contain">
+      <div class="flex gap-2 md:grid md:grid-cols-7 md:gap-2 min-w-max md:min-w-0">
+        <% (@daily_minutes || {}).each do |date, mins| %>
+          <div class="flex-none md:flex-auto min-w-[92px] md:min-w-0 rounded-lg bg-white p-2 text-center ring-1 ring-stone-200">
+            <div class="text-[11px] text-stone-500"><%= date.strftime("%m/%d") %></div>
+            <div class="mt-1 text-sm md:text-base font-medium"><%= mins %>分</div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <!-- 履歴リスト -->
+  <section class="mt-6">
+    <h2 class="text-base md:text-lg font-semibold">履歴</h2>
+    <div class="mt-2 space-y-2">
+      <% if @logs.blank? %>
+        <p class="text-sm text-stone-500">まだ記録がありません。</p>
+      <% else %>
+        <% @logs.each do |l| %>
+          <% started = (l.respond_to?(:started_at) ? l.started_at : l.try(:created_at)) %>
+          <% mins    = l.respond_to?(:duration_min) ? l.duration_min : l.try(:duration_minutes) %>
+          <article class="rounded-xl bg-white p-3 md:p-4 ring-1 ring-stone-200">
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm md:text-[15px]">
+                <span class="font-medium"><%= started&.strftime("%Y-%m-%d %H:%M") %></span>
+              </div>
+              <div class="text-sm md:text-base font-semibold shrink-0"><%= mins || 0 %>分</div>
+            </div>
+            <% if l.respond_to?(:note) && l.note.present? %>
+              <p class="mt-1 text-[13px] md:text-sm text-stone-600 break-words"><%= l.note %></p>
+            <% end %>
+          </article>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
 </div>
