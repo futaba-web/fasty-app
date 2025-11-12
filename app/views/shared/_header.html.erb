@@ -1,3 +1,5 @@
+<!-- app/views/layouts/_header.html.erb など -->
+
 <header class="sticky top-[env(safe-area-inset-top)] z-50 h-16 bg-brand-header text-white shadow-sm">
   <div class="mx-auto max-w-[1200px] h-16 px-4 md:px-8 flex items-center gap-3">
 
@@ -16,7 +18,6 @@
                hover:ring-white/40 focus:outline-none focus:ring-2 focus:ring-white/60"
         data-menu-target="button" data-action="click->menu#toggle"
         aria-controls="site-drawer" aria-expanded="false" aria-label="メニュー">
-        <!-- ハンバーガー（stroke描画で確実に見える） -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
              class="w-5 h-5" aria-hidden="true" focusable="false" fill="none">
           <path d="M3 6h18M3 12h18M3 18h18"
@@ -25,12 +26,55 @@
       </button>
     <% end %>
 
-    <!-- 右：未ログイン時のみナビ（ログイン） -->
+    <!-- 右側 -->
     <nav class="ml-auto flex items-center gap-6">
       <% unless user_signed_in? %>
         <%= nav_link_to "ログイン", new_user_session_path %>
       <% end %>
+
+      <% if user_signed_in? %>
+        <!-- 初回案内：md以上で表示、閉じたらlocalStorageで非表示（恒久） -->
+        <div id="guide-pill"
+             class="hidden md:flex items-center gap-2 rounded-full bg-white/12 ring-1 ring-white/25 px-3 py-1.5
+                    shadow-sm backdrop-blur-sm"
+             role="region" aria-label="アプリの使い方リンク">
+          <%= link_to guide_path,
+                class: "inline-flex items-center gap-2 font-semibold tracking-wide whitespace-nowrap
+                        hover:underline underline-offset-4",
+                aria: { label: "アプリの使い方を開く" } do %>
+            <span class="i i-book" aria-hidden="true">📘</span>
+            <span>アプリの使い方</span>
+          <% end %>
+          <button type="button"
+                  class="ml-1 inline-flex items-center justify-center size-7 rounded-full hover:bg-white/10
+                         focus:outline-none focus:ring-2 focus:ring-white/60"
+                  aria-label="ヘルプの案内を閉じる" data-close>
+            ✕
+          </button>
+        </div>
+      <% end %>
     </nav>
 
   </div>
+
+  <%# --- インライン初期化スクリプト（Stimulus不要 / v1キーで将来バージョン管理可） --- %>
+  <% if user_signed_in? %>
+    <script>
+      (function () {
+        try {
+          var KEY = "fasty.guidePill.dismissed.v1";
+          if (localStorage.getItem(KEY) === "1") return;
+          var pill = document.getElementById("guide-pill");
+          if (!pill) return;
+          pill.classList.remove("hidden");            // 表示
+          var btn = pill.querySelector("[data-close]");
+          if (btn) btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            pill.remove();
+            localStorage.setItem(KEY, "1");           // 次回以降は出さない
+          });
+        } catch (_) { /* 失敗しても致命的ではないので黙殺 */ }
+      })();
+    </script>
+  <% end %>
 </header>

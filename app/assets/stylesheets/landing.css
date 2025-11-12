@@ -153,6 +153,12 @@
     text-underline-offset:3px;
     padding:8px 10px; border-radius:8px; /* タップ領域 */
     transition: background-color .12s ease, color .12s ease, text-decoration-color .12s ease;
+
+    /* ボタンにも適用して“リンク風”にする */
+    background:transparent;
+    border:0;
+    appearance:none;
+    cursor:pointer;
   }
   .hero-link:hover{
     background:rgba(43,212,195,.08);
@@ -173,6 +179,9 @@
     transform: translateY(1px); /* ベースライン微調整 */
   }
   .hero-link--google .text{ line-height:1; }
+
+  /* button_to の <form> を横並びに（セパレータと同列で表示） */
+  form.inline { display:inline; }
 
   /* アニメ軽減 */
   @media (prefers-reduced-motion: reduce){
