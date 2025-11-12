@@ -85,7 +85,11 @@
     padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
   }
   body.landing-root .hero.hero--compact{ min-height:68svh; padding-block:clamp(12px,3vh,28px); }
-  body.landing-root .hero.hero--title-top{ align-items:flex-start; justify-content:center; padding-top:clamp(20px,7vh,56px); }
+
+  /* タイトルを上寄せ（配置のみ） */
+  body.landing-root .hero.hero--title-top{
+    align-items:flex-start; justify-content:center; padding-top:clamp(20px,7vh,56px);
+  }
   body.landing-root .hero.hero--title-top .hero__title{ margin-top:0; }
 
   body.landing-root .hero__inner{
@@ -95,13 +99,8 @@
     --stack-gap: clamp(10px, 2.2vw, 20px); gap: var(--stack-gap);
   }
 
-  body.landing-root .hero__title{
-    color:#fff; font-weight:800; letter-spacing:.06em; font-size:clamp(2.6rem,6vw,4rem);
-    text-shadow: 0 10px 22px rgba(0,0,0,.35), 0 0 1px rgba(255,255,255,.35);
-    filter: drop-shadow(0 8px 14px rgba(0,0,0,.35));
-    user-select:none;
-    margin:0 0 clamp(8px,1.8vw,14px);
-  }
+  /* ▼ 見た目は Tailwind ユーティリティで指定するため、装飾は持たない */
+  body.landing-root .hero__title{ margin:0; user-select:none; }
 
   body.landing-root .hero__kicker{
     margin-top:0; font-weight:800; line-height:1.6; font-size:clamp(1.15rem,2.6vw,1.6rem);
