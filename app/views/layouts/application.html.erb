@@ -55,19 +55,23 @@
     <meta name="twitter:image"       content="<%= page_image %>">
   </head>
 
-  <%# ===== 背景画像の切替ロジック ===== %>
-  <% landing       = (controller_path == "pages" && action_name == "home") %>
-  <% default_bg    = asset_path("landing/hero.jpg") %>
-  <% authed_bg     = asset_path("landing/hero-authed.png") %>
-  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>
-  <% auth_page     = (respond_to?(:devise_controller?) && devise_controller?) %>
+  <%# ===== 背景画像の切替ロジック（landing.css の body.hero-bg::* を使う） ===== %>
+  <% landing_page = (controller_path == "pages"  && action_name == "home") %>
+  <% guide_page   = (controller_path == "guides") %>
+  <% auth_page    = (controller.respond_to?(:devise_controller?) && controller.devise_controller?) %>
 
-  <% show_hero = landing || auth_page || user_signed_in? || page_override.present? %>
-  <% bg_url    = page_override || (user_signed_in? ? authed_bg : default_bg) %>
+  <% default_bg    = asset_path("landing/hero.jpg") %>
+  <% authed_bg_try = begin asset_path("landing/hero-authed.png") rescue nil end %>
+  <% authed_bg     = authed_bg_try.presence || default_bg %>  <%# 無ければ hero.jpg を使う %>
+
+  <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>
+
+  <% show_hero = landing_page || guide_page || auth_page || user_signed_in? || page_override.present? %>
+  <% bg_url    = (page_override.presence || (user_signed_in? ? authed_bg : default_bg)) %>
 
   <body
     data-controller="menu"
-    class="min-h-dvh flex flex-col bg-gray-50 text-gray-900<%= landing ? ' landing-root' : '' %><%= show_hero ? ' hero-bg' : '' %>"
+    class="min-h-dvh flex flex-col bg-gray-50 text-gray-900<%= landing_page ? ' landing-root' : '' %><%= show_hero ? ' hero-bg' : '' %>"
     style="<%= show_hero ? "--hero-bg: url('#{bg_url}')" : '' %>">
 
     <%= render "shared/header" %>

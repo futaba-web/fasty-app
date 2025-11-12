@@ -1,0 +1,164 @@
+<!-- app/views/guides/show.html.erb -->
+
+<%# ページメタ（任意） %>
+<% content_for :title, "Fasty の使い方" %>
+<% content_for :description, "初めてでも迷わない、ファスティング記録のはじめかた。" %>
+
+<%# ボタン遷移：ログイン済み→マイページ／未ログイン→ログイン %>
+<% start_path = user_signed_in? ? mypage_path : new_user_session_path %>
+
+<div class="mx-auto max-w-4xl px-4 sm:px-5 py-6 md:py-10">
+  <!-- Hero -->
+  <section class="text-center">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">Fasty の使い方</h1>
+    <p class="mt-2 sm:mt-3 text-stone-600 text-[15px] sm:text-base md:text-lg">
+      初めてでも迷わない、ファスティング記録のはじめかた。
+    </p>
+
+    <!-- スマホ: 縦積み&幅いっぱい / 640px〜: 横並び -->
+    <div class="mt-5 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-3">
+      <% if user_signed_in? %>
+        <%= link_to "マイページへ", mypage_path,
+              class: "w-full sm:w-auto rounded-2xl px-5 py-3 ring-1 ring-teal-300 bg-teal-500/90 text-white shadow text-center font-semibold" %>
+      <% else %>
+        <%= link_to "新規登録", new_user_registration_path,
+              class: "w-full sm:w-auto rounded-2xl px-5 py-3 ring-1 ring-teal-300 bg-teal-500/90 text-white shadow text-center font-semibold" %>
+        <%= link_to "ログイン", new_user_session_path,
+              class: "w-full sm:w-auto rounded-2xl px-5 py-3 ring-1 ring-stone-200 bg-white text-stone-700 shadow text-center font-semibold" %>
+      <% end %>
+
+      <!-- 統一：今すぐ開始 → ログイン状態に応じて mypage/login -->
+      <%= link_to "今すぐ開始", start_path,
+            class: "w-full sm:w-auto rounded-2xl px-5 py-3 ring-1 ring-stone-200 bg-white text-stone-700 shadow text-center font-semibold" %>
+    </div>
+  </section>
+
+  <!-- 3 Steps -->
+  <section class="mt-10 md:mt-14">
+    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold">3ステップで記録できます</h2>
+
+    <!-- 1列 -> 2列 -> 3列 -->
+    <ol class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
+      <!-- STEP1 -->
+      <li class="rounded-2xl border bg-white/95 p-4 sm:p-5 shadow">
+        <p class="text-sm font-medium text-teal-700">STEP 1</p>
+        <h3 class="mt-1 font-semibold">開始</h3>
+        <p class="mt-1 text-sm text-stone-600">
+          目標時間を選び、<strong>開始</strong>をタップ。
+        </p>
+        <%= image_tag "guide/step1.jpg",
+                      alt: "開始のスクリーンショット",
+                      class: "mt-3 w-full rounded-lg ring-1 ring-stone-200",
+                      loading: "lazy" %>
+      </li>
+
+      <!-- STEP2 -->
+      <li class="rounded-2xl border bg-white/95 p-4 sm:p-5 shadow">
+        <p class="text-sm font-medium text-teal-700">STEP 2</p>
+        <h3 class="mt-1 font-semibold">終了</h3>
+        <p class="mt-1 text-sm text-stone-600">
+          終えたら<strong>終了</strong>をタップ。経過時間が自動計算されます。
+        </p>
+        <%= image_tag "guide/step2.jpg",
+                      alt: "終了のスクリーンショット",
+                      class: "mt-3 w-full rounded-lg ring-1 ring-stone-200",
+                      loading: "lazy" %>
+      </li>
+
+      <!-- STEP3 -->
+      <li class="rounded-2xl border bg-white/95 p-4 sm:p-5 shadow">
+        <p class="text-sm font-medium text-teal-700">STEP 3</p>
+        <h3 class="mt-1 font-semibold">コメント保存</h3>
+        <p class="mt-1 text-sm text-stone-600">
+          体調や気づきをメモして<strong>保存</strong>。振り返りに役立ちます。
+        </p>
+        <%= image_tag "guide/step3.jpg",
+                      alt: "コメント保存のスクリーンショット",
+                      class: "mt-3 w-full rounded-lg ring-1 ring-stone-200",
+                      loading: "lazy" %>
+      </li>
+    </ol>
+  </section>
+
+  <!-- STEP4：瞑想で心を整える -->
+  <section class="mt-10 md:mt-14">
+    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold">ファスティング中は「瞑想」で心を整えましょう</h2>
+    <p class="mt-2 text-stone-600 text-[13.5px] sm:text-sm md:text-base leading-relaxed">
+      空腹がつらいとき・イライラしたときは、短い瞑想で気持ちをリセット。<br class="hidden sm:block">
+      記録の途中でもすぐに始められます。
+    </p>
+
+    <div class="mt-4 rounded-2xl border bg-white/95 p-4 sm:p-5 shadow">
+      <%= image_tag "guide/step4.jpg",
+                    alt: "瞑想メニューのスクリーンショット",
+                    class: "mx-auto w-full max-w-[520px] md:max-w-[680px] rounded-lg ring-1 ring-stone-200 mt-2 sm:mt-3",
+                    loading: "lazy" %>
+
+      <!-- スマホ: 幅いっぱい -->
+      <div class="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-3">
+        <% if user_signed_in? %>
+          <%= link_to "瞑想メニューを開く", meditations_path,
+                class: "w-full sm:w-auto rounded-2xl px-6 py-3 ring-1 ring-teal-300 bg-teal-500/90 text-white shadow text-center font-semibold",
+                aria: { label: "瞑想メニューを開く" } %>
+        <% else %>
+          <%= link_to "登録して瞑想も使う", new_user_registration_path,
+                class: "w-full sm:w-auto rounded-2xl px-6 py-3 ring-1 ring-teal-300 bg-teal-500/90 text-white shadow text-center font-semibold" %>
+        <% end %>
+      </div>
+
+      <p class="mt-2 text-center text-[11.5px] sm:text-xs text-stone-500">
+        ※ 瞑想動画は YouTube のコンテンツを埋め込みまたはリンクで再生します。
+      </p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mt-10 md:mt-14">
+    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold">よくある質問</h2>
+    <div class="mt-3 sm:mt-4 divide-y rounded-2xl border bg-white/95 shadow">
+      <% @faq.each do |f| %>
+        <details class="group p-4 sm:p-5">
+          <summary class="cursor-pointer list-none font-medium text-[15px] sm:text-base">
+            <span class="inline-block translate-y-[1px] select-none text-stone-500 mr-2">Q.</span><%= f[:q] %>
+          </summary>
+          <p class="mt-2 pl-6 text-[13.5px] sm:text-sm text-stone-700 leading-relaxed"><%= f[:a] %></p>
+        </details>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="mt-10 md:mt-14 text-center">
+    <%= link_to "今すぐ記録を始める", start_path,
+          class: "inline-block w-full sm:w-auto rounded-2xl px-6 py-3 ring-1 ring-teal-300 bg-teal-500/90 text-white shadow font-semibold" %>
+    <% unless user_signed_in? %>
+      <div class="mt-2">
+        <%= link_to "無料で始める（新規登録）", new_user_registration_path,
+              class: "inline-block text-sm text-stone-600 underline underline-offset-2" %>
+      </div>
+    <% end %>
+  </section>
+
+  <!-- 免責事項（控えめ表示・モバイル可読） -->
+  <section class="mt-10 md:mt-14">
+    <div class="rounded-xl border bg-white/80 px-4 py-4 sm:px-5 sm:py-5">
+      <h3 class="text-[13px] sm:text-sm font-semibold text-stone-600">免責事項</h3>
+      <div class="mt-2 space-y-1.5 text-[12px] sm:text-[13px] leading-relaxed text-stone-600">
+        <p>Fasty は個人のセルフケア記録を支援するサービスであり、医療行為や専門家の指導に代わるものではありません。</p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>断食や瞑想の実施はご自身の判断と責任において行ってください。体調不良を感じた場合は直ちに中止してください。</li>
+          <li>持病のある方、服薬中の方、妊娠中・授乳中の方、未成年の方は開始前に医師等の専門家へご相談ください。</li>
+          <li>本サービスの利用により生じたいかなる損害についても、当社は責任を負いかねます。</li>
+          <li>外部の動画（YouTube など）は各提供者の利用規約・著作権に従ってご利用ください。</li>
+        </ul>
+        <p class="mt-2">
+          詳細は
+          <%= link_to "利用規約", (terms_path rescue "#"), class: "underline underline-offset-2", rel: "nofollow" %>
+          と
+          <%= link_to "健康と安全に関するガイド", (health_path rescue "#"), class: "underline underline-offset-2", rel: "nofollow" %>
+          もご参照ください。
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
