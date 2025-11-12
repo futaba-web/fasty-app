@@ -40,6 +40,10 @@ Rails.application.routes.draw do
   # ランディング直アクセス（任意）
   get "pages/home", to: "pages#home", as: :pages_home
 
+  # ===================== ガイド（使い方） =====================
+  # オンボーディング用の静的ページ。未ログインでも閲覧可想定。
+  get "/guide", to: "guides#show", as: :guide
+
   # ===================== ファスティング記録 =====================
   resources :fasting_records, only: %i[index show new create edit update destroy] do
     collection do
