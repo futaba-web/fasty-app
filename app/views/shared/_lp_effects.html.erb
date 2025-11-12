@@ -1,0 +1,68 @@
+<!-- app/views/shared/_lp_effects.html.erb -->
+<section class="mt-8 px-4 sm:px-6 md:px-8" aria-labelledby="lp-effects">
+  <h2 id="lp-effects" class="sr-only">Fasty の効果セクション</h2>
+
+  <div class="mx-auto max-w-xl sm:max-w-2xl md:max-w-3xl rounded-2xl bg-white/85 backdrop-blur-md shadow-lg ring-1 ring-stone-200 p-4 sm:p-6 md:p-8">
+    <div class="grid gap-4 sm:gap-6 md:grid-cols-2">
+
+      <!-- Fasting -->
+      <article class="rounded-2xl p-4 sm:p-5 md:p-6 bg-emerald-50/80 ring-1 ring-emerald-100 shadow-sm">
+        <header class="flex items-center gap-2">
+          <span class="inline-flex size-7 sm:size-8 items-center justify-center rounded-full bg-emerald-100 ring-1 ring-emerald-200">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true">
+              <path d="M20 4c-6 0-10 2-12 4S4 12 4 16c0 2.761 2.239 5 5 5 4 0 6-2 8-4s4-6 4-12Z" fill="currentColor" class="text-emerald-600"/>
+            </svg>
+          </span>
+          <span class="text-[11px] sm:text-xs font-semibold text-emerald-700 bg-emerald-100/90 px-2 py-0.5 rounded-full">ファスティング</span>
+        </header>
+
+        <h3 class="mt-3 text-lg sm:text-xl md:text-2xl font-bold text-stone-800 leading-snug">
+          ファスティングで、心も体もリセット。
+        </h3>
+
+        <p class="mt-2 text-[15px] sm:text-base text-stone-700 leading-relaxed">
+          胃腸を休ませることで代謝が整い、集中力や睡眠の質もアップ。食べない時間を通じて、自分の体と丁寧に向き合うきっかけに。
+        </p>
+
+        <ul class="mt-3 space-y-1.5 text-[14px] sm:text-sm text-stone-700">
+          <li class="flex gap-2"><span class="mt-0.5">✅</span><span>胃腸を休めてスッキリ</span></li>
+          <li class="flex gap-2"><span class="mt-0.5">✅</span><span>集中力・睡眠の質UP</span></li>
+          <li class="flex gap-2"><span class="mt-0.5">✅</span><span>食べ癖をリセット</span></li>
+        </ul>
+      </article>
+
+      <!-- Meditation -->
+      <article class="rounded-2xl p-4 sm:p-5 md:p-6 bg-rose-50/80 ring-1 ring-rose-100 shadow-sm">
+        <header class="flex items-center gap-2">
+          <span class="inline-flex size-7 sm:size-8 items-center justify-center rounded-full bg-rose-100 ring-1 ring-rose-200">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true">
+              <path d="M12 3c2 3 5 4 7 6-1 5-4 8-7 10C9 17 6 14 5 9c2-2 5-3 7-6Z" fill="currentColor" class="text-rose-600"/>
+            </svg>
+          </span>
+          <span class="text-[11px] sm:text-xs font-semibold text-rose-700 bg-rose-100/90 px-2 py-0.5 rounded-full">瞑想</span>
+        </header>
+
+        <h3 class="mt-3 text-lg sm:text-xl md:text-2xl font-bold text-stone-800 leading-snug">
+          瞑想で、内側から整う。
+        </h3>
+
+        <p class="mt-2 text-[15px] sm:text-base text-stone-700 leading-relaxed">
+          深い呼吸で心が落ち着き、ストレスを手放せる。無駄食いが減り、心身の調和が生まれます。
+        </p>
+
+        <ul class="mt-3 space-y-1.5 text-[14px] sm:text-sm text-stone-700">
+          <li class="flex gap-2"><span class="mt-0.5">🌿</span><span>イライラ・不安をリリース</span></li>
+          <li class="flex gap-2"><span class="mt-0.5">🌿</span><span>食欲の波をやさしく整える</span></li>
+          <li class="flex gap-2"><span class="mt-0.5">🌿</span><span>自分を大切にできる時間</span></li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- ▼ ここが新しいCTA（旧「無料で始める」の位置） -->
+    <div class="pt-6 text-center">
+      <%= link_to "アプリの使い方", guide_path,
+            class: "btn-mint w-full sm:w-auto inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400",
+            aria: { label: "アプリの使い方を開く" } %>
+    </div>
+  </div>
+</section>
