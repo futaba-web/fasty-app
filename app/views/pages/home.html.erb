@@ -30,19 +30,19 @@
         <%= render "shared/lp_effects" %>
       </div>
 
-      <%# ▼ アカウント操作：SP=「新規登録/ログイン」を横並び2列＋その下にGoogle %>
+      <%# ▼ アカウント操作：SP=「新規登録/ログイン」横並び2列＋その下にGoogle / PC=3つ横並び %>
       <div class="mt-6 md:mt-8 w-full">
         <div class="grid grid-cols-2 gap-3
-                    sm:flex sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3">
+                    sm:flex sm:flex-row sm:flex-nowrap sm:items-center sm:justify-center sm:gap-3">
 
-          <!-- 新規登録（左） -->
+          <!-- 新規登録 -->
           <%= link_to new_user_registration_path,
                 class: "btn-mint w-full inline-flex items-center justify-center rounded-xl px-6 py-3 text-[15px] font-semibold
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400 sm:w-auto" do %>
             新規登録
           <% end %>
 
-          <!-- ログイン（右） -->
+          <!-- ログイン -->
           <%= link_to new_user_session_path,
                 class: "w-full inline-flex items-center justify-center rounded-xl px-6 py-3 text-[15px] font-semibold
                         bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
@@ -50,11 +50,11 @@
             ログイン
           <% end %>
 
-          <!-- Googleでログイン（下段・コンテンツ幅／中央） -->
+          <!-- Googleでログイン（SPは下段フル幅／PCは横並びで自動幅） -->
           <%= button_to user_google_oauth2_omniauth_authorize_path,
                 method: :post,
-                form:  { class: "col-span-2 inline flex justify-center", data: { turbo: false } },
-                class: "inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-[15px] font-semibold
+                form:  { class: "col-span-2 flex justify-center", data: { turbo: false } },
+                class: "w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-[15px] font-semibold
                         bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-300",
                 aria:  { label: "Googleでログイン" } do %>
