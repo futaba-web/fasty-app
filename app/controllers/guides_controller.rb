@@ -1,10 +1,10 @@
 # app/controllers/guides_controller.rb
 class GuidesController < ApplicationController
   # 未ログインでも閲覧できるように（アプリ全体で認証をかけている場合を考慮）
-  skip_before_action :authenticate_user!, only: [:show] rescue nil
+  skip_before_action :authenticate_user!, only: [ :show ] rescue nil
 
   # もしアプリ側で「ヘルス通知の同意が必要」など独自フィルタがある場合は除外
-  skip_before_action :require_health_notice!, only: [:show] rescue nil
+  skip_before_action :require_health_notice!, only: [ :show ] rescue nil
 
   def show
     # FAQ は最初はハードコード。将来はYAMLやDBに移せます。
