@@ -1,3 +1,4 @@
+<!-- app/views/meditation_summaries/show.html.erb -->
 <div class="mx-auto max-w-5xl p-4 md:p-6">
   <div class="flex items-center justify-between gap-3">
     <h1 class="text-2xl md:text-3xl font-semibold">瞑想の履歴</h1>
@@ -35,10 +36,16 @@
     <div class="mt-2 h-56 md:h-64">
       <canvas
         data-controller="chart-daily"
-        data-chart-daily-labels-value="<%= labels.to_json %>"
-        data-chart-daily-data-value="<%= values.to_json %>"
+        data-chart-daily-labels-value="<%= h(labels.to_json) %>"
+        data-chart-daily-data-value="<%= h(values.to_json) %>"
         data-chart-daily-type-value="<%= (@period == :week) ? 'bar' : 'line' %>">
       </canvas>
+      <!-- 画面読上げ向けの補助テキスト（視覚的には非表示） -->
+      <p class="sr-only">
+        <% if values.sum.zero? %>
+          まだグラフに表示するデータがありません。
+        <% end %>
+      </p>
     </div>
   </section>
 
