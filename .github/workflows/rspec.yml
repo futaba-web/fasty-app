@@ -21,19 +21,31 @@ jobs:
       DB_PASSWORD: password
       DB_NAME: fasty_test
 
+      # ==== 以下は OmniAuth 用のダミー環境変数（CI で KeyError を避けるため） ====
+      GOOGLE_CLIENT_ID: dummy-google-client-id
+      GOOGLE_CLIENT_SECRET: dummy-google-client-secret
+      GOOGLE_REDIRECT_URI: http://localhost:3000/users/auth/google_oauth2/callback
+
+      LINE_CHANNEL_ID: dummy-line-channel-id
+      LINE_CHANNEL_SECRET: dummy-line-channel-secret
+      LINE_CALLBACK_URL: http://localhost:3000/users/auth/line/callback
+
+      # credentials を使っているなら（必要に応じて）
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
     services:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-          MYSQL_DATABASE: ${DB_NAME}
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: fasty_test
         ports:
           - "3306:3306"
         options: >-
-          --health-cmd="mysqladmin ping -p${DB_PASSWORD}"
+          --health-cmd="mysqladmin ping -ppassword"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=10
 
     steps:
       - name: Checkout repository
@@ -43,7 +55,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2.2"
-          bundler-cache: true # Gem のキャッシュ
+          bundler-cache: true
 
       - name: Wait for MySQL
         run: |
@@ -55,8 +67,6 @@ jobs:
       - name: Set up database
         run: |
           bundle exec rails db:create db:schema:load
-        env:
-          RAILS_ENV: test
 
       - name: Run RSpec
         run: bundle exec rspec
