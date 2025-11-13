@@ -48,8 +48,9 @@
         <span class="devise-divider-line"></span>
       </div>
 
-      <!-- Google ログイン：左寄せ（.devise-oauth--center を付ければ中央寄せ） -->
+      <!-- OAuth ログイン（Google / LINE） -->
       <div class="devise-oauth">
+        <!-- Google ログイン -->
         <%= button_to user_google_oauth2_omniauth_authorize_path,
                       method: :post,
                       form: { class: "inline", data: { turbo: false } },
@@ -57,13 +58,22 @@
                       aria: { label: "Googleでログイン" } do %>
           <span class="oauth-btn__icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 48 48">
-              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C34 32.9 29.5 36 24 36 16.8 36 11 30.2 11 23s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l5.7-5.7C34.2 4.9 29.4 3 24 3 12.3 3 3 12.3 3 24s9.3 21 21 21c10.8 0 20-7.8 20-21 0-1.3-.1-2.2-.4-3.5z"/>
+              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C34 32.9 29.5 36 24 36 16.8 36 11 30.2 11 23s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l5.7-5.7C34.2 4.9 29.4 3 24 3 16 3 9.2 7.6 6.3 14.7z"/>
               <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 18.9 13 24 13c3.1 0 5.9 1.1 8.1 2.9l5.7-5.7C34.2 4.9 29.4 3 24 3 16 3 9.2 7.6 6.3 14.7z"/>
               <path fill="#4CAF50" d="M24 45c5.4 0 10.2-1.8 13.6-4.9l-6.3-5.2C29.5 36 26.9 37 24 37c-5.4 0-9.9-3.6-11.4-8.5l-6.5 5C8.9 41.8 15.9 45 24 45z"/>
               <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 2.9-3.8 6-7.3 6-5.4 0-9.9-3.6-11.4-8.5l-6.5 5C12 38.7 17.5 43 24 43c10.8 0 20-7.8 20-21 0-1.3-.1-2.2-.4-3.5z"/>
             </svg>
           </span>
           <p class="oauth-btn__label">Googleでログイン</p>
+        <% end %>
+
+        <!-- LINE ログイン -->
+        <%= button_to user_line_omniauth_authorize_path,
+                      method: :post,
+                      form: { class: "inline", data: { turbo: false } },
+                      class: "oauth-btn oauth-btn--line",
+                      aria: { label: "LINEでログイン" } do %>
+          <p class="oauth-btn__label">LINEでログイン</p>
         <% end %>
       </div>
 

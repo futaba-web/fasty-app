@@ -98,13 +98,15 @@
     <%# Tailwind の safelist（hidden）: 本番ビルドのパージ回避用 %>
     <%= render "shared/tw_safelist" %>
 
-    <!-- Service Worker 登録 -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/service-worker.js');
-        });
-      }
-    </script>
+    <%# ==== Service Worker 登録（本番のみ） ==== %>
+    <% if Rails.env.production? %>
+      <script>
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            navigator.serviceWorker.register("/service-worker.js");
+          });
+        }
+      </script>
+    <% end %>
   </body>
 </html>

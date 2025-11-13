@@ -22,13 +22,14 @@ gem "devise", "~> 4.9"
 gem "bcrypt", "~> 3.1"          # Deviseのデフォルト暗号化（必須）
 # gem "rails-i18n"              # I18nの各国語（必要なら）
 
-# --- OmniAuth / Google Login ---
+# --- OmniAuth / Google Login / LINE Login ---
 # まずは保守的に固定→動作確認後に緩める運用に
 gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "omniauth-oauth2", "~> 1.8"
 gem "omniauth-google-oauth2", "~> 1.2"
 gem "oauth2", "~> 2.0.12"
+gem "omniauth-line"            # ← 追加：LINE Login 用
 
 # Windows/JRuby向けタイムゾーンデータ
 gem "tzinfo-data", platforms: %i[windows jruby]
