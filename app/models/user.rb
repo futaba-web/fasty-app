@@ -3,11 +3,11 @@ class User < ApplicationRecord
   # Devise
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [ :google_oauth2 ]
+         :omniauthable, omniauth_providers: %i[google_oauth2 line]
 
   # Associations
-  has_many :fasting_records,   dependent: :destroy
-  has_many :meditation_logs,   dependent: :destroy
+  has_many :fasting_records, dependent: :destroy
+  has_many :meditation_logs, dependent: :destroy
 
   # Validations
   validates :name, presence: true, uniqueness: true, length: { maximum: 30 }
@@ -30,11 +30,15 @@ class User < ApplicationRecord
             health_notice_version:    version)
   end
 
-  # ===== OmniAuth (Google) =====
+  # ===== OmniAuth 共通（Google / LINE 両方で使用） =====
   # 優先順位:
   # 1) provider+uid が一致
   # 2) email が一致 → 連携情報を付与
   # 3) 新規作成（name 重複はサフィックスで回避）
+  #
+  # NOTE:
+  # - LINE Login では email が返らないケースもあるため、
+  #   その場合は changeme+ランダム@example.com を採番する。
   def self.from_omniauth(auth)
     provider = auth.provider
     uid      = auth.uid
@@ -46,7 +50,7 @@ class User < ApplicationRecord
       return user
     end
 
-    # 2) email が同じ既存ユーザーを連携
+    # 2) email が同じ既存ユーザーを連携（Google / LINE 共通）
     if email && (user = find_by(email:))
       user.update!(provider:, uid:)
       return user
@@ -69,8 +73,12 @@ class User < ApplicationRecord
       uid:      uid
     )
   end
+
   class << self
+    # 既存の Google 用エイリアス
     alias_method :from_google, :from_omniauth
+    # LINE 用エイリアス（必要ならコールバック側で呼び分けに利用）
+    alias_method :from_line, :from_omniauth
   end
 
   private

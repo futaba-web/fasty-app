@@ -60,10 +60,24 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
   config.navigational_formats      = [ "*/*", :html, :turbo_stream ]
 
+  # =====================================================
+  # OmniAuth 用の共通ホスト
+  # =====================================================
+  app_host =
+    if ENV["APP_HOST"].present?
+      # APP_HOST があればそれを最優先（ngrok などでも使える）
+      ENV["APP_HOST"]
+    else
+      Rails.env.production? ? "https://fasty-web.onrender.com" : "http://localhost:3000"
+    end
+
+  google_redirect_uri = "#{app_host}/users/auth/google_oauth2/callback"
+  line_redirect_uri   = "#{app_host}/users/auth/line/callback"
+
   # ======================== OmniAuth（Google） ========================
   # GCP: 承認済みのリダイレクトURIは完全一致で登録しておくこと
   # - http://localhost:3000/users/auth/google_oauth2/callback
-  # - https://<本番ホスト>/users/auth/google_oauth2/callback
+  # - https://fasty-web.onrender.com/users/auth/google_oauth2/callback
   require "omniauth-google-oauth2"
 
   google_id     = ENV.fetch("GOOGLE_CLIENT_ID")
@@ -74,38 +88,30 @@ Devise.setup do |config|
     google_id,
     google_secret,
     {
-      scope:       "openid email profile",
-      access_type: "offline",
-      prompt:      "select_account consent", # ← none は使わない
-      client_options: {
-        authorize_url: "https://accounts.google.com/o/oauth2/v2/auth",
-        token_url:     "https://oauth2.googleapis.com/token"
-      },
-      # リクエストごとに base_url から callback を動的設定
-      setup: lambda { |env|
-        request  = Rack::Request.new(env)
-        callback = "#{request.base_url}/users/auth/google_oauth2/callback"
-        strategy = env["omniauth.strategy"]
+      scope:        "openid email profile",
+      access_type:  "offline",
+      prompt:       "select_account consent", # ← none は使わない
+      redirect_uri: google_redirect_uri
+    }
+  )
+  # ===================================================================
 
-        # token 交換・認可の両方に確実に反映
-        strategy.options[:redirect_uri] = callback
+  # ======================== OmniAuth（LINE） ==========================
+  # LINE Login（チャネル ID / シークレット / コールバックURL は app_host から算出）
+  require "omniauth-line"
 
-        strategy.options[:client_options]                ||= {}
-        strategy.options[:client_options][:redirect_uri]  = callback
+  line_channel_id     = ENV.fetch("LINE_LOGIN_CHANNEL_ID", nil)
+  line_channel_secret = ENV.fetch("LINE_LOGIN_CHANNEL_SECRET", nil)
 
-        strategy.options[:authorize_params]              ||= {}
-        strategy.options[:authorize_params][:redirect_uri] = callback
-        strategy.options[:authorize_params][:scope]        = "openid email profile"
-        strategy.options[:authorize_params][:access_type]  = "offline"
-        strategy.options[:authorize_params][:prompt]       = "select_account consent"
-
-        # デバッグ用ログ（実運用で不要ならコメントアウトOK）
-        Rails.logger.info("[OAuth Setup] callback=#{callback} full_host=#{OmniAuth.config.full_host.call(env)}")
-
-        # 保険: 外部からの prompt=none を除去
-        env["rack.request.query_hash"]&.delete("prompt")
-        env["rack.request.form_hash"]&.delete("prompt")
-      }
+  config.omniauth(
+    :line,
+    line_channel_id,
+    line_channel_secret,
+    {
+      callback_url: line_redirect_uri,
+      scope:        "profile openid",
+      prompt:       "consent"
+      # 必要に応じて bot_prompt などもここに追加可能
     }
   )
   # ===================================================================

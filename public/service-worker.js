@@ -7,7 +7,7 @@
 // - 静的資産: cache-first + backfill
 // - SW が壊れてもサイト全体が壊れない安全設計
 
-const CACHE_VERSION = "v9";               // ← 変更時は上げる
+const CACHE_VERSION = "v10";               // ← 変更時は上げる
 const CACHE_NAME    = `fasty-${CACHE_VERSION}`;
 const OFFLINE_URL   = "/offline.html";
 

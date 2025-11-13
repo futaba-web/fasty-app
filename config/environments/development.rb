@@ -14,6 +14,11 @@ Rails.application.configure do
   # Server-Timing
   config.server_timing = true
 
+  # ---- 開発用: ngrok 経由アクセスを許可 ----------------------------
+  # 例: https://xxxx-yyy.ngrok-free.dev
+  config.hosts << /[a-z0-9-]+\.ngrok-free\.dev/
+  # ---------------------------------------------------------------
+
   # キャッシュ切替（bin/rails dev:cache）
   if Rails.root.join("tmp/caching-dev.txt").exist?
     config.action_controller.perform_caching = true
