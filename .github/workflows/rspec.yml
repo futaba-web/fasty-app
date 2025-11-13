@@ -1,0 +1,77 @@
+name: RSpec
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - "feat/**"
+      - "fix/**"
+      - "chore/**"
+  pull_request:
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+
+    env:
+      RAILS_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_USERNAME: root
+      DB_PASSWORD: password
+      DB_NAME: fasty_test
+
+      # ==== OmniAuth 用のダミー環境変数（CI で KeyError を避ける用）====
+      GOOGLE_CLIENT_ID: dummy-google-client-id
+      GOOGLE_CLIENT_SECRET: dummy-google-client-secret
+      GOOGLE_REDIRECT_URI: http://localhost:3000/users/auth/google_oauth2/callback
+
+      LINE_CHANNEL_ID: dummy-line-channel-id
+      LINE_CHANNEL_SECRET: dummy-line-channel-secret
+      LINE_CALLBACK_URL: http://localhost:3000/users/auth/line/callback
+
+      # credentials.yml.enc を使っているなら必要に応じて
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: fasty_test
+        ports:
+          - "3306:3306"
+        options: >-
+          --health-cmd="mysqladmin ping -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2.2"
+          bundler-cache: true
+
+      # ★ ここで Tailwind をビルド（tailwindcss-rails を想定）
+      - name: Build Tailwind CSS
+        run: |
+          bundle exec rails tailwindcss:build
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h"$DB_HOST" -p"$DB_PASSWORD" --silent; do
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Set up database
+        run: |
+          bundle exec rails db:prepare
+
+      - name: Run RSpec
+        run: bundle exec rspec
