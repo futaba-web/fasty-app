@@ -30,44 +30,74 @@
         <%= render "shared/lp_effects" %>
       </div>
 
-      <%# ▼ アカウント操作：SP=「新規登録/ログイン」横並び2列＋その下にGoogle / PC=3つ横並び %>
+      <%# ▼ アカウント操作
+          1段目: 新規登録 / ログイン
+          2段目: Googleでログイン / LINEでログイン %>
       <div class="mt-6 md:mt-8 w-full">
-        <div class="grid grid-cols-2 gap-3
-                    sm:flex sm:flex-row sm:flex-nowrap sm:items-center sm:justify-center sm:gap-3">
+        <div class="flex flex-col items-center gap-3 sm:gap-4">
 
-          <!-- 新規登録 -->
-          <%= link_to new_user_registration_path,
-                class: "btn-mint w-full inline-flex items-center justify-center rounded-xl px-6 py-3 text-[15px] font-semibold
-                        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400 sm:w-auto" do %>
-            新規登録
-          <% end %>
+          <!-- 1段目: 新規登録 / ログイン -->
+          <div class="flex flex-wrap gap-3 justify-center">
+            <!-- 新規登録 -->
+            <%= link_to new_user_registration_path,
+                  class: "inline-flex items-center justify-center rounded-xl px-6 py-3 text-[15px] font-semibold
+                          btn-mint
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-400" do %>
+              新規登録
+            <% end %>
 
-          <!-- ログイン -->
-          <%= link_to new_user_session_path,
-                class: "w-full inline-flex items-center justify-center rounded-xl px-6 py-3 text-[15px] font-semibold
-                        bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
-                        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-300 sm:w-auto" do %>
-            ログイン
-          <% end %>
+            <!-- ログイン -->
+            <%= link_to new_user_session_path,
+                  class: "inline-flex items-center justify-center rounded-xl px-6 py-3 text-[15px] font-semibold
+                          bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-300" do %>
+              ログイン
+            <% end %>
+          </div>
 
-          <!-- Googleでログイン（SPは下段フル幅／PCは横並びで自動幅） -->
-          <%= button_to user_google_oauth2_omniauth_authorize_path,
-                method: :post,
-                form:  { class: "col-span-2 flex justify-center", data: { turbo: false } },
-                class: "w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-[15px] font-semibold
-                        bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
-                        focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-300",
-                aria:  { label: "Googleでログイン" } do %>
-            <span class="inline-flex -ml-0.5" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 262" width="18" height="18" role="img" focusable="false">
-                <path fill="#4285F4" d="M255.68 133.5c0-10.7-.86-18.5-2.72-26.6H130.55v48.2h71.72c-1.45 12-9.3 30-26.8 42.2l-.24 1.6 38.9 30 .27.3c25.37-23.4 40.37-57.8 40.37-96.9Z"/>
-                <path fill="#34A853" d="M130.55 261.1c36.7 0 67.46-12.1 89.96-32.9l-42.9-33.1c-11.5 8.1-26.9 13.8-47 13.8-35.9 0-66.3-23.9-77.1-56.9l-1.6.1-41.97 32.5-.55.1c22.45 44.6 68.5 76.5 121.66 76.5Z"/>
-                <path fill="#FBBC05" d="M53.45 151.9c-2.9-8.1-4.6-16.8-4.6-25.9s1.7-17.8 4.6-25.9l-.1-1.7L11.03 65.5l-1.34.6C3.32 79.9 0 96 0 112.9c0 16.9 3.32 33 9.7 46.8l43.75-33.8Z"/>
-                <path fill="#EB4335" d="M130.55 50.2c25.5 0 42.7 11 52.5 20.2l38.3-37.5C197.8 12 167.25 0 130.55 0 77.4 0 31.35 31.9 8.9 76.5l44.45 33.6c10.8-33 41.2-59.9 77.2-59.9Z"/>
-              </svg>
-            </span>
-            <span>Googleでログイン</span>
-          <% end %>
+          <!-- 2段目: Google / LINE ログイン -->
+          <div class="flex flex-wrap gap-3 justify-center">
+            <!-- Googleでログイン -->
+            <%= button_to user_google_oauth2_omniauth_authorize_path,
+                  method: :post,
+                  form:  { data: { turbo: false } },
+                  class: "inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-[15px] font-semibold
+                          bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-300",
+                  aria:  { label: "Googleでログイン" } do %>
+              <span class="inline-flex -ml-0.5" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 262" width="18" height="18" role="img" focusable="false">
+                  <path fill="#4285F4" d="M255.68 133.5c0-10.7-.86-18.5-2.72-26.6H130.55v48.2h71.72c-1.45 12-9.3 30-26.8 42.2l-.24 1.6 38.9 30 .27.3c25.37-23.4 40.37-57.8 40.37-96.9Z"/>
+                  <path fill="#34A853" d="M130.55 261.1c36.7 0 67.46-12.1 89.96-32.9l-42.9-33.1c-11.5 8.1-26.9 13.8-47 13.8-35.9 0-66.3-23.9-77.1-56.9l-1.6.1-41.97 32.5-.55.1c22.45 44.6 68.5 76.5 121.66 76.5Z"/>
+                  <path fill="#FBBC05" d="M53.45 151.9c-2.9-8.1-4.6-16.8-4.6-25.9s1.7-17.8 4.6-25.9l-.1-1.7L11.03 65.5l-1.34.6C3.32 79.9 0 96 0 112.9c0 16.9 3.32 33 9.7 46.8l43.75-33.8Z"/>
+                  <path fill="#EB4335" d="M130.55 50.2c25.5 0 42.7 11 52.5 20.2l38.3-37.5C197.8 12 167.25 0 130.55 0 77.4 0 31.35 31.9 8.9 76.5l44.45 33.6c10.8-33 41.2-59.9 77.2-59.9Z"/>
+                </svg>
+              </span>
+              <span>Googleでログイン</span>
+            <% end %>
+
+            <!-- LINEでログイン -->
+            <%= button_to user_line_omniauth_authorize_path,
+                  method: :post,
+                  form:  { data: { turbo: false } },
+                  class: "inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-[15px] font-semibold
+                          bg-white text-emerald-400 ring-1 ring-emerald-300 hover:bg-white/90 shadow-sm
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-300",
+                  aria:  { label: "LINEでログイン" } do %>
+              <span class="inline-flex -ml-0.5" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
+                  <rect x="0" y="0" width="36" height="36" rx="8" fill="#06C755" />
+                  <text x="18" y="21" text-anchor="middle"
+                        font-size="11"
+                        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+                        fill="#FFFFFF">
+                    LINE
+                  </text>
+                </svg>
+              </span>
+              <span>LINEでログイン</span>
+            <% end %>
+          </div>
 
         </div>
       </div>

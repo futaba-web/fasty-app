@@ -12,6 +12,9 @@
   --field-br: 10px;
   --field-bd: 1px solid rgba(0, 0, 0, .12);
   --field-h: 44px;
+
+  /* Fasty ミント（OAuth ボタンの文字色などに使用） */
+  --fasty-mint: #18b8a5;
 }
 
 /* 外側ラッパー：どんな親でも中央寄せにする（ビューで <main class="devise-center"> を使うなら推奨） */
@@ -110,4 +113,71 @@ footer .footer-legal-thin a{ color:#1f4b99 !important; }
 /* スマホ余白最適化 */
 @media (max-width: 480px){
   .devise-wrap{ padding: 16px 14px 32px; }
+}
+
+/* ======================= OAuth ボタン ======================= */
+
+.devise-oauth{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+/* ボタン本体（共通） */
+.oauth-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 8px 22px rgba(0,0,0,.07);
+  cursor: pointer;
+  text-decoration: none;
+  min-width: 230px;
+  transition: box-shadow .18s ease, transform .18s ease, background .18s ease;
+}
+
+.oauth-btn--borderless{
+  border-color: transparent;
+}
+
+/* ホバー時の浮き上がり感 */
+.oauth-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.09);
+}
+
+/* アイコン部分 */
+.oauth-btn__icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ラベル共通 */
+.oauth-btn__label{
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Google / LINE のラベル色をミントで統一 */
+.devise-card .oauth-btn--google .oauth-btn__label,
+.devise-card .oauth-btn--line .oauth-btn__label{
+  color: var(--fasty-mint);
+}
+
+/* LINE ボタン用（必要なら微調整用に定義） */
+.oauth-btn--line{
+  /* ベースは共通スタイルを利用。
+     ここで border や背景を個別に変えたくなったら追加する */
+}
+/* OAuth ラベルをミントにする共通クラス */
+.oauth-btn__label--mint {
+  color: #18b8a5; /* Fasty のミント */
+  font-weight: 600;
 }
