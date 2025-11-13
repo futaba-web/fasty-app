@@ -20,7 +20,7 @@ end
 
 RSpec.configure do |config|
   # Rails 7.1 以降推奨の書き方（配列）
-  config.fixture_paths = [Rails.root.join("spec/fixtures")]
+  config.fixture_paths = [ Rails.root.join("spec/fixtures") ]
 
   # トランザクションフィクスチャ
   config.use_transactional_fixtures = true
