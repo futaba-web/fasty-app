@@ -21,7 +21,7 @@ jobs:
       DB_PASSWORD: password
       DB_NAME: fasty_test
 
-      # ==== 以下は OmniAuth 用のダミー環境変数（CI で KeyError を避けるため） ====
+      # ==== OmniAuth 用のダミー環境変数（CI で KeyError を避けるため）====
       GOOGLE_CLIENT_ID: dummy-google-client-id
       GOOGLE_CLIENT_SECRET: dummy-google-client-secret
       GOOGLE_REDIRECT_URI: http://localhost:3000/users/auth/google_oauth2/callback
@@ -30,7 +30,7 @@ jobs:
       LINE_CHANNEL_SECRET: dummy-line-channel-secret
       LINE_CALLBACK_URL: http://localhost:3000/users/auth/line/callback
 
-      # credentials を使っているなら（必要に応じて）
+      # credentials を使っている場合は（必要なら）
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 
     services:
@@ -66,7 +66,9 @@ jobs:
 
       - name: Set up database
         run: |
-          bundle exec rails db:create db:schema:load
+          # Rails 8 でも有効な db:prepare を使って
+          # DB 作成 + マイグレーション + schema 更新 をまとめて実行
+          bundle exec rails db:prepare
 
       - name: Run RSpec
         run: bundle exec rspec
