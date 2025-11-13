@@ -29,7 +29,7 @@ gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "omniauth-oauth2", "~> 1.8"
 gem "omniauth-google-oauth2", "~> 1.2"
 gem "oauth2", "~> 2.0.12"
-gem "omniauth-line"            # ← 追加：LINE Login 用
+gem "omniauth-line"            # ← LINE Login 用
 
 # Windows/JRuby向けタイムゾーンデータ
 gem "tzinfo-data", platforms: %i[windows jruby]
@@ -47,7 +47,8 @@ group :development, :test do
   gem "dotenv-rails"
 
   # テスト
-  gem "rspec-rails", "~> 6.1"   # 使っていなければ削除OK
+  gem "rspec-rails", "~> 6.1"   # RSpec 本体
+  gem "factory_bot_rails"       # ★ 追加：FactoryBot
 
   # デバッグ & セキュリティ & Lint
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
