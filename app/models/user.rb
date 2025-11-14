@@ -11,6 +11,12 @@ class User < ApplicationRecord
 
   # Validations
   validates :name, presence: true, uniqueness: true, length: { maximum: 30 }
+  validates :line_user_id, uniqueness: true, allow_nil: true
+
+  # スコープ: LINE通知が有効なユーザー
+  scope :line_notify_enabled, -> {
+    where(line_notify_enabled: true).where.not(line_user_id: nil)
+  }
 
   # 正規化
   before_validation :downcase_email
@@ -39,27 +45,35 @@ class User < ApplicationRecord
   # NOTE:
   # - LINE Login では email が返らないケースもあるため、
   #   その場合は changeme+ランダム@example.com を採番する。
+  # - LINE の uid は「LINEの userId」と揃うので、それを line_user_id にも保存する。
   def self.from_omniauth(auth)
     provider = auth.provider
     uid      = auth.uid
     info     = auth.info || OpenStruct.new
     email    = info.email&.downcase
 
-    # 1) すでに連携済み
+    # 1) すでに連携済みユーザー
     if (user = find_by(provider:, uid:))
+      # LINE ログイン時に line_user_id が空なら補完しておく
+      if provider == "line" && user.line_user_id.blank?
+        user.update!(line_user_id: uid)
+      end
       return user
     end
 
     # 2) email が同じ既存ユーザーを連携（Google / LINE 共通）
     if email && (user = find_by(email:))
-      user.update!(provider:, uid:)
+      attrs = { provider:, uid: }
+      # LINE でログインしてきた場合、まだ line_user_id がなければ保存
+      attrs[:line_user_id] = uid if provider == "line" && user.line_user_id.blank?
+      user.update!(attrs)
       return user
     end
 
     # 3) 新規作成
     base_name =
       info.name.presence ||
-      [ info.first_name, info.last_name ].compact.join.presence ||
+      [info.first_name, info.last_name].compact.join.presence ||
       (email ? email.split("@").first : nil) ||
       "user"
 
@@ -70,14 +84,17 @@ class User < ApplicationRecord
       name:     safe_name,
       password: Devise.friendly_token[0, 20],
       provider: provider,
-      uid:      uid
+      uid:      uid,
+      # LINE ログインからの新規作成なら line_user_id も埋める
+      line_user_id: (provider == "line" ? uid : nil)
+      # line_notify_enabled は DB の default:false に任せる
     )
   end
 
   class << self
     # 既存の Google 用エイリアス
     alias_method :from_google, :from_omniauth
-    # LINE 用エイリアス（必要ならコールバック側で呼び分けに利用）
+    # LINE 用エイリアス
     alias_method :from_line, :from_omniauth
   end
 

@@ -14,17 +14,20 @@ Rails.application.configure do
   # Server-Timing
   config.server_timing = true
 
-  # ---- 開発用: ngrok 経由アクセスを許可 ----------------------------
-  # 例: https://xxxx-yyy.ngrok-free.dev
-  config.hosts << /[a-z0-9-]+\.ngrok-free\.dev/
-  # ---------------------------------------------------------------
+  # ---- 開発用: HostAuthorization を無効化（ngrok など外部から叩くため）----
+  # development 環境ではホスト制限を外しておく
+  config.hosts.clear
+  # -----------------------------------------------------------------
 
   # キャッシュ切替（bin/rails dev:cache）
   if Rails.root.join("tmp/caching-dev.txt").exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
+
     config.cache_store = :memory_store
-    config.public_file_server.headers = { "Cache-Control" => "public, max-age=#{2.days.to_i}" }
+    config.public_file_server.headers = {
+      "Cache-Control" => "public, max-age=#{2.days.to_i}"
+    }
   else
     config.action_controller.perform_caching = false
     config.cache_store = :null_store
