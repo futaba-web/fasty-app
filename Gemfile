@@ -21,6 +21,7 @@ gem "kaminari"
 gem "devise", "~> 4.9"
 gem "bcrypt", "~> 3.1"          # Deviseのデフォルト暗号化（必須）
 # gem "rails-i18n"              # I18nの各国語（必要なら）
+gem "line-bot-api"              # LINE Messaging API 用
 
 # --- OmniAuth / Google Login / LINE Login ---
 # まずは保守的に固定→動作確認後に緩める運用に
@@ -29,7 +30,7 @@ gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "omniauth-oauth2", "~> 1.8"
 gem "omniauth-google-oauth2", "~> 1.2"
 gem "oauth2", "~> 2.0.12"
-gem "omniauth-line"            # ← LINE Login 用
+gem "omniauth-line"             # LINE Login 用
 
 # Windows/JRuby向けタイムゾーンデータ
 gem "tzinfo-data", platforms: %i[windows jruby]
@@ -48,7 +49,7 @@ group :development, :test do
 
   # テスト
   gem "rspec-rails", "~> 6.1"   # RSpec 本体
-  gem "factory_bot_rails"       # ★ 追加：FactoryBot
+  gem "factory_bot_rails"       # FactoryBot
 
   # デバッグ & セキュリティ & Lint
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
@@ -59,4 +60,5 @@ end
 group :development do
   gem "web-console"
   gem "letter_opener_web"       # /letter_opener で開発メール確認
+  gem "whenever", require: false # ← 追加：スケジューラ
 end

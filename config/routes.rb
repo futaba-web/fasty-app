@@ -6,11 +6,17 @@ Rails.application.routes.draw do
     sessions:           "users/sessions",
     registrations:      "users/registrations",
     passwords:          "users/passwords",
-    omniauth_callbacks: "users/omniauth_callbacks" # Google などのコールバック
+    omniauth_callbacks: "users/omniauth_callbacks" # Google / LINE Login などのコールバック
   }
 
   # 迷いアクセス対策：/users は存在しないためログインへ誘導
   get "/users", to: redirect("/users/sign_in")
+
+  # ===================== LINE Messaging API Webhook =====================
+  # LINE 側の Webhook URL は
+  #   https://<ホスト名>/line/webhook
+  # を設定する想定（POST）
+  post "/line/webhook", to: "line/webhooks#callback"
 
   # ===================== 開発用 =====================
   if Rails.env.development?
