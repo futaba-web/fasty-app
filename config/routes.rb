@@ -1,5 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  get "settings/show"
   # ===================== Devise =====================
   # users 名前空間のコントローラを使用
   devise_for :users, controllers: {
@@ -33,7 +34,14 @@ Rails.application.routes.draw do
   end
 
   # ===================== マイページ =====================
-  resource :mypage, only: :show
+  resource :mypage, only: :show do
+    # LINE通知 ON/OFF のトグルを更新する
+    patch :update_line_notify
+  end
+
+  # ===================== 設定ページ =====================
+  # /settings -> SettingsController#show
+  resource :setting, only: :show, controller: "settings", path: "settings"
 
   # ログイン状態でトップ切り替え
   authenticated :user do
@@ -83,7 +91,8 @@ Rails.application.routes.draw do
 
   # ===================== 静的リクエスト対策 =====================
   # RSS/Atom を提供しないため、古いクローラ向けのURLには 410 Gone を返す
-  get "/feeds/all.atom.xml", to: proc { [ 410, { "Content-Type" => "text/plain" }, [ "" ] ] }
+  get "/feeds/all.atom.xml",
+      to: proc { [ 410, { "Content-Type" => "text/plain" }, [ "" ] ] }
 
   # favicon は public/ に配置しているため通常は不要。
   # もし今後 public/favicon.ico を置かない運用にするなら下記のリダイレクトを有効化。

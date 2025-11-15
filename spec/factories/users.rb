@@ -1,10 +1,17 @@
 # spec/factories/users.rb
-# frozen_string_literal: true
-
 FactoryBot.define do
   factory :user do
+    sequence(:name)  { |n| "テストユーザー#{n}" }
     sequence(:email) { |n| "user#{n}@example.com" }
-    password { "password123" }
-    # Devise の user で最低限必要そうな属性だけにしておく
+    password { "password" }
+
+    # ▼ LINE 通知まわり（今回追加）
+    line_notify_enabled { false }  # デフォルトは OFF
+    line_user_id        { nil }    # OFF のときは nil でOK
+
+    trait :line_notify_on do
+      line_notify_enabled { true }
+      line_user_id        { "U_dummy_line_user_id" }
+    end
   end
 end

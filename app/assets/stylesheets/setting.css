@@ -1,0 +1,78 @@
+/* app/assets/stylesheets/setting.css */
+/* 設定ページ専用スタイル（LINE通知トグルまわり） */
+
+/* 実体のチェックボックス（見えない） */
+.line-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* トグルの土台（ミント色の細長い部分） */
+.line-toggle-track {
+  display: inline-flex;
+  align-items: center;
+  width: 2.75rem;          /* 約 44px */
+  height: 1.5rem;          /* 約 24px */
+  border-radius: 9999px;
+  background-color: rgba(16, 185, 129, 0.18); /* 薄いミント */
+  border: 2px solid #10b981;                  /* 濃いミント枠 */
+  padding: 0 2px;
+  box-sizing: border-box;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* 白いつまみ部分 */
+.line-toggle-knob {
+  width: 1.1rem;   /* 約 18px */
+  height: 1.1rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transform: translateX(0);
+  transition: transform 0.15s ease;
+}
+
+/* ON のときの土台色 */
+.line-toggle-input:checked + .line-toggle-track {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+
+/* ON のときのつまみ位置（右側へ） */
+.line-toggle-input:checked + .line-toggle-track .line-toggle-knob {
+  transform: translateX(1.25rem);
+}
+
+/* ===== 更新ボタン ===== */
+
+.line-toggle-submit {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1.2rem;
+  border-radius: 9999px;
+  background-color: #10b981 !important; /* ミント */
+  color: #ffffff !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  border: none;
+  width: auto !important;
+  min-width: 4.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.line-toggle-submit:hover {
+  background-color: #059669 !important; /* 少し濃いミント */
+  transform: translateY(-1px);
+}
+
+.line-toggle-submit:active {
+  transform: translateY(0);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+}

@@ -28,7 +28,7 @@
 
     <% if @running.present? %>
       <!-- 進行中カード -->
-      <div class="rounded-lg border p-4 sm:p-5 space-y-3 bg-white/70">
+      <div class="mt-3 sm:mt-4 rounded-lg border p-4 sm:p-5 space-y-3 bg-white/70">
         <div class="flex items-center gap-3 text-lg sm:text-xl">
           <span class="text-2xl sm:text-3xl">🕒</span>
           <span data-controller="timer"
@@ -51,21 +51,24 @@
       </div>
 
     <% else %>
-      <%= form_with url: start_fasting_records_path, method: :post, local: true,
-                    html: { id: "start-form" }, class: "space-y-5 sm:space-y-6" do %>
-        <div class="rounded-lg border p-4 sm:p-5 space-y-3 bg-white/70">
-          <label class="block text-sm text-gray-600">目標時間</label>
-          <%= select_tag :target_hours,
-                options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }),
-                include_blank: "選択してください🔽",
-                required: true,
-                class: "border rounded px-3 py-2 w-full max-w-xs" %>
-        </div>
+      <div class="mt-3 sm:mt-4">
+        <%= form_with url: start_fasting_records_path, method: :post, local: true,
+                      html: { id: "start-form" }, class: "space-y-5 sm:space-y-6" do %>
+          <div class="rounded-lg border p-4 sm:p-5 space-y-3 bg-white/70">
+            <label class="block text-sm text-gray-600">目標時間</label>
+            <%= select_tag :target_hours,
+                  options_for_select(FastingRecord::TARGET_HOURS_CHOICES.map { |h| ["#{h}時間", h] }),
+                  include_blank: "選択してください🔽",
+                  required: true,
+                  class: "border rounded px-3 py-2 w-full max-w-xs" %>
+          </div>
 
-        <div class="pt-1 mb-1 sm:mb-0 flex justify-center">
-          <%= submit_tag "ファスティング開始", class: "btn-mint btn-lg btn-wrap" %>
-        </div>
-      <% end %>
+          <div class="pt-1 mb-1 sm:mb-0 flex justify-center">
+            <%= submit_tag "ファスティング開始", class: "btn-mint btn-lg btn-wrap" %>
+          </div>
+        <% end %>
+      </div>
     <% end %>
+
   </div>
 </div>

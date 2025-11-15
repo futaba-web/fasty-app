@@ -13,7 +13,14 @@
     <%= csp_meta_tag %>
 
     <!-- CSS (Sprockets/Tailwind) -->
-    <%= stylesheet_link_tag "tailwind", "application", "layout", "drawer", "landing", "devise", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind",
+                            "application",
+                            "layout",
+                            "drawer",
+                            "landing",
+                            "devise",
+                            "setting",        # ← 設定ページ用CSSを追加
+                            "data-turbo-track": "reload" %>
 
     <!-- 画面個別で <head> 追記 -->
     <%= yield :head %>

@@ -16,12 +16,21 @@
   <nav class="px-3 md:px-4 py-4 md:py-5">
     <ul class="grid gap-2 text-white">
 
-      <!-- 追加：恒久の「アプリの使い方」 -->
+      <!-- 恒久の「アプリの使い方」 -->
       <li>
         <%= link_to guide_path,
               class: "inline-flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 font-medium whitespace-nowrap",
               aria:  { label: "アプリの使い方を開く" } do %>
           アプリの使い方
+        <% end %>
+      </li>
+
+      <!-- 追加：設定ページ -->
+      <li>
+        <%= link_to setting_path,
+              class: "inline-flex items-center gap-2 px-3 py-2 rounded hover:bg-white/10 font-medium whitespace-nowrap",
+              aria:  { label: "設定を開く" } do %>
+          設定
         <% end %>
       </li>
 
