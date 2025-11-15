@@ -85,7 +85,7 @@ class User < ApplicationRecord
     # 3) 新規作成
     base_name =
       info.name.presence ||
-      [info.first_name, info.last_name].compact.join.presence ||
+      [ info.first_name, info.last_name ].compact.join.presence ||
       (email ? email.split("@").first : nil) ||
       "user"
 
