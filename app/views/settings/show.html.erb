@@ -1,0 +1,74 @@
+<%# app/views/settings/show.html.erb %>
+
+<div class="mypage-bg mypage-bg--compact">
+  <div class="mypage-stack max-w-2xl mx-auto px-6 pt-4 pb-8">
+
+    <header class="mb-4 sm:mb-6">
+      <h1 class="text-lg sm:text-xl font-bold text-gray-900">
+        設定
+      </h1>
+      <p class="mt-1 text-xs sm:text-sm text-gray-600">
+        通知やアプリの各種設定を変更できます。
+      </p>
+    </header>
+
+    <% if @user.line_connected? %>
+      <section aria-labelledby="line-notify-heading">
+        <div class="rounded-lg border bg-white/90 p-4 sm:p-5 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+            <div class="flex-1">
+              <h2 id="line-notify-heading"
+                  class="text-sm sm:text-base font-semibold text-gray-900">
+                LINE通知
+              </h2>
+              <p class="mt-1 text-xs sm:text-sm text-gray-600 leading-relaxed">
+                ファスティングの終了予定時刻に、FastyのLINEボットからリマインド通知を送ります。
+                通知を受け取りたくない場合は、このスイッチをOFFにしてください。
+              </p>
+            </div>
+
+            <div class="flex-shrink-0">
+              <%= form_with model: @user,
+                            url: update_line_notify_mypage_path,
+                            method: :patch,
+                            local: true,
+                            class: "flex flex-col items-end gap-2" do |f| %>
+
+                <label class="inline-flex items-center cursor-pointer select-none gap-3">
+                  <%# 実際のチェックボックス（見た目は CSS でトグル化） %>
+                  <%= f.check_box :line_notify_enabled,
+                                  class: "line-toggle-input",
+                                  checked: @user.line_notify_on? %>
+
+                  <%# 見た目のトグル（ミント色） %>
+                  <span class="line-toggle-track">
+                    <span class="line-toggle-knob"></span>
+                  </span>
+
+                  <%# 状態ラベル：ON / OFF のみ %>
+                  <span class="text-xs sm:text-sm font-medium text-gray-800">
+                    <%= @user.line_notify_on? ? "ON" : "OFF" %>
+                  </span>
+                </label>
+
+                <%# ミント色の小さめ更新ボタン（スタイルは setting.css 側） %>
+                <%= f.submit "更新", class: "line-toggle-submit" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </section>
+    <% else %>
+      <section class="rounded-lg border bg-white/90 p-4 sm:p-5 shadow-sm">
+        <h2 class="text-sm sm:text-base font-semibold text-gray-900">
+          LINE通知
+        </h2>
+        <p class="mt-2 text-xs sm:text-sm text-gray-600 leading-relaxed">
+          現在、LINEアカウントとの連携がされていません。
+          LINE通知を利用するには、ログアウト後に「LINEでログイン」から再度ログインしてください。
+        </p>
+      </section>
+    <% end %>
+
+  </div>
+</div>

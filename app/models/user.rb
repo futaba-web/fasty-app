@@ -13,7 +13,7 @@ class User < ApplicationRecord
   validates :name, presence: true, uniqueness: true, length: { maximum: 30 }
   validates :line_user_id, uniqueness: true, allow_nil: true
 
-  # スコープ: LINE通知が有効なユーザー
+  # スコープ: LINE通知が有効なユーザー（LINE連携済み + 通知ON）
   scope :line_notify_enabled, -> {
     where(line_notify_enabled: true).where.not(line_user_id: nil)
   }
@@ -34,6 +34,18 @@ class User < ApplicationRecord
   def accept_health_notice!(version: HEALTH_NOTICE_VERSION)
     update!(accepted_health_notice_at: Time.current,
             health_notice_version:    version)
+  end
+
+  # ===== LINE 連携 / 通知ヘルパー =====
+
+  # LINEの userId が紐づいているか？
+  def line_connected?
+    line_user_id.present?
+  end
+
+  # 通知設定が ON か？
+  def line_notify_on?
+    line_notify_enabled?
   end
 
   # ===== OmniAuth 共通（Google / LINE 両方で使用） =====
@@ -73,7 +85,7 @@ class User < ApplicationRecord
     # 3) 新規作成
     base_name =
       info.name.presence ||
-      [ info.first_name, info.last_name ].compact.join.presence ||
+      [info.first_name, info.last_name].compact.join.presence ||
       (email ? email.split("@").first : nil) ||
       "user"
 
@@ -87,7 +99,7 @@ class User < ApplicationRecord
       uid:      uid,
       # LINE ログインからの新規作成なら line_user_id も埋める
       line_user_id: (provider == "line" ? uid : nil)
-      # line_notify_enabled は DB の default:false に任せる
+      # line_notify_enabled は DB の default に任せる
     )
   end
 
