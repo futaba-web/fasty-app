@@ -57,7 +57,10 @@ RSpec.describe MealSuggestions::Generator, type: :service do
       .with(user)
       .and_return(insight_double)
 
-    # OpenAIClient.chat をモック
+    # OpenAIClient 自体が存在しない環境（CI / test）でも動くように、
+    # テスト内で OpenAIClient 定数をダミークラスとして定義してからモックする
+    stub_const("OpenAIClient", Class.new)
+
     allow(OpenAIClient).to receive(:chat)
       .and_return(openai_response)
   end
