@@ -32,7 +32,7 @@ gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "omniauth-oauth2", "~> 1.8"
 gem "omniauth-google-oauth2", "~> 1.2"
-gem "oauth2", "~> 2.0.12"
+gem "oauth2", "~> 2.0.18"
 gem "omniauth-line"             # LINE Login 用
 
 # Windows/JRuby向けタイムゾーンデータ
