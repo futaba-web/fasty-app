@@ -1,5 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  get "meal_suggestions/show"
   get "settings/show"
   # ===================== Devise =====================
   # users 名前空間のコントローラを使用
@@ -76,6 +77,10 @@ Rails.application.routes.draw do
   resources :meditations, only: :index
   resources :meditation_logs, only: :create          # 「瞑想を始める」押下時に記録
   resource  :meditation_summary, only: :show         # 今週の回数/合計分など
+
+  # ===================== AI回復食コンシェルジュ =====================
+  # /meal_suggestion (GET: show, POST: create)
+  resource :meal_suggestion, only: %i[show create]
 
   # ===================== 法務／お問い合わせ =====================
   scope :legal do
