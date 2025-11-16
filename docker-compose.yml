@@ -1,3 +1,4 @@
+# docker-compose.yml
 services:
   db:
     image: mysql:8.0
@@ -11,7 +12,7 @@ services:
   web:
     build: .
     command: bin/rails server -b 0.0.0.0 -p 3000
-    # ▼ ここを追加
+    # .env から環境変数を読み込む
     env_file:
       - .env
     environment:
@@ -19,10 +20,14 @@ services:
       DB_HOST: db
       DB_USERNAME: root
       DB_PASSWORD: password
-    ports: ["3000:3000"]
+      # OpenAI のキーは実体をここに書かず、.env の値を参照する
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    ports:
+      - "3000:3000"
     volumes:
       - .:/rails
-    depends_on: [db]
+    depends_on:
+      - db
 
 volumes:
   db-data:

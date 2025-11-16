@@ -23,6 +23,9 @@ gem "bcrypt", "~> 3.1"          # Deviseのデフォルト暗号化（必須）
 # gem "rails-i18n"              # I18nの各国語（必要なら）
 gem "line-bot-api"              # LINE Messaging API 用
 
+# --- AI / OpenAI ---
+gem "ruby-openai", require: "openai"
+
 # --- OmniAuth / Google Login / LINE Login ---
 # まずは保守的に固定→動作確認後に緩める運用に
 gem "omniauth", "~> 2.1"
@@ -59,6 +62,6 @@ end
 
 group :development do
   gem "web-console"
-  gem "letter_opener_web"       # /letter_opener で開発メール確認
-  gem "whenever", require: false # ← 追加：スケジューラ
+  gem "letter_opener_web"        # /letter_opener で開発メール確認
+  gem "whenever", require: false # スケジューラ
 end

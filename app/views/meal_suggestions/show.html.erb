@@ -1,0 +1,71 @@
+<!-- app/views/meal_suggestions/show.html.erb -->
+
+<div class="mx-auto max-w-xl p-6 mt-6 rounded-2xl bg-white/95 shadow-lg ring-1 ring-stone-200">
+  <h1 class="text-xl md:text-2xl font-semibold">AI回復食コンシェルジュ</h1>
+  <p class="mt-1 text-sm text-stone-600">
+    <%= @today.strftime("%Y-%m-%d") %> の提案です。
+  </p>
+
+  <% if @insight.present? %>
+    <div class="mt-4 text-xs md:text-sm text-stone-700 space-y-1">
+      <p>直近7日間の合計ファスティング時間：<%= @insight.total_hours_7days %> 時間</p>
+      <p>1日あたり平均：<%= @insight.avg_hours_7days %> 時間</p>
+      <p>成功率：<%= (@insight.success_rate_7days * 100).round %> %</p>
+      <p>連続成功日数：<%= @insight.streak_days %> 日</p>
+      <p>現在断食中：<%= @insight.currently_fasting ? "はい" : "いいえ" %></p>
+      <p>最後の断食終了からの日数：<%= @insight.days_since_last_end || "不明" %> 日</p>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <% if @suggestion.present? %>
+      <% c = @suggestion.content.with_indifferent_access %>
+
+      <% [["朝食", "breakfast"], ["昼食", "lunch"], ["夕食", "dinner"]].each do |(label, key)| %>
+        <div class="mt-4 p-4 rounded-xl bg-stone-50">
+          <h2 class="text-sm font-medium"><%= label %></h2>
+          <p class="mt-1 whitespace-pre-wrap text-sm">
+            <strong>メニュー：</strong><%= c.dig(key, :menu) %>
+          </p>
+          <p class="mt-1 whitespace-pre-wrap text-xs text-stone-700">
+            <strong>理由：</strong><%= c.dig(key, :why) %>
+          </p>
+          <p class="mt-1 whitespace-pre-wrap text-xs text-stone-700">
+            <strong>注意点：</strong><%= c.dig(key, :note) %>
+          </p>
+        </div>
+      <% end %>
+
+      <% if c[:alerts].present? %>
+        <div class="mt-5 p-4 rounded-xl bg-amber-50">
+          <h3 class="text-sm font-medium">全体の注意点</h3>
+          <ul class="mt-2 list-disc pl-5 text-xs text-stone-800 space-y-1">
+            <% c[:alerts].each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mt-6">
+        <%= button_to "今日の提案を再生成する", meal_suggestion_path,
+                      method: :post,
+                      class: "w-full rounded-xl py-3 text-sm font-medium bg-stone-900 text-white hover:bg-stone-800" %>
+      </div>
+    <% else %>
+      <p class="mt-2 text-sm text-stone-600">
+        まだ今日の食事提案は作成されていません。
+      </p>
+      <div class="mt-4">
+        <%= button_to "今日の提案を作る", meal_suggestion_path,
+                      method: :post,
+                      class: "w-full rounded-xl py-3 text-sm font-medium bg-stone-900 text-white hover:bg-stone-800" %>
+      </div>
+    <% end %>
+  </div>
+
+  <p class="mt-6 text-[11px] text-stone-500 leading-relaxed">
+    この提案は一般的な健康情報に基づいたものであり、医療行為ではありません。<br>
+    持病がある方、服薬中の方、体調に不安がある場合は、必ず医師など専門家に相談してください。
+  </p>
+</div>
