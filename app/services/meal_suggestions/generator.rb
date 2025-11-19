@@ -1,6 +1,9 @@
 # app/services/meal_suggestions/generator.rb
 module MealSuggestions
   class Generator
+    # どれくらいの期間のメニューを「なるべく被らせない対象」にするか
+    RECENT_DAYS_FOR_VARIETY = 7
+
     def initialize(user, target_date: Date.current, client: OpenAIClient)
       @user   = user
       @date   = target_date
@@ -43,7 +46,31 @@ module MealSuggestions
 
     # OpenAI に投げて JSON を生成 → 正規化して返す
     def generate_content(insight, phase)
-      system_prompt = <<~PROMPT
+      recent_menus  = recent_menu_history
+      current_menu  = current_menu_for_date
+
+      response = client.chat(
+        parameters: {
+          model: "gpt-4o-mini",
+          messages: [
+            { role: "system", content: system_prompt },
+            { role: "user",   content: build_user_prompt(insight, phase, recent_menus, current_menu) }
+          ],
+          # バリエーション重視で少し揺らぎ多め
+          temperature: 0.85,
+          max_tokens: 800
+        }
+      )
+
+      raw    = response.dig("choices", 0, "message", "content")
+      parsed = safe_parse_json(raw)
+      normalize_content(parsed)
+    end
+
+    # ====== プロンプト関連 ===================================================
+
+    def system_prompt
+      <<~PROMPT
         あなたは「Fasty」というファスティング記録アプリの、
         やさしく落ち着いたトーンで話す日本人の栄養士です。
 
@@ -89,22 +116,47 @@ module MealSuggestions
         - 体調に不安がある場合は「医師や専門家に相談してください」
           といった一般的な表現にとどめてください。
       PROMPT
+    end
 
+    def build_user_prompt(insight, phase, recent_menus, current_menu)
       phase_hint = case phase
-      when "fasting_now"
+                   when "fasting_now"
                      "ユーザーは現在も断食中です。水分補給や、断食終了後1〜2食目のイメージを伝えてください。"
-      when "recovery_day1"
+                   when "recovery_day1"
                      "断食終了から1日以内の「回復食1日目」です。かなりやさしいメニューにしてください。"
-      when "recovery_day2"
+                   when "recovery_day2"
                      "回復食2日目です。まだ消化にやさしいものを中心にしつつ、少しずつ固形物を増やしてよい段階です。"
-      when "recovery_day3_plus"
+                   when "recovery_day3_plus"
                      "回復食3日目以降です。通常食に近づけつつも、揚げ物や脂っこいもの・お酒は控えめにしてください。"
-      else
+                   else
                      "最近の記録を参考にしつつ、無理のないバランスのよい1日分のメニューを提案してください。"
-      end
+                   end
 
-      # モデルに渡すコンテキスト（人間が読んで分かる形にする）
-      user_context_text = <<~CONTEXT
+      recent_text =
+        if recent_menus.present?
+          recent_menus.map do |row|
+            "#{row[:date]}: 朝=#{row[:breakfast]} / 昼=#{row[:lunch]} / 夜=#{row[:dinner]}"
+          end.join("\n")
+        else
+          "（最近のメニュー履歴はありません）"
+        end
+
+      current_text =
+        if current_menu
+          c = current_menu
+          <<~CURR
+            なお、本日 (#{date}) に現在表示されているメニューは次の通りです。
+            - 朝: #{c[:breakfast]}
+            - 昼: #{c[:lunch]}
+            - 夜: #{c[:dinner]}
+
+            同じ日付で新しい案を出すときは、この内容とできるだけ被らないようにしてください。
+          CURR
+        else
+          ""
+        end
+
+      <<~CONTEXT
         今日の日付: #{date}
 
         回復フェーズ:
@@ -119,29 +171,58 @@ module MealSuggestions
         - 現在断食中か:            #{insight.currently_fasting}
         - 最後の断食終了からの日数: #{insight.days_since_last_end || '不明'} 日
 
-        上記の情報をもとに、指定された JSON フォーマットで、
-        1日の朝食・昼食・夕食と、全体の注意点を提案してください。
+        直近#{RECENT_DAYS_FOR_VARIETY}日間に、あなたがこのユーザーに提案したメニュー履歴は次の通りです（新しい日付から順に）:
+        #{recent_text}
+
+        #{current_text}
+
+        バリエーションに関する重要な条件:
+        - 上記の直近#{RECENT_DAYS_FOR_VARIETY}日分の menu と、できるだけ同じにならないようにしてください。
+        - 同じ料理名（例: "おかゆ" や "湯豆腐"）を使う場合は、
+          具材や味付け・組み合わせを変えて「別のバリエーション」になるようにしてください。
+        - 朝・昼・夜で主食・たんぱく質・野菜のバランスや調理法を少し変えて、
+          1日を通して単調にならないようにしてください。
+        - 説明文（why, note）も、コピペのように同じ文章を繰り返さず、
+          内容に合わせて言い回しを変えてください。
+
+        上記をすべて踏まえて、指定された JSON フォーマットだけを出力してください。
       CONTEXT
-
-      response = client.chat(
-        parameters: {
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: system_prompt },
-            { role: "user",   content: user_context_text }
-          ],
-          # ちょっとだけ揺らぎを持たせる
-          temperature: 0.7,
-          # JSON が途中で切れない程度の上限
-          max_tokens: 800
-          # ※ 必要なら response_format を追加する余地あり
-        }
-      )
-
-      raw    = response.dig("choices", 0, "message", "content")
-      parsed = safe_parse_json(raw)
-      normalize_content(parsed)
     end
+
+    # ====== 履歴取得ロジック ================================================
+
+    # 直近 RECENT_DAYS_FOR_VARIETY 日分（当日を除く）のメニュー履歴
+    # [{ date:, breakfast:, lunch:, dinner: }, ...] の配列で返す
+    def recent_menu_history
+      user.meal_suggestions
+          .where("target_date < ? AND target_date >= ?", date, date - RECENT_DAYS_FOR_VARIETY)
+          .order(target_date: :desc)
+          .map do |ms|
+        c = (ms.content || {}).with_indifferent_access
+        {
+          date:      ms.target_date,
+          breakfast: c.dig(:breakfast, :menu).to_s,
+          lunch:     c.dig(:lunch, :menu).to_s,
+          dinner:    c.dig(:dinner, :menu).to_s
+        }
+      end
+    end
+
+    # 同じ日付の「現在表示中メニュー」（もう一案ボタン用）
+    # まだ何もない場合は nil
+    def current_menu_for_date
+      ms = user.meal_suggestions.find_by(target_date: date)
+      return nil unless ms
+
+      c = (ms.content || {}).with_indifferent_access
+      {
+        breakfast: c.dig(:breakfast, :menu).to_s,
+        lunch:     c.dig(:lunch, :menu).to_s,
+        dinner:    c.dig(:dinner, :menu).to_s
+      }
+    end
+
+    # ====== JSON パース & 正規化 ===========================================
 
     def safe_parse_json(text)
       JSON.parse(text)
