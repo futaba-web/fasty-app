@@ -120,17 +120,17 @@ module MealSuggestions
 
     def build_user_prompt(insight, phase, recent_menus, current_menu)
       phase_hint = case phase
-                   when "fasting_now"
+      when "fasting_now"
                      "ユーザーは現在も断食中です。水分補給や、断食終了後1〜2食目のイメージを伝えてください。"
-                   when "recovery_day1"
+      when "recovery_day1"
                      "断食終了から1日以内の「回復食1日目」です。かなりやさしいメニューにしてください。"
-                   when "recovery_day2"
+      when "recovery_day2"
                      "回復食2日目です。まだ消化にやさしいものを中心にしつつ、少しずつ固形物を増やしてよい段階です。"
-                   when "recovery_day3_plus"
+      when "recovery_day3_plus"
                      "回復食3日目以降です。通常食に近づけつつも、揚げ物や脂っこいもの・お酒は控えめにしてください。"
-                   else
+      else
                      "最近の記録を参考にしつつ、無理のないバランスのよい1日分のメニューを提案してください。"
-                   end
+      end
 
       recent_text =
         if recent_menus.present?
