@@ -80,6 +80,43 @@
     </ol>
   </section>
 
+  <!-- AI食事コンシェルジュ：回復食の提案を受け取る -->
+  <section class="mt-10 md:mt-14">
+    <h2 class="text-lg sm:text-xl md:text-2xl font-semibold">
+      回復食は「AI食事コンシェルジュ」におまかせ
+    </h2>
+    <p class="mt-2 text-stone-600 text-[13.5px] sm:text-sm md:text-base leading-relaxed">
+      断食明けに「何を食べたらいいかわからない…」と不安になったときは、<br class="hidden sm:block">
+      <strong>AI食事コンシェルジュ</strong>があなたの記録にもとづいて、朝・昼・夜のメニューをやさしく提案します。
+    </p>
+
+    <div class="mt-4 rounded-2xl border bg-white/95 p-4 sm:p-5 shadow">
+      <!-- スクショ：PCでは横並び／スマホでは縦並び -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+        <%= image_tag "guide/meal_suggestion2.jpg",
+                      alt: "AI食事コンシェルジュの画面（提案前／メニュー生成前）",
+                      class: "w-full rounded-lg ring-1 ring-stone-200",
+                      loading: "lazy" %>
+
+        <%= image_tag "guide/meal_suggestion.jpg",
+                      alt: "AI食事コンシェルジュの画面（メニュー決定後）",
+                      class: "w-full rounded-lg ring-1 ring-stone-200",
+                      loading: "lazy" %>
+      </div>
+
+      <!-- ボタンだけを下に中央配置 -->
+      <div class="mt-4 text-center">
+        <% if user_signed_in? %>
+          <%= link_to "今日の食事提案を見てみる", meal_suggestion_path,
+                class: "inline-flex items-center justify-center rounded-2xl px-6 py-3 ring-1 ring-emerald-300 bg-emerald-500/90 text-white shadow font-semibold" %>
+        <% else %>
+          <%= link_to "登録して食事提案も使う", new_user_registration_path,
+                class: "inline-flex items-center justify-center rounded-2xl px-6 py-3 ring-1 ring-emerald-300 bg-emerald-500/90 text-white shadow font-semibold" %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
   <!-- STEP4：瞑想で心を整える -->
   <section class="mt-10 md:mt-14">
     <h2 class="text-lg sm:text-xl md:text-2xl font-semibold">ファスティング中は「瞑想」で心を整えましょう</h2>
