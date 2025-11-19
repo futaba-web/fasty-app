@@ -1,45 +1,144 @@
 <!-- app/views/meal_suggestions/show.html.erb -->
 
 <div class="mx-auto max-w-xl p-6 mt-6 rounded-2xl bg-white/95 shadow-lg ring-1 ring-stone-200">
-  <h1 class="text-xl md:text-2xl font-semibold">AI回復食コンシェルジュ</h1>
-  <p class="mt-1 text-sm text-stone-600">
-    <%= @today.strftime("%Y-%m-%d") %> の提案です。
-  </p>
+  <!-- タイトル行 -->
+  <div class="flex items-start justify-between gap-3">
+    <!-- 左側：栄養士アイコン＋タイトル -->
+    <div class="flex items-center gap-3 flex-wrap">
+      <%= image_tag "fasty_recovery_nutritionist.png",
+            alt: "AI食事コンシェルジュの栄養士",
+            width: 48,
+            height: 48,
+            class: "object-contain shrink-0" %>
 
-  <% if @insight.present? %>
-    <div class="mt-4 text-xs md:text-sm text-stone-700 space-y-1">
-      <p>直近7日間の合計ファスティング時間：<%= @insight.total_hours_7days %> 時間</p>
-      <p>1日あたり平均：<%= @insight.avg_hours_7days %> 時間</p>
-      <p>成功率：<%= (@insight.success_rate_7days * 100).round %> %</p>
-      <p>連続成功日数：<%= @insight.streak_days %> 日</p>
-      <p>現在断食中：<%= @insight.currently_fasting ? "はい" : "いいえ" %></p>
-      <p>最後の断食終了からの日数：<%= @insight.days_since_last_end || "不明" %> 日</p>
+      <div>
+        <h1 class="text-xl md:text-2xl font-semibold">
+          AI食事コンシェルジュ
+        </h1>
+        <p class="mt-1 text-xs md:text-sm text-stone-500">
+          <%= @today.strftime("%Y-%m-%d") %> の提案です。
+        </p>
+      </div>
+    </div>
+
+    <!-- 右側：バッジ -->
+    <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-700">
+      🌿 やさしい食事サポート
+    </span>
+  </div>
+
+  <% confirmed = @confirmed %>
+
+  <!-- OK後のフラッシュ風メッセージ -->
+  <% if confirmed %>
+    <div class="mt-4 rounded-full bg-emerald-50 px-4 py-2 text-xs md:text-sm text-emerald-800 text-center">
+      今日のご飯のメニューが決まりました
     </div>
   <% end %>
 
-  <div class="mt-6">
+  <% if @insight.present? && !confirmed %>
+    <!-- 最近のファスティング状況カード（OK後は非表示） -->
+    <div class="mt-4 rounded-xl bg-stone-50/80 px-4 py-3 text-xs md:text-[13px] text-stone-700 space-y-1">
+      <p class="font-semibold text-stone-800">最近のファスティング状況</p>
+      <p>直近7日間の合計ファスティング時間：
+        <span class="font-medium"><%= @insight.total_hours_7days %> 時間</span>
+      </p>
+      <p>1日あたり平均：
+        <span class="font-medium"><%= @insight.avg_hours_7days %> 時間</span>
+      </p>
+      <p>成功率：
+        <span class="font-medium"><%= (@insight.success_rate_7days * 100).round %> %</span>
+      </p>
+      <p>連続成功日数：
+        <span class="font-medium"><%= @insight.streak_days %> 日</span>
+      </p>
+      <p>現在断食中：
+        <span class="font-medium"><%= @insight.currently_fasting ? "はい" : "いいえ" %></span>
+      </p>
+      <p>最後の断食終了からの日数：
+        <span class="font-medium"><%= @insight.days_since_last_end || "不明" %> 日</span>
+      </p>
+    </div>
+  <% end %>
+
+  <div class="mt-6 border-t border-stone-100 pt-4">
     <% if @suggestion.present? %>
       <% c = @suggestion.content.with_indifferent_access %>
 
-      <% [["朝食", "breakfast"], ["昼食", "lunch"], ["夕食", "dinner"]].each do |(label, key)| %>
-        <div class="mt-4 p-4 rounded-xl bg-stone-50">
-          <h2 class="text-sm font-medium"><%= label %></h2>
-          <p class="mt-1 whitespace-pre-wrap text-sm">
-            <strong>メニュー：</strong><%= c.dig(key, :menu) %>
-          </p>
-          <p class="mt-1 whitespace-pre-wrap text-xs text-stone-700">
-            <strong>理由：</strong><%= c.dig(key, :why) %>
-          </p>
-          <p class="mt-1 whitespace-pre-wrap text-xs text-stone-700">
-            <strong>注意点：</strong><%= c.dig(key, :note) %>
-          </p>
+      <% unless confirmed %>
+        <% [["朝食", "breakfast"], ["昼食", "lunch"], ["夕食", "dinner"]].each do |(label, key)| %>
+          <div class="mt-4 p-4 rounded-xl bg-stone-50/80">
+            <h2 class="text-sm font-semibold text-stone-800">
+              <span class="mr-1">🍽</span><%= label %>
+            </h2>
+            <p class="mt-1 whitespace-pre-wrap text-sm">
+              <span class="font-semibold">メニュー：</span><%= c.dig(key, :menu) %>
+            </p>
+            <p class="mt-1 whitespace-pre-wrap text-xs text-stone-700">
+              <span class="font-semibold">理由：</span><%= c.dig(key, :why) %>
+            </p>
+            <p class="mt-1 whitespace-pre-wrap text-xs text-stone-700">
+              <span class="font-semibold">注意点：</span><%= c.dig(key, :note) %>
+            </p>
+          </div>
+        <% end %>
+      <% end %>
+
+      <!-- ごはんイラスト：OK前は大きく、OK後はコンパクトカードの中に表示 -->
+      <% illustration = [
+        ["meal_illustrations/breakfast.png", "やさしい朝食イメージ"],
+        ["meal_illustrations/lunch.png",     "ほっとする昼食イメージ"],
+        ["meal_illustrations/dinner.png",    "からだにやさしい夕食イメージ"]
+      ].sample %>
+
+      <% if confirmed %>
+        <!-- OK後：1日のメニューまとめ + ごはんイラスト（理由・注意点なし） -->
+        <div class="mt-6 rounded-xl bg-emerald-50/80 px-4 py-4 flex items-center gap-4">
+          <div class="flex-1 text-xs md:text-sm text-emerald-900">
+            <p class="font-semibold mb-2">今日のご飯メニュー</p>
+            <ul class="space-y-1">
+              <li>朝：<%= c.dig(:breakfast, :menu) %></li>
+              <li>昼：<%= c.dig(:lunch, :menu) %></li>
+              <li>夜：<%= c.dig(:dinner, :menu) %></li>
+            </ul>
+          </div>
+          <div class="shrink-0">
+            <%= image_tag illustration[0],
+                          alt: illustration[1],
+                          class: "h-16 w-16 md:h-20 md:w-20 object-contain" %>
+          </div>
+        </div>
+
+        <!-- 決定後だけ出す「初期状態に戻す」ボタン -->
+        <div class="mt-6 flex justify-center">
+          <%= button_to "メニューを選び直す", meal_suggestion_path,
+                        method: :get,
+                        params: { reset: true },
+                        class: "inline-flex items-center justify-center rounded-full
+                                px-8 py-3 w-full sm:w-auto sm:min-w-[220px]
+                                text-[14px] font-semibold tracking-wide
+                                border border-emerald-200 text-emerald-700 bg-white
+                                hover:bg-emerald-50 active:bg-emerald-100
+                                active:scale-[0.98] transition" %>
+        </div>
+      <% else %>
+        <!-- 通常時：大きめのごはんイラスト -->
+        <div class="mt-6">
+          <div class="flex justify-center">
+            <div class="flex h-32 w-32 items-center justify-center rounded-2xl bg-white/80 shadow-sm
+                        md:h-36 md:w-36">
+              <%= image_tag illustration[0],
+                            alt: illustration[1],
+                            class: "max-h-28 max-w-full object-contain" %>
+            </div>
+          </div>
         </div>
       <% end %>
 
-      <% if c[:alerts].present? %>
-        <div class="mt-5 p-4 rounded-xl bg-amber-50">
-          <h3 class="text-sm font-medium">全体の注意点</h3>
-          <ul class="mt-2 list-disc pl-5 text-xs text-stone-800 space-y-1">
+      <% if c[:alerts].present? && !confirmed %>
+        <div class="mt-5 p-4 rounded-xl bg-amber-50/90">
+          <h3 class="text-sm font-semibold text-amber-900">全体の注意点</h3>
+          <ul class="mt-2 list-disc space-y-1 pl-5 text-xs text-amber-900">
             <% c[:alerts].each do |msg| %>
               <li><%= msg %></li>
             <% end %>
@@ -47,25 +146,45 @@
         </div>
       <% end %>
 
-      <div class="mt-6">
-        <%= button_to "今日の提案を再生成する", meal_suggestion_path,
-                      method: :post,
-                      class: "w-full rounded-xl py-3 text-sm font-medium bg-stone-900 text-white hover:bg-stone-800" %>
-      </div>
+      <!-- ボタン群：もう一案 + OK（OK後は非表示） -->
+      <% unless confirmed %>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <%= button_to "もう一案もらう", meal_suggestion_path,
+                        method: :post,
+                        class: "inline-flex items-center justify-center rounded-full
+                                px-10 py-3.5 w-full sm:w-auto sm:min-w-[220px]
+                                text-[15px] font-semibold tracking-wide
+                                bg-emerald-300 text-white shadow-sm
+                                hover:bg-emerald-400 active:bg-emerald-500
+                                active:scale-[0.98] transition" %>
+
+          <%= button_to "このメニューでOK", meal_suggestion_path,
+                        method: :get,
+                        params: { confirm: true },
+                        class: "inline-flex items-center justify-center rounded-full
+                                px-10 py-3.5 w-full sm:w-auto sm:min-w-[220px]
+                                text-[15px] font-semibold tracking-wide
+                                border border-emerald-300 text-emerald-700 bg-white
+                                hover:bg-emerald-50 active:bg-emerald-100
+                                active:scale-[0.98] transition" %>
+        </div>
+      <% end %>
     <% else %>
-      <p class="mt-2 text-sm text-stone-600">
+      <p class="mt-4 text-sm text-stone-600">
         まだ今日の食事提案は作成されていません。
       </p>
-      <div class="mt-4">
-        <%= button_to "今日の提案を作る", meal_suggestion_path,
+
+      <!-- 初回生成ボタン -->
+      <div class="mt-4 flex justify-center">
+        <%= button_to "今日のおすすめメニューはこちら", meal_suggestion_path,
                       method: :post,
-                      class: "w-full rounded-xl py-3 text-sm font-medium bg-stone-900 text-white hover:bg-stone-800" %>
+                      class: "inline-flex items-center justify-center rounded-full
+                              px-10 py-3.5 w-full sm:w-auto sm:min-w-[220px]
+                              text-[15px] font-semibold tracking-wide
+                              bg-emerald-300 text-white shadow-sm
+                              hover:bg-emerald-400 active:bg-emerald-500
+                              active:scale-[0.98] transition" %>
       </div>
     <% end %>
   </div>
-
-  <p class="mt-6 text-[11px] text-stone-500 leading-relaxed">
-    この提案は一般的な健康情報に基づいたものであり、医療行為ではありません。<br>
-    持病がある方、服薬中の方、体調に不安がある場合は、必ず医師など専門家に相談してください。
-  </p>
 </div>
