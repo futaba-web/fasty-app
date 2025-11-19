@@ -4,7 +4,7 @@
   <!-- タイトル行 -->
   <div class="flex items-start justify-between gap-3">
     <!-- 左側：栄養士アイコン＋タイトル -->
-    <div class="flex items-center gap-3 flex-wrap">
+    <div class="flex items-center gap-3">
       <%= image_tag "fasty_recovery_nutritionist.png",
             alt: "AI食事コンシェルジュの栄養士",
             width: 48,
@@ -21,8 +21,8 @@
       </div>
     </div>
 
-    <!-- 右側：バッジ -->
-    <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-700">
+    <!-- 右側：バッジ（スマホ非表示 / PCのみ表示） -->
+    <span class="hidden md:inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-medium text-emerald-700">
       🌿 やさしい食事サポート
     </span>
   </div>
@@ -176,14 +176,19 @@
 
       <!-- 初回生成ボタン -->
       <div class="mt-4 flex justify-center">
-        <%= button_to "今日のおすすめメニューはこちら", meal_suggestion_path,
+        <%= button_to meal_suggestion_path,
                       method: :post,
                       class: "inline-flex items-center justify-center rounded-full
                               px-10 py-3.5 w-full sm:w-auto sm:min-w-[220px]
                               text-[15px] font-semibold tracking-wide
                               bg-emerald-300 text-white shadow-sm
                               hover:bg-emerald-400 active:bg-emerald-500
-                              active:scale-[0.98] transition" %>
+                              active:scale-[0.98] transition" do %>
+          <!-- スマホ用文言 -->
+          <span class="md:hidden">今日のご飯の提案はこちら</span>
+          <!-- PC用文言（今まで通り） -->
+          <span class="hidden md:inline">今日のおすすめメニューはこちら</span>
+        <% end %>
       </div>
     <% end %>
   </div>
