@@ -3,6 +3,20 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Fasty" %></title>
 
+    <%# ================================
+       Google Analytics（本番のみ）
+       ================================ %>
+    <% if Rails.env.production? %>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-M7X4TXYH0Q"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-M7X4TXYH0Q');
+      </script>
+    <% end %>
+
     <!-- 基本: モバイル最適化 -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,7 +33,7 @@
                             "drawer",
                             "landing",
                             "devise",
-                            "setting",        # ← 設定ページ用CSSを追加
+                            "setting",
                             "data-turbo-track": "reload" %>
 
     <!-- 画面個別で <head> 追記 -->
@@ -36,7 +50,7 @@
 
     <%# ================================
        OGP / Twitter Card（デフォルト + 上書き）
-       ================================= %>
+       ================================ %>
     <% meta = default_meta %>
     <% page_title       = content_for?(:title)       ? yield(:title)       : meta[:title] %>
     <% page_description = content_for?(:description) ? yield(:description) : meta[:description] %>
@@ -69,7 +83,7 @@
 
   <% default_bg    = asset_path("landing/hero.jpg") %>
   <% authed_bg_try = begin asset_path("landing/hero-authed.png") rescue nil end %>
-  <% authed_bg     = authed_bg_try.presence || default_bg %>  <%# 無ければ hero.jpg を使う %>
+  <% authed_bg     = authed_bg_try.presence || default_bg %>
 
   <% page_override = content_for?(:hero_bg_url) ? yield(:hero_bg_url) : nil %>
 
@@ -83,16 +97,13 @@
 
     <%= render "shared/header" %>
 
-    <%# ログイン後のみドロワーを描画 %>
     <%= render("shared/menu_drawer") if user_signed_in? %>
 
     <main id="main" role="main" class="grow">
-      <!-- 共通フラッシュ（左右余白あり） -->
       <div class="mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8">
         <%= render "shared/flash" %>
       </div>
 
-      <!-- ▼ 共通コンテナ（ランディング等はフルブリード可） -->
       <div class="app-container mx-auto w-full max-w-screen-lg px-4 sm:px-6 lg:px-8 py-6 sm:py-8 <%= 'is-full-bleed' if content_for?(:full_bleed) %>">
         <%= yield %>
       </div>
@@ -102,10 +113,8 @@
       <%= render "shared/footer" %>
     </footer>
 
-    <%# Tailwind の safelist（hidden）: 本番ビルドのパージ回避用 %>
     <%= render "shared/tw_safelist" %>
 
-    <%# ==== Service Worker 登録（本番のみ） ==== %>
     <% if Rails.env.production? %>
       <script>
         if ("serviceWorker" in navigator) {
