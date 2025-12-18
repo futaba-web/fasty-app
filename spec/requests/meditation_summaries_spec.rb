@@ -24,7 +24,7 @@ RSpec.describe "MeditationSummaries", type: :request do
         get meditation_summary_path
 
         # アプリ仕様上 200 または 302 のどちらも正
-        expect(response.status).to be_in([200, 302])
+        expect(response.status).to be_in([ 200, 302 ])
       end
     end
   end
