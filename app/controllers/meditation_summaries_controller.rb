@@ -1,6 +1,7 @@
 # app/controllers/meditation_summaries_controller.rb
 class MeditationSummariesController < ApplicationController
   before_action :authenticate_user!
+  helper_method :duration_minutes_of, :started_time_of
 
   def show
     @period = (params[:p] == "month") ? :month : :week
@@ -42,6 +43,8 @@ class MeditationSummariesController < ApplicationController
       record.duration_min
     elsif record.respond_to?(:duration_minutes) && record.duration_minutes
       record.duration_minutes
+    elsif record.respond_to?(:duration_sec) && record.duration_sec
+      record.duration_sec.to_f / 60
     else
       0
     end
