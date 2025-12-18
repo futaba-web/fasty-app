@@ -1,22 +1,24 @@
-# app/controllers/meditation_logs_controller.rb
+# frozen_string_literal: true
+
 class MeditationLogsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, only: :create
 
   def create
-    log = current_user.meditation_logs.new(meditation_log_params)
+    # ここに来る時点で必ずログイン済み
+    log = current_user.meditation_logs.build(meditation_log_params)
 
     if log.save
-      render json: { id: log.id }, status: :created
+      redirect_to meditation_summary_path, notice: "瞑想を記録しました"
     else
-      render json: { errors: log.errors.full_messages }, status: :unprocessable_entity
+      redirect_to meditation_summary_path,
+                  alert: log.errors.full_messages.to_sentence
     end
-  rescue ActionController::ParameterMissing => e
-    render json: { errors: [ e.message ] }, status: :bad_request
   end
 
   private
 
   def meditation_log_params
-    params.require(:meditation_log).permit(:duration_sec, :started_at)
+    # ★ Rails 8対策：キーが無ければ空Hashを返す
+    params.fetch(:meditation_log, {}).permit(:duration_sec, :started_at)
   end
 end
