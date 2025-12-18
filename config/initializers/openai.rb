@@ -13,7 +13,7 @@ end
 
 OpenAIClient = if ENV["OPENAI_API_KEY"].present?
                  OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
-               else
+else
                  Rails.logger.warn("[OpenAI] OPENAI_API_KEY is not set. AI features are disabled.")
                  NullOpenAIClient.new
-               end
+end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe "MeditationLogs", type: :request do
@@ -11,7 +12,7 @@ RSpec.describe "MeditationLogs", type: :request do
         post meditation_logs_path,
              params: { meditation_log: { duration_sec: 120 } }
 
-        expect(response.status).to be_in([302, 422])
+        expect(response.status).to be_in([ 302, 422 ])
       end
     end
 
@@ -27,14 +28,14 @@ RSpec.describe "MeditationLogs", type: :request do
                }
              }
 
-        expect(response.status).to be_in([302, 422])
+        expect(response.status).to be_in([ 302, 422 ])
       end
 
       it "rejects invalid payload" do
         post meditation_logs_path,
              params: { meditation_log: { duration_sec: -10 } }
 
-        expect(response.status).to be_in([302, 422])
+        expect(response.status).to be_in([ 302, 422 ])
       end
     end
   end
