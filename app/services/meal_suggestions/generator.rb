@@ -1,6 +1,8 @@
 # app/services/meal_suggestions/generator.rb
 module MealSuggestions
   class Generator
+    class AIUnavailableError < StandardError; end
+
     # どれくらいの期間のメニューを「なるべく被らせない対象」にするか
     RECENT_DAYS_FOR_VARIETY = 7
 
@@ -16,6 +18,8 @@ module MealSuggestions
     # - OpenAI で提案生成
     # - MealSuggestion を upsert
     def call
+      ensure_ai_available!
+
       insight = FastingInsight.build_for(user)
       phase   = detect_phase(insight)
       content = generate_content(insight, phase)
@@ -31,6 +35,19 @@ module MealSuggestions
     private
 
     attr_reader :user, :date, :client
+
+    def ensure_ai_available!
+      return if ai_enabled?
+
+      Rails.logger.warn("[MealSuggestions] OpenAI is disabled. Skipping suggestion generation.")
+      raise AIUnavailableError, "OpenAI is not configured."
+    end
+
+    def ai_enabled?
+      return client.enabled? if client.respond_to?(:enabled?)
+
+      true
+    end
 
     # ユーザーの状態から、ざっくりフェーズを決める
     def detect_phase(insight)

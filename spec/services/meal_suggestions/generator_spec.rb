@@ -51,6 +51,8 @@ RSpec.describe MealSuggestions::Generator, type: :service do
     }
   end
 
+  let(:logger) { instance_double(ActiveSupport::Logger, warn: nil) }
+
   before do
     # FastingInsight.build_for(user) をモック
     allow(FastingInsight).to receive(:build_for)
@@ -63,6 +65,8 @@ RSpec.describe MealSuggestions::Generator, type: :service do
 
     allow(OpenAIClient).to receive(:chat)
       .and_return(openai_response)
+
+    allow(Rails).to receive(:logger).and_return(logger)
   end
 
   it "creates a MealSuggestion for the given date with normalized content" do
@@ -82,5 +86,16 @@ RSpec.describe MealSuggestions::Generator, type: :service do
     expect(content["lunch"]["why"]).to include("タンパク質と食物繊維")
     expect(content["alerts"]).to be_an(Array)
     expect(content["alerts"].size).to eq(2)
+  end
+
+  it "logs and raises when OpenAI client is disabled" do
+    null_client = instance_double("NullClient", enabled?: false)
+
+    expect {
+      described_class.new(user, target_date: target_date, client: null_client).call
+    }.to raise_error(described_class::AIUnavailableError)
+
+    expect(logger).to have_received(:warn).with("[MealSuggestions] OpenAI is disabled. Skipping suggestion generation.")
+    expect(user.meal_suggestions.where(target_date: target_date)).to be_blank
   end
 end

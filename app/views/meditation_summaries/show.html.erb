@@ -72,8 +72,8 @@
         <p class="text-sm text-stone-500">まだ記録がありません。</p>
       <% else %>
         <% @logs.each do |l| %>
-          <% started = (l.respond_to?(:started_at) ? l.started_at : l.try(:created_at)) %>
-          <% mins    = l.respond_to?(:duration_min) ? l.duration_min : l.try(:duration_minutes) %>
+          <% started = started_time_of(l) %>
+          <% mins    = duration_minutes_of(l) %>
           <article class="rounded-xl bg-white p-3 md:p-4 ring-1 ring-stone-200">
             <div class="flex items-center justify-between gap-3">
               <div class="text-sm md:text-[15px]">
