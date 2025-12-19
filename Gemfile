@@ -51,7 +51,7 @@ group :development, :test do
   gem "dotenv-rails"
 
   # テスト
-  gem "rspec-rails", "~> 6.1"   # RSpec 本体
+  gem "rspec-rails", "~> 8.0"   # RSpec 本体
   gem "factory_bot_rails"       # FactoryBot
 
   # デバッグ & セキュリティ & Lint
